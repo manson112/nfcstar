@@ -29,9 +29,6 @@ script.
 	}
 	
 	function goEdit(){
-		if(!chkForm($("#prdnam")[0])) return false;
-		if(!chkForm($("#totamt")[0])) return false;
-		if(!chkForm($("#odrnum")[0])) return false;
 		$.ajax({
 			url: "/pos/setup/product_insert_proc",
 			type: "POST",

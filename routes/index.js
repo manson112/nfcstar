@@ -562,7 +562,7 @@ router.get('/ncall2setting', function(req, res, next){
 router.post('/imageUpload', function(req, res, next){
 
     let page = "";
-    let image = ""; 
+    let image = "";
 
     let form = new formidable.IncomingForm();
     form.encoding = "utf-8";
