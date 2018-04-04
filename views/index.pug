@@ -1,0 +1,111 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/css/nfcstar-pos-styles.css')
+    script(src="/jquery/jquery-1.11.1.js")
+    script(src="/javascripts/js/common-script.js")
+    script(src="/javascripts/js/socket.io.js")
+    script(src="/javascripts/js/html5shiv.js")
+    script. 
+      $(document).ready(function(){
+        setTimeout("realtimeClock()", 1000);
+        var socket = io.connect("http://nfcstar.com:9090");
+        //var socket = io.connect("http://nfcstar.com:9090");
+        socket.on('38', function(msg){
+          var jsonMsg = JSON.parse(msg);
+          if( jsonMsg.MSGTYP == "CALL" ){
+            reloadCall();
+          } else if ( jsonMsg.MSGTYP == "TABLE" ){
+            reloadTable(jsonMsg.TBLSEQ);
+          } else if ( jsonMsg.MSGTYP == "DELIVERY" ){
+            reloadDelivery();
+          } else if( jsonMsg.MSGTYP == "TEST" ){
+            alert("123");
+          }
+        });
+      });
+      function reloadCall(){ 
+        $.ajax({
+          url: "/pos/sale/call_select.do",
+          success: function(data) {
+            //$("#select_call option").remove();
+            $("#select_call").empty();
+            $.each(data, function(index, value){
+              $("#select_call").append("<option value='"+value.CALSEQ+"' onclick='checkCall(this)'>"+value.CALTXT+"</option>");
+            });
+            document.embeds[0].Play();
+            //document.getElementsByTagName('embed')[0].Play();
+            }
+        });
+      }
+      function checkCall(obj){ 
+        $.ajax({
+          url: "/pos/sale/call_update.do",
+          data:{ CALSEQ:obj.value, CHKFLG:"Y" },
+          success: function(data) {
+            if(data.flag){
+              $(obj).remove();
+            }
+            }
+        });
+      }
+      function reloadTable(tblseq){
+        var obj_table = $('#iframe_body').contents().find("#tblseq_"+tblseq);
+        if(obj_table.length>0) $('#iframe_body').attr('src', $('#iframe_body').attr('src'));
+      }
+      function reloadDelivery(){ 
+        var obj_delivery = $('#iframe_body').contents().find("#td_delivery");
+        if(obj_delivery.length>0) $('#iframe_body').attr('src', $('#iframe_body').attr('src'));
+      }
+      function realtimeClock() {
+        $("#sysdate").html(getTimeStamp());
+        setTimeout("realtimeClock()", 1000);
+      }
+      function logout() {
+        var conf = confirm("종료하시겠습니까?");
+        if(conf){
+          location.href = "/user/logout.do";
+          self.close();
+        }
+      }
+    
+  body
+    embed#file_alarm(src="/sound/alarm.wav" autoplay="false" hidden="true")
+      //- #document
+      //-   html
+      //-     head
+      //-       meta(name="viewport" content="width=device-width")
+      //-     body
+      //-       video(controls autoplay name="media")
+      //-         source(src="http://nfcstar.com/sound/alarm.wav" type="audio/x-wav")
+    header
+      .in_1014
+        .top_wrap
+          .logo
+            img(src="/upload/logo2.png")
+          .top_con
+            ul
+              li
+                span.ton_con_text *사용자 : #{USER}
+
+              li
+                span.ton_con_text *영업일자 : #{DATE}
+
+              li
+                span.ton_con_text *포스번호 : #{POSID}
+
+              li#sysdate
+          .top_select
+            table(width="100%" border="0" cellspacing="0" cellpadding="0")
+              tbody
+                tr
+                  td
+                    select#select_call(style="font-size:15px;")
+          .top_btn  
+            img(src="/views/pos/top_btn_close.jpg" onclick="logout();" style="cursor:pointer;")
+    .content_wrap
+      .in_1014
+        iframe#iframe_body(src="/pos/setup/storeInfo" width="100%" height="725" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" vspace="0" hspace="0" noresize)
+
+  

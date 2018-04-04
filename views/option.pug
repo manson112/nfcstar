@@ -1,0 +1,173 @@
+extends store_iframe_layout
+
+block append head
+
+
+block content 
+    script.
+        $("#tab_name").html("상품옵션");
+
+        var nowdat = '2018-03-17';
+
+        var colName01 = ['분류번호', '분류명'];
+        var colModel01 = [
+            {name: 'OPTSEQ', 	index: '분류번호', 	width: 10, 	editable: false,		template:numberTemplate,		hidden:true			},
+            {name: 'OPTNAM', 	index: '분류명', 		width: 20, 	editable: false,		template:textTemplate			},
+            //- {name: 'ORDNUM', 	index: '순서', 		width:  5, 	editable: false,		template:numberTemplate		}
+        ];
+        
+        var colName02 = ['분류번호', '옵션번호', '옵션명', '옵션가격'];
+        var colModel02 = [
+            {name: 'OPTSEQ',	index: '분류번호', 	width:  5, 	editable: false,		template:numberTemplate,		hidden:true			},
+            {name: 'DTLSEQ', 	index: '옵션번호', 	width:  5, 	editable: false,		template:numberTemplate,		hidden:true			},
+            {name: 'DTLNAM', 	index: '옵션명',		width: 20, 	editable: false,		template:textTemplate			},
+            {name: 'DTLCST', 	index: '옵션가격',		width: 5, 	editable: false,		template:textTemplate			},
+            //- {name: 'ORDNUM', 	index: '정렬순서', 	width:  5, 	editable: false,		template:numberTemplate		}
+        ];
+        
+        $(document).ready(function(){
+            $("#dataList01").datagrid(null, colName01, colModel01, 400, false);
+            $('#dataList01').setGridParam({
+                onCellSelect: function(rowid, iCol, cellcontent, e) {
+                    getDataList02( $(this).getRowData( rowid ) )
+                }
+            });
+            $("#dataList02").datagrid(null, colName02, colModel02, 400, false);
+            
+            getDataList01();
+        });
+        
+        function getDataList01(){
+            clearDataList01();
+            $.ajax({
+                url: "/pos/setup/option_select",
+                data:$("[name=form_search01]").serialize(),
+                success: function(data) {
+                    $("#dataList01").setDatagrid(data);
+                }
+            });
+        }
+        
+        function clearDataList01(){
+            $("#dataList01").clearGridData().trigger("reloadGrid");
+            clearDataList02();
+        }
+        
+        function getDataForm01Dailog(OPTSEQ){
+            var dialog = $.defaultDialog("div_dialog", "/pos/setup/dialog/option01", {OPTSEQ:OPTSEQ});
+            dialog.dialog( "option", { title:"옵션분류 관리",height: 250,width: 500 } );
+        }
+        
+        function setDataForm01( savgbn ){
+            var OPTSEQ = "";
+            if( savgbn=='U' ){
+                var selData = $("#dataList01").getSelRowData();
+                if(selData==null){ alert("분류을 선택하여 주세요."); return; }
+                OPTSEQ = selData.OPTSEQ;
+                getDataForm01Dailog(OPTSEQ);
+            } else if( savgbn=='I' ){
+                getDataForm01Dailog(OPTSEQ);
+            } else if( savgbn=='D' ){
+                var selData = $("#dataList01").getSelRowData();
+                if(selData==null){ alert("분류을 선택하여 주세요."); return; }
+                OPTSEQ = selData.OPTSEQ;
+                $.ajax({
+                    url: "/pos/setup/option_proc",
+                    data:{SAVGBN:'D', OPTSEQ:OPTSEQ},
+                    success: function(data) {
+                        if(data.result){
+                            getDataList01();
+                        }else{
+                            alert(data.msg);
+                        }
+                    }
+                });
+            }
+        }
+        
+        function getDataList02( data ){
+            clearDataList02();
+            var OPTSEQ 		= data.OPTSEQ;
+            $.ajax({
+                url: "/pos/setup/optionDetail_select",
+                data:{OPTSEQ:OPTSEQ},
+                success: function(data) {
+                    $("#dataList02").setDatagrid(data);
+                }
+            });
+        }
+        
+        function clearDataList02(){
+            $("#dataList02").clearGridData().trigger("reloadGrid");
+        }
+        
+        function getDataForm02Dailog(OPTSEQ, DTLSEQ){
+            var dialog = $.defaultDialog("div_dialog", "/pos/setup/dialog/option02",{OPTSEQ:OPTSEQ, DTLSEQ:DTLSEQ});
+            dialog.dialog( "option", { title:"옵션 관리",height: 250,width: 500 } );
+        }
+        
+        function setDataForm02( savgbn ){
+            var OPTSEQ = "";
+            var DTLSEQ = "";
+            if( savgbn!='I' ){
+                var selData = $("#dataList02").getSelRowData();
+                if(selData==null){ alert("옵션을 선택하여 주세요."); return; }
+                OPTSEQ = selData.OPTSEQ;
+                DTLSEQ = selData.DTLSEQ;
+            } else {
+                var selData = $("#dataList01").getSelRowData();
+                if(selData==null){ alert("분류을 선택하여 주세요."); return; }
+                OPTSEQ = selData.OPTSEQ;
+            }
+            if( savgbn=='U' ){
+                getDataForm02Dailog(OPTSEQ, DTLSEQ);
+            } else if( savgbn=='I' ){
+                getDataForm02Dailog(OPTSEQ, DTLSEQ);
+            } else if( savgbn=='D' ){
+                $.ajax({
+                    url: "/pos/setup/optionDetail_proc",
+                    data:{SAVGBN:'D', OPTSEQ:OPTSEQ, DTLSEQ:DTLSEQ},
+                    success: function(data) {
+                        if(data.result){
+                            var data = new Object();
+                            data.OPTSEQ = OPTSEQ;
+                            getDataList02( data );
+                        }else{
+                            alert(data.msg);
+                        }
+                    }
+                });
+            }
+        }
+
+    table(width="100%" border="0" cellspacing="1" cellpadding="1")
+        tr
+            td(width="35%" height="45" align="right")
+                form(name="form_search01")
+                    table(border="0" cellspacing="0" cellpadding="0")
+                        tr
+                            td.padding3
+                                img(src="/views/admin/btn_new_save.gif" onclick="setDataForm01('I');" class="pointer")
+                                | 
+                                img(src="/views/admin/btn_edit.gif" onclick="setDataForm01('U');" class="pointer")
+                                | 
+                                img(src="/views/admin/btn_del.gif" onclick="setDataForm01('D');" class="pointer")
+                            td(width="5")
+            td(width="65%" align="right")
+                form(name="form_search02")
+                    table(border="0" cellspacing="0" cellpadding="0")
+                        tr
+                            td.padding3
+                                img(src="/views/admin/btn_new_save.gif" onclick="setDataForm02('I');" class="pointer")
+                                | 
+                                img(src="/views/admin/btn_edit.gif" onclick="setDataForm02('U');" class="pointer")
+                                | 
+                                img(src="/views/admin/btn_del.gif" onclick="setDataForm02('D');" class="pointer")
+                            td(width="5")
+        tr
+            td(valign="top")
+                table#dataList01
+                form(name="form_data01")
+            td
+                table#dataList02
+                form(name="form_data02")

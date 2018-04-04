@@ -1,0 +1,13 @@
+extend layout
+
+block content
+    h1 NCALL2 동영상 추가 (#{title})
+    form(action="/addncall2url_p", method="post")
+        table
+            tr  
+                th 유튜브 주소
+                td 
+                    input(type="text" name="YTBURL" required)
+            tr
+                td
+                    input(type="submit" value="등록")

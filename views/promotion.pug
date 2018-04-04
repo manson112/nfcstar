@@ -1,0 +1,177 @@
+extends store_iframe_layout
+
+block append head
+
+
+block content 
+    script.
+        $("#tab_name").html("할인상품");
+
+        var nowdat = '2018-03-17';
+        
+        var colName01 = ['상품번호', '할인명', '판매가', '매입가'];
+        var colModel01 = [
+            {name: 'PRDSEQ',	index: '상품번호', 	width:  5, 	editable: false,		template:numberTemplate,		hidden:true			},
+            {name: 'PRDNAM', 	index: '할인명', 		width: 10, 	editable: false,		template:textTemplate			},
+            {name: 'TOTAMT', 	index: '판매가', 		width:  5, 	editable: false,		template:numberTemplate		},
+            {name: 'BUYAMT', 	index: '매입가',		width:  5, 	editable: false,		template:numberTemplate		}
+        ];
+
+        var colName02 = ['상품번호', '하위상품번호', '카테고리', '상품명', '판매가', '매입가'];
+        var colModel02 = [
+            {name: 'PRDSEQ',	index: '상품번호', 	width:  5, 	editable: false,		template:numberTemplate,		hidden:true			},
+            {name: 'SUBSEQ',	index: '하위상품번호', 	width:  5, 	editable: false,		template:numberTemplate,		hidden:true		},
+            {name: 'CTGNAM', 	index: '카테고리', 	width: 10, 	editable: false,		template:textTemplate			},
+            {name: 'PRDNAM', 	index: '상품명', 		width: 10, 	editable: false,		template:textTemplate			},
+            {name: 'TOTAMT', 	index: '판매가', 		width:  5, 	editable: false,		template:numberTemplate		},
+            {name: 'BUYAMT', 	index: '매입가',		width:  5, 	editable: false,		template:numberTemplate		}
+        ];
+        
+        var colName03 = ['상품번호', '카테고리', '상품명', '판매가', '매입가'];
+        var colModel03 = [
+            {name: 'PRDSEQ',	index: '상품번호', 	width:  5, 	editable: false,		template:numberTemplate,		hidden:true			},
+            {name: 'CTGNAM', 	index: '카테고리', 	width: 10, 	editable: false,		template:textTemplate			},
+            {name: 'PRDNAM', 	index: '상품명', 		width: 10, 	editable: false,		template:textTemplate			},
+            {name: 'TOTAMT', 	index: '판매가', 		width:  5, 	editable: false,		template:numberTemplate		},
+            {name: 'BUYAMT', 	index: '매입가',		width:  5, 	editable: false,		template:numberTemplate		}
+        ];
+        
+        $(document).ready(function(){
+            $("#dataList01").datagrid(null, colName01, colModel01, 400, false);
+            $('#dataList01').setGridParam({
+                onCellSelect: function(rowid, iCol, cellcontent, e) {
+                    getDataList02( $(this).getRowData( rowid ) );
+                    getDataList03( $(this).getRowData( rowid ) );
+                }
+            });
+            $("#dataList02").datagrid(null, colName02, colModel02, 190, false);
+            $("#dataList03").datagrid(null, colName03, colModel03, 190, false);
+            
+            getDataList01();
+        });
+        
+        function getDataList01(){
+            clearDataList01();
+            $.ajax({
+                url: "/pos/setup/promotion_select",
+                data:$("[name=form_search01]").serialize(),
+                success: function(data) {
+                    $("#dataList01").setDatagrid(data);
+                }
+            });
+        }
+        
+        function clearDataList01(){
+            $("#dataList01").clearGridData().trigger("reloadGrid");
+            clearDataList02();
+            clearDataList03();
+        }
+        
+        function getDataForm01Dailog(PRDSEQ){
+            var dialog = $.defaultDialog("div_dialog", "/pos/setup/dialog/promotion",{PRDSEQ:PRDSEQ});
+            dialog.dialog( "option", { title:"할인상품 관리",height:450, width:700 } );
+        }
+        
+        function setDataForm01( savgbn ){
+            var PRDSEQ = "";
+            if( savgbn!='I' ){
+                var selData = $("#dataList01").getSelRowData();
+                if(selData==null){ alert("할인상품을 선택하여 주세요."); return; }
+                PRDSEQ = selData.PRDSEQ;
+            }
+            if( savgbn=='U' ){
+                getDataForm01Dailog(PRDSEQ);
+            } else if( savgbn=='I' ){
+                getDataForm01Dailog(PRDSEQ);
+            } 
+        }
+        
+        function getDataList02( data ){
+            clearDataList02();
+            var PRDSEQ 		= data.PRDSEQ;
+            $.ajax({
+                url: "/pos/setup/setDetail_select01",
+                data:{PRDSEQ:PRDSEQ},
+                success: function(data) {
+                    $("#dataList02").setDatagrid(data);
+                }
+            });
+        }
+        function clearDataList02(){
+            $("#dataList02").clearGridData().trigger("reloadGrid");
+        }
+        
+        function getDataList03( data ){
+            clearDataList03();
+            var PRDSEQ 		= data.PRDSEQ;
+            $.ajax({
+                url: "/pos/setup/setDetail_select02",
+                data:{PRDSEQ:PRDSEQ},
+                success: function(data) {
+                    $("#dataList03").setDatagrid(data);
+                }
+            });
+        }
+        function clearDataList03(){
+            $("#dataList03").clearGridData().trigger("reloadGrid");
+        }
+        
+        function setDataForm02( savgbn ){
+            var PRDSEQ = "";
+            var SUBSEQ = "";
+            
+            var selData = $("#dataList01").getSelRowData();
+            if(selData==null){ alert("할인상품을 선택하여 주세요."); return; }
+            PRDSEQ = selData.PRDSEQ;
+            
+            if( savgbn=='I' ){
+                var selData3 = $("#dataList03").getSelRowData();
+                if(selData3==null){ alert("추가하실 상품을 선택하여 주세요."); return; }
+                SUBSEQ	= selData3.PRDSEQ;
+            } else if( savgbn=='D' ){
+                var selData2 = $("#dataList02").getSelRowData();
+                if(selData2==null){ alert("삭제하실 상품을 선택하여 주세요."); return; }
+                SUBSEQ	= selData2.SUBSEQ;
+            }
+            $.ajax({
+                url: "/pos/setup/setDetail_proc.do",
+                data:{SAVGBN:savgbn, PRDSEQ:PRDSEQ, SUBSEQ:SUBSEQ},
+                success: function(data) {
+                    if(data.result){
+                        var data = new Object();
+                        data.PRDSEQ = PRDSEQ;
+                        getDataList02( data );
+                        getDataList03( data );
+                    }else{
+                        alert(data.msg);
+                    }
+                }
+            });
+        }
+
+    table(width="100%" border="0" cellspacing="1" cellpadding="1")
+        tr
+            td(width="50%" height="45" align="right")
+                form(name="form_search01")
+                    table(border="0" cellspacing="0" cellpadding="0")
+                        tr
+                            td.padding3
+                                img(src="/views/admin/btn_new_save.gif" onclick="setDataForm01('I');" class="pointer")
+                                | 
+                                img(src="/views/admin/btn_edit.gif" onclick="setDataForm01('U');" class="pointer")
+                            
+                            td(width="5")
+            td(rowspan="2")
+                table#dataList02
+                div
+                    img(src="/views/admin/btn_long_up.gif" onclick="setDataForm02('I');" class="pointer")
+                    img(src="/views/admin/btn_long_down.gif" onclick="setDataForm02('D');" class="pointer")
+                table#dataList03
+        tr
+            td(valign="top")
+                table#dataList01
+                form(name="form_data01")
+                
+		
+	
+

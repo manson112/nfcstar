@@ -1,0 +1,68 @@
+extends store_iframe_layout
+
+block append head
+
+block content
+    script.
+        $("#tab_name").html("판매내역");
+
+        var nowdat = '';
+
+        var colName01 = ['판매번호', '구분', '시작일자', '시간', '종료일자', '시간', '테이블', '총판매금', '현금', '카드', '할인'];
+        var colModel01 = [
+            {name: 'RCNSEQ',	index: '판매번호', 		width:  5, 	editable: false,		template:numberTemplate,		hidden:true		},
+            {name: 'RCNTYP_NM', 	index: '구분',		 		width:  5, 	editable: false,		template:defaultTemplate		},
+            {name: 'STRDAT', 	index: '시작일자', 		width: 10, 	editable: false,		template:defaultTemplate		},
+            {name: 'STRTIM', 	index: '시간', 			width:  5, 	editable: false,		template:defaultTemplate		},
+            {name: 'ENDDAT', 	index: '종료일자',		width: 10, 	editable: false,		template:defaultTemplate		},
+            {name: 'ENDTIM', 	index: '시간',				width:  5, 	editable: false,		template:defaultTemplate		},
+            {name: 'TBLNAM', 	index: '테이블', 			width:  6, 	editable: false,		template:defaultTemplate		},
+            {name: 'TOTAMT', 	index: '총판매금', 		width:  9, 	editable: false,		template:numberTemplate		},
+            {name: 'CSHAMT', 	index: '현금', 			width:  8, 	editable: false,		template:numberTemplate		},
+            {name: 'CRDAMT', 	index: '카드', 			width:  8, 	editable: false,		template:numberTemplate		},
+            {name: 'HALAMT', 	index: '할인', 			width:  8, 	editable: false,		template:numberTemplate		}
+        ];
+        
+        $(document).ready(function(){
+            $("#dataList01").datagrid(null, colName01, colModel01, 450, false);
+            $('#dataList01').setGridParam({
+                /*
+                ondblClickRow: function(rowid, iRow, iCol, e) {  	
+                    var rowData = $('#dataList01').jqGrid ("getRowData", rowid);
+                    getDataForm01Dailog( rowData );
+                }
+                */
+            });
+            $("#strdat, #enddat").datepicker();
+        });
+        
+        function getDataList01(){
+            clearDataList01();
+            $.ajax({
+                url: "/pos/setup/rcpnList_select.do",
+                data:$("[name=form_search01]").serialize(),
+                success: function(data) {
+                    $("#dataList01").setDatagrid(data);
+                }
+            });
+        }
+        
+        function clearDataList01(){
+            $("#dataList01").clearGridData().trigger("reloadGrid");
+        }
+        
+        function getDataForm01Dailog(data){
+            var dialog = $.defaultDialog("div_dialog", "/pos/setup/dialog/rcpnList.do",{RCNSEQ:data.RCNSEQ});
+            dialog.dialog( "option", { title:"판매 내역",height:400, width:500 } );
+        }
+    form(name="form_search01")
+        table(border="0" cellspacing="0" cellpadding="0" class="table_search")
+            tr
+                td(class="padding3 align_left" style="color:black;")
+                    |판매일 : 
+                    input(type="text" id="strdat" name="STRDAT" class="view_textfiled1" value="2018-03-10" maxlength="10" readonly="readonly" style="font-size:14px")
+                    |~ 
+                    input(type="text" id="enddat" name="ENDDAT" class="view_textfiled1" value="2018-03-17" maxlength="10" readonly="readonly" style="font-size:14px")
+                td(class="padding3 align_right")
+                    img(src="/views/admin/btn_search.gif" onclick="getDataList01();" class="pointer")
+    table#dataList01

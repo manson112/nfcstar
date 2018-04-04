@@ -1,0 +1,54 @@
+script.
+    function chkForm(obj){
+        if(obj==document.getElementById("flrnam")){
+            if(obj.value==""){
+                alert("층명를 입력하여 주세요."); 
+                obj.focus();
+                return false;	
+            }
+            return true;
+        } 
+    }
+    
+    function goEdit(){
+        if(!chkForm($("#flrnam")[0])) return false;
+        $.ajax({
+            url: "/pos/setup/floor_proc",
+            data: $("[name=form_dialog]").serialize(),
+            success: function(data) {
+                if(data.result){
+                    goCancel();
+                }else{
+                    alert(data.msg);
+                }
+            }
+        });
+    }
+    
+    function goCancel() {
+        $("#div_dialog").dialog('close').remove();
+        getDataList01();
+    }
+
+form(name="form_dialog")
+    table(class="table_default" style="width:350px; margin:30px 0 0;")
+        colgroup
+            col(width="30%")
+            col(width="70%")
+        tbody
+            tr(style="display:none")
+                th 저장구분
+                td
+                    input(type="text" name="SAVGBN" value="U" readonly="readonly" class="input_readonly")
+            tr(style="display:none")
+                th 층번호
+                td
+                    input(type="text" name="FLRSEQ" value=FLRSEQ readonly="readonly" class="input_readonly")
+            tr
+                th 층명
+                td
+                    input(type="text" id="flrnam" name="FLRNAM" maxlength="20" class="view_textfiled3")
+            tr
+                td(colspan="2" style="background:white; padding:20px; text-align:center;")
+                    img(src="/views/admin/btn_save.gif" onclick="goEdit();" style="cursor:pointer;")
+                    img(src="/views/admin/btn_cancel.gif" onclick="goCancel();" style="cursor:pointer;")

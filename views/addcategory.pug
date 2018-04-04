@@ -1,0 +1,15 @@
+extend layout
+
+block content
+    h1 제품 카테고리 등록 (#{title})
+    form(action="/addcategory_p" method="post" enctype="multipart/form-data")
+        label 카테고리 명
+            input(type="text" name="CATNAM")
+            br
+        label 카테고리 사진
+            input(type="file" name="CATFIL")
+            br
+        label 정렬 순서
+            input(type="number" name="ORDNUM")
+            br
+        input(type="submit" value="등록")

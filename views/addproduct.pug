@@ -1,0 +1,79 @@
+extend layout
+
+block content
+    script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript")
+    script(src="/javascripts/product.js" type="text/javascript")
+    h1 제품 등록 (#{title})
+    form(action="/addproduct_p" method="post" enctype="multipart/form-data")
+        table#prdtable
+            tr
+                th 
+                    label 카테고리
+                td
+                    select(name = "CATSEQ")
+                        each category in categories
+                            option(value=category.CATSEQ) #{category.CATNAM} (#{category.CATNUM})
+            tr
+                th 
+                    label 제품 명  
+                td          
+                    input(type="text" name="PRDNAM")
+            tr
+                th      
+                    label 제품 가격
+                td
+                    input(type="number" name="PRDCST")
+            
+            tr
+                th  
+                    label 제품 설명
+                td  
+                    input(type="text" name="PRDEXP")
+            tr
+                th
+                    label 옵션
+                td#opt1
+                    select#optcatselect(name="OPTCAT")
+                        each optioncategory in optioncategories
+                            option(value=optioncategory.OPTCATSEQ) #{optioncategory.CATNAM}
+                td
+                    button#addOption(type="button") 추가
+                td  
+                    button#insertOption(type="button") 옵션 등록
+            tr#prdimg
+                th
+                    label 제품 메인 사진
+                td
+                    input(type="file" name="PRDIMG" required)
+            tr
+                th
+                    label 제품 세부 사진
+                td
+                    input(type="file" name="PRDIMG" required)
+                td
+                    button#addImage(type="button") 추가
+            tr#salflg
+                th  
+                    label 판매 여부
+                td 
+                    label O
+                        input(type="radio" name="SALFLG" value="Y")
+                td 
+                    label X
+                        input(type="radio" name="SALFLG" value="N")     
+            tr
+                th
+                    label 원산지 (수정 필요)
+                td
+                    input(type="text" name="CTRCOD" maxlength="4")
+            tr    
+                th
+                    label 정렬
+                td
+                    input(type="number" name="ORDNUM")
+            tr
+                td
+                    input(type="submit" value="등록")
+
+    
+    

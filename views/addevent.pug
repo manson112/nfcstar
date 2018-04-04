@@ -1,0 +1,45 @@
+extend layout
+
+block content
+    script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript")
+    script(src="/javascripts/event.js" type="text/javascript")
+    h1 이벤트 등록 (#{title})
+    form(action="/addevent_p" method="post" enctype="multipart/form-data")
+        table
+            tr
+                th 이벤트 명
+                td 
+                    input(type="text" name="EVTNAM")
+            tr
+                th 이벤트 시작
+                td
+                    input(type="date" name="EVTSTR")
+            tr
+                th 이벤트 종료
+                td
+                    input(type="date" name="EVTEND")
+            tr
+                th 정렬
+                td
+                    input(type="number" name="ORDNUM")
+            tr
+                th 이벤트 메인 사진
+                td
+                    input(type="file" name="EVTIMG" required)
+            tr
+                th 이벤트 상세 사진
+                td#d_img1
+                    input(type="file" name="EVTIMG" required)
+                td
+                    select#prd_select(name = "PRDSEQ")
+                        each product in products
+                            option(value=product.PRDSEQ) #{product.PRDNAM}
+                td
+                    button#addImage(type="button") 추가
+            tr#evtvdo
+                th 이벤트 동영상 주소
+                td
+                    input(type="text" name="VDOURL")
+            tr#submitbtn
+                td
+                    input(type="submit" value="등록")

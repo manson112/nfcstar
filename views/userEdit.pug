@@ -1,0 +1,127 @@
+extends store_iframe_layout
+
+block append head
+
+block content
+    script.
+        $("#tab_name").html("회원정보");
+        
+        $(document).ready(function(){
+            $("#telnum, #mobnum").numeric();
+        });
+        
+        function chkForm(obj){
+            if(obj==document.getElementById("nowpwd")){
+                if(obj.value==""){
+                    alert("패스워드를 입력하여 주세요."); 
+                    obj.focus();
+                    return false;	
+                }
+                return true;
+            } else if(obj==document.getElementById("chgpwd")){
+                if(obj.value!=""){
+                    if( obj.value.length < 4 ) {
+                        alert("변경할 패스워드는 4자리이상 입력하여 주세요."); 
+                        obj.focus();
+                        return false;
+                    }
+                    if( obj.value!=document.getElementById("chkpwd").value ){
+                        alert("변경할 패스워드가 확인 패스워드와 일치하지 않습니다."); 
+                        obj.focus();
+                        return false;
+                    }		
+                }
+                return true;
+            } else if(obj==document.getElementById("mobnum")){
+                if(obj.value==""){
+                    alert("핸드폰번호을 입력하여 주세요."); 
+                    obj.focus();
+                    return false;	
+                }
+                return true;
+            }
+        }
+        /*
+        function chkText(gubun){
+            if(gubun=="nowpwd"){
+                if( $("#nowpwd").length  8 ) {
+                    alert("변경할 패스워드는 8자리이상 입력하여 주세요."); 
+                    $("#nowpwd").focus();
+                    return false;
+                }					
+            }
+            else if(gubun=="chgpwd"){
+                if( $("#chgpwd").length  8 ) {
+                    alert("변경할 패스워드는 8자리이상 입력하여 주세요."); 
+                    $("#chgpwd").focus();
+                    return false;
+                }					
+            }
+            else if(gubun=="mobnum"){
+                if( $("#mobnum").val() == "" ) {
+                    alert("핸드폰번호을 입력하여 주세요."); 
+                    $("#mobnum").focus();
+                    return false;
+                }					
+            }
+            return true;
+        }
+        */
+        function goEdit(){
+            if(!chkForm($("#nowpwd")[0])) return false;
+            if(!chkForm($("#chgpwd")[0])) return false;
+            //- if(!chkForm($("#mobnum")[0])) return false;
+            /*
+            if(!chkText("nowpwd")) return false;
+            if(!chkText("chgpwd")) return false;
+            if(!chkText("mobnum")) return false;
+            */
+            $.ajax({
+                url: "/pos/setup/userEdit_proc",
+                data: $("[name=form_data01]").serialize(),
+                success: function(data) {
+                    if(data.result){
+                        alert(data.msg);
+                        goCancel();
+                    }else{
+                        alert(data.msg);
+                    }
+                }
+            });
+        }
+        
+        function goCancel() {
+            window.location.reload();
+        }
+
+    form(name="form_data01")
+        table.table_default
+            colgroup
+                col(width="30%")
+                col(width="70%")
+            tbody
+                tr
+                    th 아이디
+                    td
+                        input(type="text" name="POSID" value=POSID readonly="readonly" class="input_readonly")
+
+                tr
+                    th 패스워드
+                    td
+                        input(type="password" id="nowpwd" name="NOWPWD" maxlength="20" class="view_textfiled3")
+                tr 
+                    th 변경할 패스워드
+                    td
+                        input(type="password" id="chgpwd" name="CHGPWD" maxlength="20" class="view_textfiled3")
+                tr 
+                    th 변경할 패스워드 확인
+                    td
+                        input(type="password" id="chkpwd" name="CHKPWD" maxlength="20" class="view_textfiled3")
+                tr 
+                    th 사용자명  
+                    td #{POSNAM}
+                tr
+                    td(colspan="2" style="background:white; padding:20px; text-align:center;")
+                        img(src="/views/admin/btn_save.gif" onclick="goEdit();" style="cursor:pointer;")
+                        | 
+                        img(src="/views/admin/btn_cancel.gif" onclick="goCancel();" style="cursor:pointer;")

@@ -1,0 +1,80 @@
+extends store_iframe_layout
+
+block append head
+
+block content
+    script.
+        $("#tab_name").html("이벤트");
+
+        var nowdat = '2018-03-17';
+
+        var colName01 = ['이벤트번호', '메인이미지', '이벤트명', '시작일', '종료일', '정렬', '비고'];
+        var colModel01 = [
+            {name: 'EVTSEQ', 	index: '이벤트번호',	width:  5, 	editable: false,		template:numberTemplate,		hidden:true			},
+            {name: 'IMGTAG', 	index: '이미지', 		width:  7, 	editable: false,		template:defaultTemplate		},
+            {name: 'EVTNAM',	index: '이벤트명', 	width: 10, 	editable: false,		template:textTemplate			},
+            {name: 'STRDAT',	index: '시작일', 		width:  7, 	editable: false,		template:dateTemplate			},
+            {name: 'ENDDAT',	index: '종료일', 		width:  7, 	editable: false,		template:dateTemplate			},
+            {name: 'ORDNUM',	index: '정렬', 		width:  5, 	editable: false,		template:numberTemplate		},
+            {name: 'REMARK',	index: '비고', 		width: 18, 	editable: false,		template:textTemplate			}
+        ];
+        
+        $(document).ready(function(){
+            $("#dataList01").datagrid(null, colName01, colModel01, 400, false);
+            getDataList01();
+        });
+        
+        function getDataList01(){
+            clearDataList01();
+            $.ajax({
+                url: "/pos/setup/event_select",
+                success: function(data) {
+                    $("#dataList01").setDatagrid(data);
+                }
+            });
+        }
+        
+        function clearDataList01(){
+            $("#dataList01").clearGridData().trigger("reloadGrid");
+        }
+        
+        function getDataForm01Dailog(EVTSEQ){
+            var dialog = $.defaultDialog("div_dialog", "/pos/setup/dialog/event",{EVTSEQ:EVTSEQ});
+            dialog.dialog( "option", { title:"이벤트 관리",height:600, width:900 } );
+        }
+        
+        function setDataForm01( savgbn ){
+            var EVTSEQ = "";
+            if( savgbn!='I' ){
+                var selData = $("#dataList01").getSelRowData();
+                if(selData==null){ alert("이벤트을 선택하여 주세요."); return; }
+                EVTSEQ = selData.EVTSEQ;
+            }
+            if( savgbn=='U' ){
+                getDataForm01Dailog(EVTSEQ);
+            } else if( savgbn=='I' ){
+                getDataForm01Dailog(EVTSEQ);
+            } else if( savgbn=='D' ){
+                $.ajax({
+                    url: "/pos/setup/event_proc",
+                    data:{SAVGBN:'D', EVTSEQ:EVTSEQ},
+                    success: function(data) {
+                        if(data.result){
+                            getDataList01();
+                        }else{
+                            alert(data.msg);
+                        }
+                    }
+                });
+            }
+        }
+    form(name="form_search01")
+        table(border="0" cellspacing="0" cellpadding="0" style="width:100%")
+            tr
+                td(class="padding3 align_right")
+                    img(src="/views/admin/btn_new_save.gif" onclick="setDataForm01('I');" class="pointer")
+                    | 
+                    img(src="/views/admin/btn_edit.gif" onclick="setDataForm01('U');" class="pointer")
+                    | 
+                    img(src="/views/admin/btn_del.gif" onclick="setDataForm01('D');" class="pointer")
+    table#dataList01

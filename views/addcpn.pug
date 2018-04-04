@@ -1,0 +1,31 @@
+extend layout
+
+block content
+    h1 업체 등록 (#{title})
+    form(action='/addcpn_p' method="post")
+        label 업체 명
+            input(type="text" name="CPNNAM")
+            br
+        label ID  
+            input(type="text" name="CPNID")
+            br
+        label 비밀번호  
+            input(type="password" name="CPNPW")
+            br
+        label 전화번호  
+            input(type="tel" name="CPNTEL")
+            br
+        label 우편번호 
+            input(type="text" name="CPNZIP" maxlength="5")
+            br
+        label 주소
+            input(type="text" name="CPNADD")
+            br
+        label 상세 주소 
+            input(type="text" name="CPDADD")
+            br
+        label 관할 시군 
+            input(type="text" name="CPNCOD")
+            br
+
+        input(type="submit" value="등록")

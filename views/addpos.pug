@@ -1,0 +1,35 @@
+extend layout
+
+block content
+    h1 포스 등록 (#{title})
+    form(action='/addpos_p' method="post")
+        label 매장 명
+            select(name = "STOSEQ")
+                each stoinfo in stoinfos
+                    option(value=stoinfo.STOSEQ) #{stoinfo.STONAM}
+        br
+        label 포스 ID
+            input(type="text" name="POSID")
+        br
+        label 포스 비밀번호
+            input(type="text" name="POSPW")
+        br
+        label 등록업체번호
+            input(type="text" name="CPNSEQ")
+        br
+        label 웹 포스2 사용(사용:T, 사용x:F)
+            input(type="text" name="USEWEB" maxlength="1")
+        br
+        label 앱 포스 사용(사용:T, 사용x:F)
+            input(type="text" name="USEAPP" maxlength="1")
+        br
+        label 딩동이 사용(사용:T, 사용x:F)
+            input(type="text" name="USEALR" maxlength="1")
+        br
+        label 계산만 사용(사용:T, 사용x:F)
+            input(type="text" name="USECAL" maxlength="1")
+        br
+        label 등록 사용자ID 
+            input(type="text" name="MODUSR")
+        br
+        input(type="submit" value="등록")

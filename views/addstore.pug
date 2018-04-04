@@ -1,0 +1,57 @@
+extend layout
+
+block content
+    h1 매장 등록 (#{title})
+    form(action='/addstore_p' method="post")
+        label 사업자 번호
+            input(type="text" name="REGNUM" required)
+            br
+        label 대표자명
+            input(type="text" name="CHFNAM" required)
+            br
+        label 업태
+            input(type="text" name="STOTYP")
+            br
+        label 종목  
+            input(type="tel"  name="STOITM")
+            br
+        label 매장 명  
+            input(type="text" name="STONAM" required)
+            br
+        label 매장 로고  
+            input(type="text" name="STLOGO")
+            br
+        label 전화 번호
+            input(type="tel" name="STOTEL")
+            br
+        label 팩스 번호
+            input(type="tel" name="STOFAX")
+            br
+        label 이메일
+            input(type="email" name="STOEML")
+            br
+        label 홈페이지
+            input(type="text" name="STOHPG")
+            br
+        label 우편번호
+            input(type="text" name="STOZIP" maxlength="5")
+            br
+        label 주소
+            input(type="text" name="STOADD")
+            br
+        label 상세 주소
+            input(type="text" name="STDADD")
+            br    
+        label 영업 시작 시간
+            input(type="text" name="STOSTR")
+            br
+        label 영업 마감 시간
+            input(type="text" name="STOEND")
+            br
+        label 영업 방식 (테이블:1, 배달:2, 바로결제:3, 모두:3)
+            input(type="text" name="SALMTH")
+            br
+        label 등록 업체 번호
+            input(type="text" name="CPNSEQ")
+            br
+        input(type="submit" value="등록")

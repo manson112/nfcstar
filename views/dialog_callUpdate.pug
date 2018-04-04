@@ -1,0 +1,75 @@
+script.
+	$(document).ready(function(){
+		$("#odrnum").numeric();
+	});
+	
+	function chkForm(obj){
+		if(obj==document.getElementById("calnam")){
+			if(obj.value==""){
+				alert("호출내용을 입력하여 주세요."); 
+				obj.focus();
+				return false;	
+			}
+			return true;
+		} else if(obj==document.getElementById("odrnum")){
+			if(obj.value==""){
+				alert("정렬순서을 입력하여 주세요."); 
+				obj.focus();
+				return false;	
+			}
+		} 
+		return true;
+	}
+	
+	function goEdit(){
+		if(!chkForm($("#calnam")[0])) return false;
+		if(!chkForm($("#odrnum")[0])) return false;
+		$.ajax({
+			url: "/pos/setup/call_proc",
+			data:$("[name=form_dialog]").serialize(),
+			success: function(data) {
+				if(data.result){
+					goCancel();
+					getDataList01();
+				}else{
+					alert(data.msg);
+				}
+			}
+		});
+	} 
+	
+	function goCancel() {
+		$("#div_dialog").dialog('close').remove();
+	}
+
+form(name="form_dialog")
+	table(width="100%" class="table_default")
+		colgroup
+			col(width="20%")
+			col(width="80%")
+		
+		tbody
+			tr(style="display:none")
+				th 저장구분
+				td
+					input(type="text" id="savgbn" name="SAVGBN" value="U" readonly="readonly" class="input_readonly")
+			
+			tr(style="display:none")
+				th 호출번호
+				td
+					input(type="text" id="calseq" name="CALSEQ" value=CALSEQ readonly="readonly" class="input_readonly")
+			
+			tr
+				th 호출
+				td
+					input(type="text" id="calnam" name="CALNAM" value=CALNAM class="view_textfiled4" maxlength ="30")
+			
+			tr
+				th 정렬순서
+				td
+					input(type="text" id="odrnum" name="ORDNUM" value=ORDNUM class="view_textfiled0" maxlength ="5")
+			
+			tr
+				td(colspan="2" style="background:white; padding:20px; text-align:center;")
+					img(src="/views/admin/btn_save.gif" onclick="goEdit();" style="cursor:pointer;")
+					img(src="/views/admin/btn_cancel.gif" onclick="goCancel();" style="cursor:pointer;")

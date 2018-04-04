@@ -1,0 +1,78 @@
+extends store_iframe_layout
+
+block append head
+
+
+block content 
+    script.
+        $("#tab_name").html("호출");
+
+        var nowdat = '2018-03-17';
+
+        var colName01 = ['호출번호', '호출', '정렬순서'];
+        var colModel01 = [
+            {name: 'CALSEQ', 	index: '호출번호',	width:  5, 	editable: false,		template:numberTemplate,		hidden:true			},
+            {name: 'CALNAM',	index: '호출', 		width:  8, 	editable: false,		template:textTemplate			},
+            {name: 'ORDNUM',	index: '정렬순서', 	width:  1, 	editable: false,		template:numberTemplate		}
+        ];
+        
+        $(document).ready(function(){
+            $("#dataList01").datagrid(null, colName01, colModel01, 400, false);
+            getDataList01();
+        });
+        
+        function getDataList01(){
+            clearDataList01();
+            $.ajax({
+                url: "/pos/setup/call_select",
+                success: function(data) {
+                    $("#dataList01").setDatagrid(data);
+                }
+            });
+        }
+        
+        function clearDataList01(){
+            $("#dataList01").clearGridData().trigger("reloadGrid");
+        }
+        
+        function getDataForm01Dailog(CALSEQ){
+            var dialog = $.defaultDialog("div_dialog", "/pos/setup/dialog/call",{CALSEQ:CALSEQ});
+            dialog.dialog( "option", { title:"호출 관리",height: 250,width: 500 } );
+        }
+        
+        function setDataForm01( savgbn ){
+            var CALSEQ = "";
+            if( savgbn!='I' ){
+                var selData = $("#dataList01").getSelRowData();
+                if(selData==null){ alert("호출을 선택하여 주세요."); return; }
+                CALSEQ = selData.CALSEQ;
+            }
+            if( savgbn=='U' ){
+                getDataForm01Dailog(CALSEQ);
+            } else if( savgbn=='I' ){
+                getDataForm01Dailog(CALSEQ);
+            } else if( savgbn=='D' ){
+                $.ajax({
+                    url: "/pos/setup/call_proc",
+                    data:{SAVGBN:'D', CALSEQ:CALSEQ},
+                    success: function(data) {
+                        if(data.result){
+                            getDataList01();
+                        }else{
+                            alert(data.msg);
+                        }
+                    }
+                });
+            }
+        }
+
+    form(name="form_search01")
+        table(border="0" cellspacing="0" cellpadding="0" style="width:100%")
+            tr
+                td.padding3.align_right
+                    img(src="/views/admin/btn_new_save.gif" onclick="setDataForm01('I');" class="pointer")
+                    | 
+                    img(src="/views/admin/btn_edit.gif" onclick="setDataForm01('U');" class="pointer")
+                    | 
+                    img(src="/views/admin/btn_del.gif" onclick="setDataForm01('D');" class="pointer")
+    table#dataList01

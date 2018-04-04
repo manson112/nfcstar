@@ -1,0 +1,21 @@
+extend layout
+
+block content
+    h1 호출 (#{title})
+    form(action="/addcall_p", method="post")
+        table
+            tr
+                th 호출 내용
+                td 
+                    input(type="text" name="CALNAM")
+            tr
+                th 호출 대상(C: 매장 to 손님, S: 손님 to 매장)
+                td
+                    input(type="text" name="CALCOD" maxlength="1")
+            tr
+                th 정렬 순서
+                td
+                    input(type="number" name="ORDNUM")
+            tr
+                td
+                    input(type="submit" value="등록")

@@ -1,0 +1,525 @@
+
+.Clearfix:after
+{
+    clear: both;
+    content: ".";
+    display: block;
+    height: 0;
+    visibility: hidden;
+}
+
+*{margin: 0px;padding: 0px;}
+body, table{ font-size: 12px; }
+
+body, p, h1, h2, h3, h4, h5, h6, ul, ol, li, dl, dt, dd, table, th, td, form, fieldset, legend, input, textarea, button, select
+{
+    margin: 2px 0;
+    padding: 0;
+    font-family:NanumGothic, 나눔고딕, ngttf, ngeot, verdana, dotum, AppleGothic, sans-serif;
+}
+
+img, fieldset{border: 0;}
+ul, ol{list-style: none;}
+em, address{font-style: normal;}
+
+a{
+    text-decoration: none;
+    selector-dummy: expression(this.hideFocus=true);
+    color: #666666;
+    text-decoration: none;
+}
+a:hover
+{
+    color: #666699;
+    text-decoration: none;
+}
+
+a:hover img
+{
+     cursor: pointer;
+   /* -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=7)";
+    filter: alpha(opacity=7);*/
+    -khtml-opacity: 0.7;
+    -moz-opacity: 0.7;
+    opacity: 0.7;
+    filter: alpha(opacity=70);
+    }
+
+
+/* Styles for basic forms
+-----------------------------------------------------------*/
+fieldset {
+    border: 1px solid #ddd;
+    padding: 0 1.4em 1.4em 1.4em;
+    margin: 0 0 1.5em 0;
+}
+
+legend {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+textarea {
+    min-height: 75px;
+}
+
+.editor-label {
+    margin: 1em 0 0 0;
+}
+
+.editor-field {
+    margin: 0.5em 0 0 0;
+}
+
+
+/* Styles for validation helpers
+-----------------------------------------------------------*/
+.field-validation-error {
+    color: #f00;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+.input-validation-error {
+    border: 1px solid #f00;
+    background-color: #fee;
+}
+
+.validation-summary-errors {
+    font-weight: bold;
+    color: #f00;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+.mainct
+{
+    width:948px;
+    }
+
+#headerDiv
+{
+    border-bottom: 4px solid #F00000;
+    padding-bottom: 5px;
+    }
+    
+.divlogo
+{
+    float:left;
+    width:132px;
+    text-align:center;
+    margin-top:8px;
+    }
+    
+.divmenu
+{
+    float:left;
+    width:65%;
+    }    
+
+.divsearch
+{
+    float:left;
+    width:20%;
+    }
+
+
+#divBanner
+{
+    background: url("/views/web/layout/icon_01.png") no-repeat scroll center bottom rgba(0, 0, 0, 0);
+    padding-bottom:28px;
+    }
+    
+.banner_content
+{
+    background:url("/views/web/layout/bg_banner_center.png") no-repeat scroll center center #272727;
+    border-bottom:2px solid #272727;
+    padding:5px 0;
+    }    
+
+#bodyDiv
+{
+    }  
+    
+#footerDiv
+{
+    }   
+     
+.tb_layout_bottom td
+{
+     padding-left: 10px;
+     cursor:pointer;
+    }    
+    
+
+.login_div
+{
+    border-top:3px solid red;
+    padding:20px;
+    }
+
+.input_login
+{    
+    width:250px;
+    padding:5px;
+    font-size:12pt;    
+    }
+    
+.bt_login
+{    
+    background: none repeat scroll 0 0 #000000;
+    color: #FFFFFF;
+    display: block;
+    margin-top: 10px;
+    padding: 10px 6px;
+    width: 250px;
+    cursor:pointer;
+    }    
+    
+    
+.div_bn01
+{
+   background: url("/views/web/layout/line_bottom_1.png") no-repeat scroll center bottom rgba(0, 0, 0, 0);
+    padding-bottom: 40px;
+    }  
+    
+.h_regis
+{
+    font-size:28pt;
+    color:Red;
+    margin-top:30px;
+    }     
+    
+.h_ezen
+{
+    margin-bottom:30px;
+    margin-top:10px;
+    font-size:14pt;
+    
+    }     
+    
+    
+.divScroll
+{
+    border: 1px solid #CCCCCC;
+    font-size: 11pt;
+    height: 250px;
+    overflow: auto;
+    padding: 10px;
+    text-align: left;
+    line-height: 1.7;
+    }    
+    
+    
+.title_regis
+{
+     font-size: 18pt;
+    margin: 10px 0 30px;
+    }
+
+.title_regis span
+{
+    font-weight:bold;
+    }    
+    
+    
+ .btn_res_red
+ {
+    background: none repeat scroll 0 0 #CC0001;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: block;   
+    padding: 10px 0px;
+    width: 100%;
+        }
+        
+.btn_res_blue
+{
+     background: none repeat scroll 0 0 #2589b5;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: block;
+    margin-top: 5px;
+    padding: 10px 5px;
+    width: 100%;
+    }        
+        
+ .btn_res_black
+ {
+    background: none repeat scroll 0 0 #bababa;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: block;
+    margin-top: 5px;
+    padding: 10px 0;
+    width: 100%;
+        }    
+        
+        
+.div_boder
+{
+    border: 1px solid #CCCCCC;
+    font-size: 11pt;
+    height: 250px;        
+    text-align: left;
+    }   
+    
+.cl_lineWhite
+{
+    background: url("/views/web/layout/line_bottom_white.png") no-repeat scroll center top rgba(0, 0, 0, 0);
+    font-size: 24pt;
+    font-weight: bold;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    padding-top: 100px;
+    }       
+    
+.tb_regis
+{
+   width:100%;
+   padding: 10px;
+    }    
+    
+.tb_regis th
+{
+    color:#141414;
+    font-size: 11pt;
+    padding:20px 5px;
+    width:150px;
+    }          
+
+.tb_regis td
+{
+    text-align:left;
+    }    
+    
+    
+.bn_title01
+{
+    color:#fff;
+    font-size:15pt;
+    font-weight:bold;
+    }
+.bn_title02
+{
+    color:#acacac;
+    font-size:10pt;
+    }   
+    
+.dl_item
+{
+    margin: 20px 0 40px 0;
+    }
+
+.dl_item div
+{
+    font-size: 11pt;
+    margin: 10px 0;
+    font-weight: bold;
+    }    
+    
+    
+.icon_btom
+{ float: left;
+    margin: 10px 0 30px 70px;
+    text-align: center;
+    width: 100px;
+    }     
+    
+div.icon_fl01
+{
+    float: left;
+    margin: 10px 20px;
+    text-align: center;
+    width: 100px;
+    }    
+
+.inputlogin
+{
+    height:32px;
+    }  
+    
+    
+.tt_001
+{
+    font-size: 16pt;
+    font-weight: bold;
+    margin: 20px 0 10px;
+    }
+
+.tt_002
+{
+    color: #666666;
+    font-size: 10pt;
+    margin: 0 0 20px;
+    }      
+    
+.about_us_banner
+{
+    background: url("/views/web/banner/bg_banner_info.png") repeat scroll center center rgba(0, 0, 0, 0);
+    height: 686px;
+    }    
+    
+.div_border
+{
+   border: 1px solid #CCCCCC;
+    font-size: 13pt;
+    margin: 10px 0;
+    padding: 10px;
+    text-align: left;
+    }   
+    
+.item_more
+{
+    
+        
+    }
+    
+.tb_item
+{
+    margin: 10px;
+    width: 98%;
+    }
+
+.tb_item tr
+{
+    background: url("/views/web/icon/icon_11.png") no-repeat scroll right center rgba(0, 0, 0, 0);
+    cursor:pointer;
+    }
+    
+.tb_item tr td:hover
+{
+    background: url("/views/web/icon/icon_11.png") no-repeat scroll right center #e8e7e4;
+    }    
+
+.tb_item tr td
+{
+    border-bottom: 1px solid #CCCCCC;
+    font-size: 12pt;
+    padding: 10px 0;
+    }
+    
+     
+    
+.tb_notice
+{
+    margin: 10px;
+    width: 98%;
+    }
+
+.tb_notice tr
+{   
+    cursor:pointer;
+    }
+ 
+    
+.tb_notice tr:hover
+{
+    background: #e8e7e4;
+    }    
+
+.tb_notice tr td 
+{
+    border-bottom: 1px solid #CCCCCC;
+    font-size: 12pt;
+    padding: 10px 0;
+    }     
+.tb_notice tr th
+{
+    border-bottom: 1px solid #CCCCCC;
+    font-size: 10pt;
+    text-align:right;
+    color:#666;
+    
+    }       
+    
+.cusinput
+{
+    height: 50px;
+    width: 49%;
+    font-size: 18pt;
+    }       
+    
+.iconlink
+{
+   cursor: pointer;
+    display: inline-block;
+    margin: 15px 20px;
+    }    
+    
+.bt_cus
+{
+    display: inline-block;
+    float: right;
+    margin-top: -7px;
+    padding: 5px;
+    }    
+    
+   
+.item_paging
+{
+    display: inline-block;
+    margin-top: 10px;
+    }   
+    
+.item_paging a
+{
+    margin:10px 10px;
+    font-size:13pt;
+    cursor:pointer;
+    }    
+.search_pa
+{
+    font-size: 12pt;
+    padding: 6px;
+    }    
+    
+.bt_cusgis
+{
+   display: inline-block;
+    float: right;
+    margin-top: -7px;
+    padding: 5px;
+    } 
+   
+.tb_cusregis
+{
+   width:100%;
+   padding: 10px;
+    }
+        
+.tb_cusregis tr th, .tb_cusregis tr td
+{
+    border-bottom:1px solid #ccc;
+    }
+        
+.tb_cusregis th
+{
+    color:#141414;
+    font-size: 11pt;
+    padding:30px 5px;
+    width:70px;
+    }          
+
+.tb_cusregis td
+{
+    text-align:left;
+    }   
+    
+.tb_cusregis td input
+{
+    padding:5px 0;
+    font-size:13pt;
+    }        
+    
+.txtarea
+{
+    min-height: 250px;
+    width: 98%;
+    padding:10px;
+    margin-bottom:20px;
+    }    

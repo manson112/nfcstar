@@ -1,0 +1,185 @@
+extends store_iframe_layout
+
+block append head
+
+
+block content 
+	script.
+		$("#tab_name").html("상품");
+
+		var nowdat = '2018-03-17';
+		
+		var colName01 = ['카테고리번호', '이미지', '카테고리명', '정렬'];
+		var colModel01 = [
+			{name: 'CTGSEQ', 	index: '카테고리번호', 	width: 10, 	editable: false,		template:numberTemplate,		hidden:true			},
+			{name: 'IMGTAG', 	index: '이미지', 		width: 10, 	editable: false,		template:defaultTemplate							},
+			{name: 'CTGNAM', 	index: '카테고리명', 	width: 15, 	editable: false,		template:textTemplate								},
+			{name: 'ORDNUM', 	index: '정렬', 			width: 6, 	editable: false,		template:numberTemplate								}
+		];
+		var colName02 = ['상품번호', '이미지', '상품명', '판매가', '매입가', '원산지', '판매', '설명', '정렬'];
+		var colModel02 = [
+			{name: 'PRDSEQ',		index: '상품번호', 		width:  5, 	editable: false,		template:numberTemplate,		hidden:true		},
+			{name: 'PRDIMG_TAG', 	index: '이미지', 		width:  6, 	editable: false,		template:defaultTemplate						},
+			{name: 'PRDNAM', 		index: '상품명', 		width: 10, 	editable: false,		template:textTemplate							},
+			{name: 'TOTAMT', 		index: '판매가', 		width:  6, 	editable: false,		template:numberTemplate							},
+			{name: 'BUYAMT', 		index: '매입가',		width:  5, 	editable: false,		template:numberTemplate,		hidden:true		},
+			{name: 'CTRNAM', 		index: '원산지', 		width:  5, 	editable: false,		template:textTemplate,			hidden:true		},
+			{name: 'SALFLG', 		index: '판매', 			width:  4, 	editable: false,		template:textTemplate,			hidden:true		},
+			{name: 'PRDEXP', 		index: '설명', 			width: 11, 	editable: false,		template:textTemplate							},
+			{name: 'ORDNUM', 		index: '정렬', 			width:  4, 	editable: false,		template:numberTemplate							}
+		];
+		
+		$(document).ready(function(){
+			$("#dataList01").datagrid(null, colName01, colModel01, 400, false);
+			$('#dataList01').setGridParam({
+				onCellSelect: function(rowid, iCol, cellcontent, e) {
+					getDataList02( $(this).getRowData( rowid ) )
+				}
+			});
+			$("#dataList02").datagrid(null, colName02, colModel02, 400, false);
+			
+			getDataList01();
+		});
+		
+		function getDataList01(){
+			clearDataList01();
+			$.ajax({
+				url: "/pos/setup/catagory_select",
+				data:$("[name=form_search01]").serialize(),
+				success: function(data) {
+					$("#dataList01").setDatagrid(data);
+				}
+			});
+		}
+		
+		function clearDataList01(){
+			$("#dataList01").clearGridData().trigger("reloadGrid");
+		}
+		
+		function getDataForm01Dailog(CTGSEQ){
+			var dialog = $.defaultDialog("div_dialog", "/pos/setup/dialog/product01", {CTGSEQ:CTGSEQ});
+			dialog.dialog( "option", { title:"카테고리 관리", height: 400, width: 800 } );
+		}
+		
+		function setDataForm01( savgbn ){
+			var CTGSEQ = "";
+			if( savgbn!='I' ){
+				var selData = $("#dataList01").getSelRowData();
+				if(selData==null){ alert("카테고리을 선택하여 주세요."); return; }
+				CTGSEQ = selData.CTGSEQ;
+			}
+			if( savgbn=='U' ){
+				getDataForm01Dailog(CTGSEQ);
+			} else if( savgbn=='I' ){
+				getDataForm01Dailog(CTGSEQ);
+			} else if( savgbn=='D' ){
+				var conf = true;
+				if(conf){
+					$.ajax({
+						url: "/pos/setup/catagory_proc",
+						timeout: 6000,
+						data:{SAVGBN:'D', CTGSEQ:CTGSEQ},
+						success: function(data) {
+							if(data.result){
+								getDataList01();
+							}else{
+								alert(data.msg);
+							}
+						}
+					});
+				}
+			}
+		}
+		
+		function getDataList02( data ){
+			clearDataList02();
+			var CTGSEQ 		= data.CTGSEQ;
+			var SALFLG		= $("[name=SALFLG]:checked").val();
+			
+			$.ajax({
+				url: "/pos/setup/product_select",
+				data:{CTGSEQ:CTGSEQ, SALFLG:SALFLG},
+				success: function(data) {
+					$("#dataList02").setDatagrid(data);
+				}
+			});
+		}
+		
+		function clearDataList02(){
+			$("#dataList02").clearGridData().trigger("reloadGrid");
+		}
+		
+		function getDataForm02Dailog(CTGSEQ, PRDSEQ){
+			var dialog = $.defaultDialog("div_dialog", "/pos/setup/dialog/product02",{PRDSEQ:PRDSEQ, CTGSEQ:CTGSEQ});
+			dialog.dialog( "option", { title:"상품 관리",height:600, width:750 } );
+		}
+		
+		function setDataForm02( savgbn ){
+			var PRDSEQ = "";
+			var CTGSEQ = "";
+			if( savgbn!='I' ){
+				var selData = $("#dataList02").getSelRowData();
+				if(selData==null){ alert("상품을 선택하여 주세요."); return; }
+				PRDSEQ = selData.PRDSEQ;
+				CTGSEQ = selData.CTGSEQ;
+			} else {
+				var selData = $("#dataList01").getSelRowData();
+				if(selData==null){ alert("카테고리을 선택하여 주세요."); return; }
+				CTGSEQ = selData.CTGSEQ;
+			}
+			
+			if( savgbn=='U' ){
+				getDataForm02Dailog(CTGSEQ, PRDSEQ);
+			} else if( savgbn=='I' ){
+				getDataForm02Dailog(CTGSEQ, PRDSEQ);
+			} else if( savgbn=='D') {
+				$.ajax({
+					url: "/pos/setup/product_delete_proc",
+					data:{PRDSEQ: PRDSEQ},
+					success: function(data) {
+						let obj = new Object();
+						obj.CTGSEQ = CTGSEQ;
+						getDataList02(obj);
+					}
+				});
+			}
+		}
+
+	table(width="100%" border="0" cellspacing="1" cellpadding="1")
+		tr
+			td(width="37%" height="45" align="right")
+				form(name="form_search01")
+					table(border="0" cellspacing="0" cellpadding="0")
+						tr
+							td.padding3
+								img(src="/views/admin/btn_new_save.gif" onclick="setDataForm01('I');" class="pointer")
+								| 
+								img(src="/views/admin/btn_edit.gif" onclick="setDataForm01('U');" class="pointer")
+								| 
+								img(src="/views/admin/btn_del.gif" onclick="setDataForm01('D');" class="pointer")
+							td(width="5")
+			td(width="63%" align="right")
+				form(name="form_search02")
+					table(border="0" cellspacing="0" cellpadding="0" width="100%")
+						tr
+							td(style="text-align:right; color:black;")
+								input(type="radio" name="SALFLG" value="")
+								|전체
+								input(type="radio" name="SALFLG" value="Y" checked="checked")
+								|판매
+								input(type="radio" name="SALFLG" value="N")
+								|미판매
+								img(src="/views/admin/btn_new_save.gif" onclick="setDataForm02('I');" class="pointer")
+								| 
+								img(src="/views/admin/btn_edit.gif" onclick="setDataForm02('U');" class="pointer")
+								| 
+								img(src="/views/admin/btn_del.gif" onclick="setDataForm02('D');" class="pointer")
+							td(width="5")
+		tr
+			td(valign="top")
+				table(id="dataList01")
+				form(name="form_data01")
+			td
+				table(id="dataList02")
+				form(name="form_data02")
+

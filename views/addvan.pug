@@ -1,0 +1,20 @@
+extend layout
+
+block content
+    h1 밴사 등록 (#{title})
+    form(action='/addvan_p' method="post")
+        label 매장 명
+            select(name = "STOSEQ")
+                each stoinfo in stoinfos
+                    option(value=stoinfo.STOSEQ) #{stoinfo.STONAM}
+        br
+        label 밴사 명
+            input(type="text" name="VANCOD")
+        br
+        label 밴 번호
+            input(type="text" name="VANNUM")
+        br
+        label 등록업체번호
+            input(type="text" name="REGUSR")
+        br
+        input(type="submit" value="등록")

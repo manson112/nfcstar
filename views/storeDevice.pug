@@ -1,0 +1,217 @@
+extends store_iframe_layout
+
+block append head
+    
+
+block content
+    script.
+        $("#tab_name").html("주변기기");
+        
+        $(document).ready(function(){
+            $("#file1").ajaxImgUpload( $("#advfil1") ); $("#file1").ajaxImgUpload( "setData", {filseq:'3189', filnam:'2018.03.11-4(1).jpg'} );
+            $("#file2").ajaxImgUpload( $("#advfil2") ); $("#file2").ajaxImgUpload( "setData", {filseq:'3202', filnam:'a1234-2(0).jpg'} );
+            $("#file3").ajaxImgUpload( $("#advfil3") ); $("#file3").ajaxImgUpload( "setData", {filseq:'3195', filnam:'2018.03.11-16.jpg'} );
+            $("#file4").ajaxImgUpload( $("#advfil4") ); $("#file4").ajaxImgUpload( "setData", {filseq:'3274', filnam:'444444444444444444444444.png'} );
+            $("#file5").ajaxImgUpload( $("#advfil5") ); $("#file5").ajaxImgUpload( "setData", {filseq:'3273', filnam:'realstrawberrylatte(0).jpg'} );
+            
+            $("#manipa_1, #manipa_2, #manipa_3, #manipa_4, #manprt").numeric();
+            $("#subipa1_1, #subipa1_2, #subipa1_3, #subipa1_4, #subprt1").numeric();
+            $("#subipa2_1, #subipa2_2, #subipa2_3, #subipa2_4, #subprt2").numeric();
+            $("#almtim").numeric();
+
+            var devicenum = "#{deviceNumber}";
+            var devices = !{JSON.stringify(devices)};
+            var device = eval(devices);
+            for(var i=0; i<devicenum; i++){
+                var row = "<tr>";
+                row += "<th>프린터" + (i+1) + "</th>";
+                row += "<td>";
+                row += "<table class='table_default'>";
+                row += "<colgroup><col width='25%'/><col width='48%'/><col width='12%'/><col width='15%'/></colgroup>";
+                row += "<tbody>";
+                row += "<th>영수증 출력</th>";
+                row += "<td colspan='3'>";
+                if(device[i].RCPFLG == "Y"){
+                    row += "<input type='radio' name='RCPFLG' value='Y' checked>사용";
+                    row += "<input type='radio' name='RCPFLG' value='N'>미사용";
+                } else {
+                    row += "<input type='radio' name='RCPFLG' value='Y'>사용";
+                    row += "<input type='radio' name='RCPFLG' value='N' checked>미사용";
+                }
+                row += "</td>";
+                row += "</tr>";
+                row += "<tr>";
+                row += "<th style='border-top:1px solid white;'>주방전표 출력</th>"
+                row += "<td style='border-top:1px solid white;' colspan='3'>"
+                if(device[i].KITFLG == "Y"){
+                    row += "<input type='radio' name='KITFLG' value='Y' checked>사용";
+                    row += "<input type='radio' name='KITFLG' value='N'>미사용</td></tr>";
+                } else {
+                    row += "<input type='radio' name='KITFLG' value='Y'>사용";
+                    row += "<input type='radio' name='KITFLG' value='N' checked>미사용</td></tr>"; 
+                }
+                row += "<tr><th style='border-top:1px solid white'>IP</th>";
+                row += "<td style='border-top:1px solid white'>";
+                row += "<input type='text' id='manipa_1' name='MANIPA_1' maxlength='15' class='align_center' value='"+ device[i].IPADDR +"'/></td>";
+                row += "<th style='border-top:1px solid white'>PORT</th>";
+                row += "<td style='border-top:1px solid white'>";
+                row += "<input type='text' id='manprt' name='MANPRT' maxlength='5' class='view_textfiled1 align_right' value='"+ device[i].PORT +"'/></td></tr>";
+                row += "</tbody>";
+                $("#ncallrow").before(row);
+            }
+            
+        });
+            
+        function chkForm(obj){
+            //- if(obj==document.getElementById("manipa_1")){
+            //-     if( $("#manipa_1").val()=="" || $("#manipa_1").val()*1>255 ){
+            //-         alert("메인프린트 아이피를 0~255 사이의 수로 입력하여 주세요."); 
+            //-         $("#manipa_1").focus();
+            //-         return false;	
+            //-     } else if( $("#manipa_2").val()=="" || $("#manipa_2").val()*1>255 ){
+            //-         alert("메인프린트 아이피를 0~255 사이의 수로 입력하여 주세요."); 
+            //-         $("#manipa_2").focus();
+            //-         return false;
+            //-     } else if( $("#manipa_3").val()=="" || $("#manipa_3").val()*1>255 ){
+            //-         alert("메인프린트 아이피를 0~255 사이의 수로 입력하여 주세요."); 
+            //-         $("#manipa_3").focus();
+            //-         return false;
+            //-     } else if( $("#manipa_4").val()=="" || $("#manipa_4").val()*1>255 ){
+            //-         alert("메인프린트 아이피를 0~255 사이의 수로 입력하여 주세요."); 
+            //-         $("#manipa_4").focus();
+            //-         return false;
+            //-     }
+            //-     return true;
+            //- } else if(obj==document.getElementById("subipa1_1")){
+            //-     if( $("#subipa1_1").val()=="" || $("#subipa1_1").val()*1>255 ){
+            //-         alert("서브프린트1 아이피를 0~255 사이의 수로 입력하여 주세요."); 
+            //-         $("#subipa1_1").focus();
+            //-         return false;	
+            //-     } else if( $("#subipa1_2").val()=="" || $("#subipa1_2").val()*1>255 ){
+            //-         alert("서브프린트1 아이피를 0~255 사이의 수로 입력하여 주세요."); 
+            //-         $("#subipa1_2").focus();
+            //-         return false;
+            //-     } else if( $("#subipa1_3").val()=="" || $("#subipa1_3").val()*1>255 ){
+            //-         alert("서브프린트1 아이피를 0~255 사이의 수로 입력하여 주세요."); 
+            //-         $("#subipa1_3").focus();
+            //-         return false;
+            //-     } else if( $("#subipa1_4").val()=="" || $("#subipa1_4").val()*1>255 ){
+            //-         alert("서브프린트1 아이피를 0~255 사이의 수로 입력하여 주세요."); 
+            //-         $("#subipa1_4").focus();
+            //-         return false;
+            //-     }
+            //-     return true;
+            //- }  else if(obj==document.getElementById("subipa2_1")){
+            //-     if( $("#subipa2_1").val()=="" || $("#subipa2_1").val()*1>255 ){
+            //-         alert("서브프린트2 아이피를 0~255 사이의 수로 입력하여 주세요."); 
+            //-         $("#subipa2_1").focus();
+            //-         return false;	
+            //-     } else if( $("#subipa2_2").val()=="" || $("#subipa2_2").val()*1>255 ){
+            //-         alert("서브프린트2 아이피를 0~255 사이의 수로 입력하여 주세요."); 
+            //-         $("#subipa2_2").focus();
+            //-         return false;
+            //-     } else if( $("#subipa2_3").val()=="" || $("#subipa2_3").val()*1>255 ){
+            //-         alert("서브프린트2 아이피를 0~255 사이의 수로 입력하여 주세요."); 
+            //-         $("#subipa2_3").focus();
+            //-         return false;
+            //-     } else if( $("#subipa2_4").val()=="" || $("#subipa2_4").val()*1>255 ){
+            //-         alert("서브프린트2 아이피를 0~255 사이의 수로 입력하여 주세요."); 
+            //-         $("#subipa2_4").focus();
+            //-         return false;
+            //-     }
+            //-     return true;
+            //- } 
+            //- return true;
+        }
+        
+        function goEdit(){
+            if(!chkForm($("#manipa_1")[0])) return false;
+            if(!chkForm($("#manprt")[0])) return false;
+            if(!chkForm($("#subipa1_1")[0])) return false;
+            if(!chkForm($("#subprt1")[0])) return false;
+            if(!chkForm($("#subipa2_1")[0])) return false;
+            if(!chkForm($("#subprt2")[0])) return false;
+            $.ajax({
+                url: "/pos/setup/storeDevice_proc",
+                data: $("[name=form_data01]").serialize(),
+                success: function(data) {
+                    if(data.result){
+                        alert(data.msg);
+                        goCancel();
+                    }else{
+                        alert(data.msg);
+                    }
+                }
+            });
+        } 
+        
+        function goCancel() {
+            window.location.reload();
+        }
+
+    form(name="form_data01")
+        table.table_default(style="width:720px")
+            colgroup
+                col(width="20%")
+                col(width="80%")
+            tbody
+                tr#ncallrow
+                    th 딩동이
+                    td
+                        table.table_default
+                            colgroup
+                                col(width="23%")
+                                col(width="77%")
+                            tbody
+                                tr
+                                    td 알림설정
+                                    td
+                                            input(type="radio" name="ALMGBN" value="0" checked="checked")
+                                            |주문+호출 
+                                            input(type="radio" name="ALMGBN" value="1") 
+                                            |호출 
+                                            input(type="radio" name="ALMGBN" value="2") 
+                                            |주문 
+                                tr
+                                    td(style="border-top:1px solid white") 알림시간
+                                    td(style="border-top:1px solid white")
+                                        input(type="radio" name="ALMTIM" value="10") 
+                                        |10초
+                                        input(type="radio" name="ALMTIM" value="15" checked="checked")
+                                        |15초
+                                        input(type="radio" name="ALMTIM" value="20") 
+                                        |20초
+                                        input(type="radio" name="ALMTIM" value="25")
+                                        |25초
+                                        input(type="radio" name="ALMTIM" value="30") 
+                                        |30초
+                                tr
+                                    td(style="border-top:1px solid white") 광고사용
+                                    td(style="border-top:1px solid white")
+                                        input(type="radio" name="ALMADV" value="Y" checked="checked")
+                                        |사용
+                                        input(type="radio" name="ALMADV" value="N")
+                                        |미사용
+                                tr
+                                    td(style="border-top:1px solid white") 광고1
+                                    td(style="border-top:1px solid white")
+                                        input(type="hidden" id="advfil1" name="ADVFIL1")
+                                        .input_file
+                                            input(type="file" class="jfilestyle" id="file1")
+                                        input(type="hidden" id="advfil2" name="ADVFIL2")
+                                        .input_file
+                                            input(type="file" class="jfilestyle" id="file2")
+                                        input(type="hidden" id="advfil3" name="ADVFIL3")
+                                        .input_file
+                                            input(type="file" class="jfilestyle" id="file3")
+                                        input(type="hidden" id="advfil4" name="ADVFIL4")
+                                        .input_file
+                                            input(type="file" class="jfilestyle" id="file4")
+                                        input(type="hidden" id="advfil5" name="ADVFIL5")
+                                        .input_file
+                                            input(type="file" class="jfilestyle" id="file5")
+                tr
+                    td(colspan="2" style="background:white; padding:20px; text-align:center;")
+                        img(src="/views/admin/btn_save.gif" onclick="goEdit();" style="cursor:pointer;")
+                        | 
+                        img(src="/views/admin/btn_cancel.gif" onclic="goCancel();" style="cursor:pointer;")

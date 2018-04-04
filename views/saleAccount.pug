@@ -1,0 +1,56 @@
+extends store_iframe_layout
+
+block append head
+
+block content
+    script.
+        $("#tab_name").html("입출금");
+
+        var nowdat = '';
+
+        var colName01 = ['영업번호', '입출금번호', '입출금코드', '구분', '시간', '금액', '비고'];
+        var colModel01 = [
+            {name: 'SALSEQ',	index: '영업번호', 		width:  8, 	editable: false,		template:numberTemplate,		hidden:true			},
+            {name: 'SIOSEQ', 	index: '입출금번호', 		width:  8, 	editable: false,		template:numberTemplate,		hidden:true			},
+            {name: 'SIOCOD', 	index: '입출금코드',		width:  8, 	editable: false,		template:textTemplate,			hidden:true			},
+            {name: 'SIONAM', 	index: '입출금코드명', 	width:  8, 	editable: false,		template:textTemplate			},
+            {name: 'SIODAT', 	index: '입출금시간', 		width: 10, 	editable: false,		template:textTemplate			},
+            {name: 'SIOAMT', 	index: '입출금금액', 		width: 10, 	editable: false,		template:textTemplate			},
+            {name: 'REMARK', 	index: '비고', 			width: 20, 	editable: false,		template:textTemplate			}
+        ];
+        
+        $(document).ready(function(){
+            $("#dataList01").datagrid(null, colName01, colModel01, 450, false);
+            getDataList01();
+        });
+        
+        function getDataList01(){
+            clearDataList01();
+            $.ajax({
+                url: "/pos/setup/saleAccount_select.do",
+                data:$("[name=form_search01]").serialize(),
+                success: function(data) {
+                    $("#dataList01").setDatagrid(data);
+                }
+            });
+        }
+        
+        function clearDataList01(){
+            $("#dataList01").clearGridData().trigger("reloadGrid");
+        }
+        
+        function getDataForm01Dailog(){
+            var dialog = $.defaultDialog("div_dialog", "/pos/setup/dialog/saleAccount.do");
+            dialog.dialog( "option", { title:"입출금 관리",height:250, width:500 } );
+        }
+        
+        function setDataForm01(){
+            getDataForm01Dailog();
+        } 
+
+    form(name="form_search01")
+        table(border="0" cellspacing="0" cellpadding="0" style="width:100%")
+            tr
+                td.padding3.align_right
+                    img(src="/views/admin/btn_new_save.gif" onclick="setDataForm01();" class="pointer")
+    table#dataList01

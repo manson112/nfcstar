@@ -1,0 +1,48 @@
+extend layout
+
+block content
+    script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript")
+    script(src="/javascripts/set.js" type="text/javascript")
+    h1 세트 등록 (#{title})
+    form(action="/addset_p", method="post")
+        input(type="hidden", id="prdlist", value=products)
+        table
+            tr
+                th
+                    label 세트 이름
+                td
+                    input(type="text" name="SETNAM")
+            tr
+                th
+                    label 제품
+                td#set1
+                    select#prd1(name = "PRDSEQ" onchange = "prdChange(1)")
+                        each product in products
+                            option(value=product.PRDSEQ) #{product.PRDNAM}
+                td#prd1cst
+                    p
+                td
+                    input#prev1cst(type="hidden" value="0")
+            tr
+                th
+                    label
+                td#set2
+                    select#prd2(name = "PRDSEQ" onchange = "prdChange(2)")
+                        each product in products
+                            option(value=product.PRDSEQ) #{product.PRDNAM}
+                td#prd2cst
+                    p
+                td
+                    button#addProduct(type="button") 추가
+                td
+                    input#prev2cst(type="hidden" value="0")
+            tr#setcst
+                th
+                    label 가격
+                td
+                    input#setscst(type="number" name="SETCST") 
+                td  원
+                
+            tr
+                td
+                    input(type="submit" value="등록")

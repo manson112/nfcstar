@@ -1,0 +1,15 @@
+extends layout
+
+block content
+    h1 #{title}
+    each table in tables
+        h2 #{table.name}
+        table(border="1px")
+            tr
+                each c in table.col
+                    th #{c}
+            each row in table.row
+                tr
+                    each elem in row
+                        td #{elem}
+            

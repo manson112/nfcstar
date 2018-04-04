@@ -1,0 +1,319 @@
+extends sale_iframe_layout
+
+block append head
+
+
+block content
+	script.
+		$(document).ready(function(){
+			
+		});
+		
+		function getSaleStartDailog(){
+			var dialog = $.defaultDialog("div_saleStartDialog", "/pos/sale/dialog/saleStart");
+			dialog.dialog("option", "dialogClass", "transparent-dialog");
+			dialog.dialog("option", { title:"영업 시작", height:320, width:750 } );
+		}
+		
+		function getTableData( RCNTYP, FLRSEQ, TBLSEQ, RCNSEQ, CHKFLG ){
+			if( RCNTYP=="D" && RCNSEQ=="" ){
+				location.href = "/pos/sale/order?PAGE=customer&RCNTYP="+RCNTYP+"&FLRSEQ="+FLRSEQ+"&TBLSEQ="+TBLSEQ+"&RCNSEQ="+RCNSEQ;
+			} else {
+				if(RCNTYP=="T" && RCNSEQ!="" && CHKFLG=="N"){
+					$.ajax({
+						url: "/pos/sale/saleOrder_proc",
+						data:"RCNTYP="+RCNTYP+"&FLRSEQ="+FLRSEQ+"&TBLSEQ="+TBLSEQ+"&RCNSEQ="+RCNSEQ+"&CHKFLG=Y"
+					});
+				}
+				location.href = "/pos/sale/order?PAGE=orderProduct&RCNTYP="+RCNTYP+"&FLRSEQ="+FLRSEQ+"&TBLSEQ="+TBLSEQ+"&RCNSEQ="+RCNSEQ;
+			}
+		}
+		
+		
+		function goTab( RCNTYP, FLRSEQ ){
+			location.href = "/pos/sale/sale?RCNTYP="+RCNTYP+"&FLRSEQ="+FLRSEQ;
+		}
+				
+		
+		function goSetup(){
+			location.href = "/pos/setup/storeInfo";
+		}
+		
+		function getSaleCheck(){
+			var dialog = $.defaultDialog("div_dialog", "/pos/sale/link/saleCheck",null);
+			dialog.dialog("option", "dialogClass", "tab-dialog");
+			dialog.dialog( "option", { title:"중간 정산",height:550, width:750 } );
+		}
+		function getSaleEnd(){
+			var dialog = $.defaultDialog("div_dialog", "/pos/sale/link/saleEnd",null);
+			dialog.dialog("option", "dialogClass", "tab-dialog");
+			dialog.dialog( "option", { title:"영업 마감",height:600, width:750 } );
+		}
+		function getRcpnList(){
+			var dialog = $.defaultDialog("div_dialog", "/pos/sale/link/rcpnList",null);
+			dialog.dialog("option", "dialogClass", "tab-dialog");
+			dialog.dialog( "option", { title:"판매내역",height:600, width:850 } );
+		}
+		function getCardList(){
+			var dialog = $.defaultDialog("div_dialog", "/pos/sale/link/cardList",null);
+			dialog.dialog("option", "dialogClass", "tab-dialog");
+			dialog.dialog( "option", { title:"결제내역",height:600, width:850 } );
+		}
+	div(style="width:1014px")
+		div(class="mian_table_top")
+			table(width="100%" border="0" cellspacing="0" cellpadding="0")
+				tr
+					td(height="36")
+						table(border="0" cellspacing="0" cellpadding="0")
+							tr
+								each floor in FLOORS
+									if TAB == floor.FLRSEQ
+										td(class="main_table_tab_over main_table_tab_text pointer" onclick="goTab('T',"+floor.FLRSEQ+");") #{floor.FLRNAM}
+									else 
+										td(class="main_table_tab main_table_tab_text pointer" onclick="goTab('T',"+floor.FLRSEQ+");") #{floor.FLRNAM}											
+									td(width="5")
+					td(align="right" class="main_table_top_count" style="padding-right: 8px;")
+						table(border="0" cellspacing="0" cellpadding="0")
+							tr
+								td(width="43" align="center")
+									span(class="main_table_count_text2")
+								td(width="4")
+								td(width="121" align="center")
+									span(class="main_table_count_text")
+								td(width="3")
+								td(width="83" align="right" style="padding-right: 10px;")
+									span(class="main_table_count_text")
+					td(width="73" align="right")
+						img(src="/views/pos/main_table_more.png" width="37" height="29")
+		div(class="main_table_con")
+			table(width="100%" border="0" cellspacing="0" cellpadding="0")
+				tr
+					td(align="center")
+						table(border="0" cellspacing="0" cellpadding="0")
+							tr
+								td(align="center" class="main_table_bg_padding main_table main_table_bg01_noCheck" id="tblseq_64" onclick="getTableData('T', 1, 64, 1821, 'N')")
+									table(width="127" border="0" cellspacing="0" cellpadding="0")
+										tr
+											td(height="28" align="center")
+												table(width="100%" border="0" cellspacing="0" cellpadding="0")
+													tr
+														td
+															span(class="main_table_text_no") 1
+														td(align="right")
+															span(class="main_table_text_title") 5989
+										tr
+											td(height="71" valign="top" style="width:100px;")
+												span(class="main_table_text_con")
+												ul(style="width:135px; height:66px; overflow:hidden; font-size:12px; line-height:13px")
+													li(style="width:200px;") 에스프레소
+										tr
+											td(height="25")
+												table(width="100%" border="0" cellspacing="0" cellpadding="0")
+													tr
+														td(class="main_table_icon")
+															img(src="/views/pos/main_table_icon.png")
+														td
+															span(class="main_table_text_time") 16:44
+														td(align="right")
+															span(class="main_table_text_pay") 10,500
+								td(align="center" class="main_table_bg_padding main_table main_table_bg01_noCheck" id="tblseq_65" onclick="getTableData('T', 1, 65, 1820, 'N')")
+									table(width="127" border="0" cellspacing="0" cellpadding="0")
+										tr
+											td(height="28" align="center")
+												table(width="100%" border="0" cellspacing="0" cellpadding="0")
+													tr
+														td
+															span(class="main_table_text_no") 2
+														td(align="right")
+															span(class="main_table_text_title") 5989
+										tr
+											td(height="71" valign="top" style="width:100px;")
+												span(class="main_table_text_con")
+												ul(style="width:135px; height:66px; overflow:hidden; font-size:12px; line-height:13px")
+													li(style="width:200px;") 에스프레소
+										tr
+											td(height="25")
+												table(width="100%" border="0" cellspacing="0" cellpadding="0")
+													tr
+														td(class="main_table_icon")
+															img(src="/views/pos/main_table_icon.png")
+														td
+															span(class="main_table_text_time") 16:40
+														td(align="right") 
+															span(class="main_table_text_pay") 14,000
+								td(align="center" class="main_table_bg_padding main_table main_table_bg02" id="tblseq_66" onclick="getTableData('T', 1, 66, 0, '')")
+									table(width="127" border="0" cellspacing="0" cellpadding="0")
+										tr
+											td(height="28" align="center")
+												table(width="100%" border="0" cellspacing="0" cellpadding="0")
+													tr
+														tdspan(class="main_table_text_no") 3
+														td(align="right")
+															span(class="main_table_text_title")
+										tr
+											td(height="71" valign="top" style="width:100px;")
+												span(class="main_table_text_con")
+												ul(style="width:135px; height:66px; overflow:hidden; font-size:12px; line-height:13px")
+													li(style="width:200px;")
+										tr
+											td(height="25")
+												table(width="100%" border="0" cellspacing="0" cellpadding="0")
+													tr
+														td(class="main_table_icon")
+														td
+															span(class="main_table_text_time")
+														td(align="right")
+															span(class="main_table_text_pay")
+								td(align="center" class="main_table_bg_padding main_table main_table_bg02" id="tblseq_67" onclick="getTableData('T', 1, 67, 0, '')")
+									table(width="127" border="0" cellspacing="0" cellpadding="0")
+										tr
+											td(height="28" align="center")
+												table(width="100%" border="0" cellspacing="0" cellpadding="0")
+													tr
+														td
+															span(class="main_table_text_no") 4
+														td(align="right")
+															span(class="main_table_text_title")
+										tr
+											td(height="71" valign="top" style="width:100px;")
+												span(class="main_table_text_con")
+												ul(style="width:135px; height:66px; overflow:hidden; font-size:12px; line-height:13px")
+													li(style="width:200px;")
+										tr
+											td(height="25")
+												table(width="100%" border="0" cellspacing="0" cellpadding="0")
+													tr
+														td(class="main_table_icon")
+														td
+															span(class="main_table_text_time")
+														td(align="right")
+															span(class="main_table_text_pay")
+								td(align="center" class="main_table_bg_padding main_table main_table_bg02" id="tblseq_68" onclick="getTableData('T', 1, 68, 0, '')")
+									table(width="127" border="0" cellspacing="0" cellpadding="0")
+										tr
+											td(height="28" align="center")
+												table(width="100%" border="0" cellspacing="0" cellpadding="0")
+													tr
+														td
+															span(class="main_table_text_no") 5
+														td(align="right")
+															span(class="main_table_text_title")
+										tr
+											td(height="71" valign="top" style="width:100px;")
+												span(class="main_table_text_con")
+												ul(style="width:135px; height:66px; overflow:hidden; font-size:12px; line-height:13px")
+													li(style="width:200px;")
+										tr
+											td(height="25")
+												table(width="100%" border="0" cellspacing="0" cellpadding="0")
+													tr
+														td(class="main_table_icon")
+														td
+															span(class="main_table_text_time")
+														td(align="right")
+															span(class="main_table_text_pay")
+								td(align="center" class="main_table_bg_padding main_table main_table_bg02" id="tblseq_69" onclick="getTableData('T', 1, 69, 0, '')")
+									table(width="127" border="0" cellspacing="0" cellpadding="0")
+										tr
+											td(height="28" align="center")
+												table(width="100%" border="0" cellspacing="0" cellpadding="0")
+													tr
+														td
+															span(class="main_table_text_no") 6
+														td(align="right")
+															span(class="main_table_text_title")
+										tr
+											td(height="71" valign="top" style="width:100px;")
+												span(class="main_table_text_con")
+												ul(style="width:135px; height:66px; overflow:hidden; font-size:12px; line-height:13px")
+													li(style="width:200px;")
+										tr
+											td(height="25")
+												table(width="100%" border="0" cellspacing="0" cellpadding="0")
+													tr
+														td(class="main_table_icon")
+														td
+															span(class="main_table_text_time")
+														td(align="right")
+															span(class="main_table_text_pay")
+							tr
+									td(align="center" class="main_table_bg_padding main_table main_table_bg01_noCheck" id="tblseq_70" onclick="getTableData('T', 1, 70, 1822, 'N')")
+										table(width="127" border="0" cellspacing="0" cellpadding="0")
+											tr
+												td(height="28" align="center")
+													table(width="100%" border="0" cellspacing="0" cellpadding="0")
+														tr
+															td
+																span(class="main_table_text_no") 7
+															td(align="right")
+																span(class="main_table_text_title") 8504
+											tr
+												td(height="71" valign="top" style="width:100px;")
+													span(class="main_table_text_con")
+													ul(style="width:135px; height:66px; overflow:hidden; font-size:12px; line-height:13px")
+														li(style="width:200px;") 
+															|에스프레소마끼아또
+															br
+															|페퍼민트 허브티
+											tr
+												td(height="25")
+													table(width="100%" border="0" cellspacing="0" cellpadding="0")
+														tr
+															td(class="main_table_icon")
+																img(src="/views/pos/main_table_icon.png")
+															td
+																span(class="main_table_text_time") 16:46
+															td(align="right")
+																span(class="main_table_text_pay") 8,700
+									td(align="center" class="main_table_bg_padding main_table main_table_bg02" id="tblseq_71" onclick="getTableData('T', 1, 71, 0, '')")
+										table(width="127" border="0" cellspacing="0" cellpadding="0")
+											tr
+												td(height="28" align="center")
+													table(width="100%" border="0" cellspacing="0" cellpadding="0")
+														tr
+															td
+																span(class="main_table_text_no") 8
+															td(align="right")
+																span(class="main_table_text_title")
+											tr
+												td(height="71" valign="top" style="width:100px;")
+													span(class="main_table_text_con")
+													ul(style="width:135px; height:66px; overflow:hidden; font-size:12px; line-height:13px")
+														li(style="width:200px;")
+											tr
+												td(height="25")
+													table(width="100%" border="0" cellspacing="0" cellpadding="0")
+														tr
+															td(class="main_table_icon")
+															td
+																span(class="main_table_text_time")
+															td(align="right")
+																span(class="main_table_text_pay")
+					td(width="76")
+						table(width="100%" border="0" cellspacing="0" cellpadding="0")
+							tr
+								td(height="13")
+							tr
+								td(align="center" class="main_table_btn main_table_btn_text pointer" onclick="goSetup();") 설정
+							tr
+								td(height="5")
+							tr
+								td(align="center" class="main_table_btn main_table_btn_text pointer" onclick="getSaleCheck()") 중간 <br/>정산
+							tr
+								td(height="5")
+							tr
+								td(align="center" class="main_table_btn main_table_btn_text pointer" onclick="getSaleEnd()") 영업 <br/>마감
+							tr
+								td(height="5")
+							tr
+								td(align="center" class="main_table_btn main_table_btn_text pointer" onclick="getRcpnList()") 판매<br/>내역
+							tr
+								td(height="5")
+							
+							tr
+								td(align="center" class="main_table_btn main_table_btn_text pointer" onclick="getCardList()") 결제<br/>내역
+							tr
+								td(height="5")
+							
+							tr
+								td(align="center" class="main_table_btn main_table_btn_text pointer") 돈통

@@ -1,0 +1,34 @@
+doctype html
+html
+    head
+        title= title
+        link(rel='stylesheet', href='/stylesheets/css/nfcstar-web-login-styles.css')
+        link(rel='stylesheet', href='/stylesheets/css/jquery-ui.css')
+        script(src="/jquery/jquery-1.11.1.js")
+        script(src="/jquery/jquery-ui.js")
+        script(src="/jquery/json2.js")
+        script(src="/jquery/my.jquery.js")
+        script(src="/javascripts/js/common-script.js")
+    body
+        form(name="form_admin" method="post" action="/login")
+            div#login_wrap
+                div#imageDiv
+                    img(src="/views/login/login01.jpg")
+                div#login
+                    div#login_text_box
+                        table(border="0" cellspacing="0" cellpadding="0")
+                            tr
+                                td(height="38" valign="top" style="padding-top:2px;")
+                                    input(type="text" name="username" id="userid" value="" class="login_text" tabindex="1" maxlength="10" onKeydown="keyDown(this, event);")
+                                td(width="93" rowspan="2" align="right")
+                                    img(src="/views/login/login_btn.jpg" onclick="goLogin();")
+                            tr  
+                                td(style="padding-bottom:2px;")
+                                    input(type="password" name="password" id="userpw" value="" class="login_text" tabindex="2" maxlength="20" onKeydown="keyDown(this, event);" style="margin:0;")
+                div
+                    img(src="/views/login/login03.jpg" border="0" usemap="#Map")
+                    map(name="Map")
+                        area(shape="rect" coords="409,21,492,41" href="#")
+                        area(shape="rect" coords="325,21,396,41" href="#")
+
+        script(src="/javascripts/js/login-script.js")

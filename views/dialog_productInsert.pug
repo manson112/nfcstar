@@ -1,0 +1,204 @@
+script.
+	$(document).ready(function(){
+		$("#totamt, #buyamt, #odrnum").numeric();
+	});
+	
+	function chkForm(obj){
+		if(obj==document.getElementById("prdnam")){
+			if(obj.value==""){
+				alert("상품명을 입력하여 주세요."); 
+				obj.focus();
+				return false;	
+			}
+			return true;
+		} else if(obj==document.getElementById("totamt")){
+			if(obj.value==""){
+				alert("판매가를 입력하여 주세요."); 
+				obj.focus();
+				return false;	
+			}
+		}
+		else if(obj==document.getElementById("odrnum")){
+			if(obj.value==""){
+				alert("정렬순서를 입력하여 주세요."); 
+				obj.focus();
+				return false;	
+			}
+		}
+		return true;
+	}
+	
+	function goEdit(){
+		if(!chkForm($("#prdnam")[0])) return false;
+		if(!chkForm($("#totamt")[0])) return false;
+		if(!chkForm($("#odrnum")[0])) return false;
+		$.ajax({
+			url: "/pos/setup/product_insert_proc",
+			type: "POST",
+			timeout: 6000,
+			data: $("[name=form_dialog]").serialize(),
+			success: function(data) {
+				if(data.result){
+					goCancel();
+					var data = new Object();
+					data.CTGSEQ = '1';
+					getDataList02( data );
+				}else{
+					alert(data.msg);
+				}
+			}
+		});
+	}
+	
+	function goCancel() {
+		$("#div_dialog").dialog('close').remove();
+	}
+	var optnum = 2;
+	$("#addOption").click(function() {
+		var select = $("#optcatselect").clone();
+		
+		var row = "<tr>";
+		row += "<th> 옵션 </th>";
+		row += "<td id='opt" + optnum + "'> </td>";
+		row += "<td colspan='2'> <button type='button' id='deleteOption' onclick='deleterow(this);'> 삭제 </td>";
+		row += "</tr>";
+		$("#prdimgrow").before(row);
+		var td = "#opt"+(optnum++);
+		$(td).append(select);
+	});
+	$("#addImage").click(function() {
+		var row = "<tr>";
+		row += "<th> 상세이미지 </th>";
+		row += "<td colspan='3'>";
+		row += "<img src='/images/empty.png' width='50px' />";
+		row += "<input type='hidden' name='PRDIMGNAME'/>";
+		row += "<input type='file' onchange='imgUpload(this)'/>";
+		row += "<input type='button' onclick='deleterow(this)' value='삭제'/>";
+		row += "</td></tr>";
+
+		$("#prdexprow").before(row);
+	});
+	function deleterow(obj) {
+		var row = $(obj).parent().parent();
+		row.remove();
+	};
+	function deletedtlrow(obj) {
+		var row = $(obj).parent().parent().parent();
+		row.remove();
+	};s
+	function imgUpload(obj) {
+		if($(obj).val() != "") {
+			var formData = new FormData();
+			formData.append('page', 'Product');
+			formData.append('image', $(obj)[0].files[0]);
+			$.ajax({
+				url: '/imageUpload',
+				data: formData,
+				type: 'POST',
+				cache: false,
+				timeout: 6000,
+				contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+				processData: false, // NEEDED, DON'T OMIT THIS
+				success: function(data) {
+					if(data.result){
+						$(obj).parent().children().eq(0).attr('src', '/images/'+data.file);	
+						$(obj).parent().children().eq(1).attr('value', data.file);
+					}else{
+						alert(data.msg);
+					}
+				}
+			});
+		}
+	}
+
+form(name="form_dialog")
+	table(width ="100%" class="table_default")
+		colgroup
+			col(width ="16%")
+			col(width ="34%")
+			col(width ="16%")
+			col(width ="34%")
+		tbody
+			tr(style="display:none")
+				th 저장구분
+				td(colspan="3")
+					input(type="text" id="savgbn" name="SAVGBN" value=SAVGBN)
+			tr(style="display:none")
+				th 상품번호
+				td(colspan="3")
+					input(type="text" id="prdseq" name="PRDSEQ" value=PRDSEQ)
+			tr(style="display:none")
+				th 카테고리번호
+				td(colspan="3")
+					input(type="text" id="ctgseq" name="CTGSEQ" value=CTGSEQ)
+			tr
+				th 상품명
+				td(colspan="3")
+					input(type="text" id="prdnam" name="PRDNAM" value=PRDNAM class="view_textfiled3" maxlength ="10")
+			tr
+				th 판매가
+				td
+					input(type="text" id="totamt" name="TOTAMT" value=TOTAMT class="view_textfiled2" maxlength ="10")
+				th 매입가
+				td
+					input(type="text" id="buyamt" name="BUYAMT" value=BUTAMT class="view_textfiled2" maxlength ="10")
+			tr
+				th 옵션
+				td#opt1
+					select#optcatselect(name="OPTCAT")
+						each optioncategory in optioncategories
+							option(value=optioncategory.OPTCATSEQ) #{optioncategory.CATNAM}
+				td
+					button#addOption(type="button") 추가
+				td
+					button#insertOption(type="button") 옵션 등록
+			tr#prdimgrow
+				th 메인 이미지
+				td(colspan="3")
+					img(src="/images/empty.png" width="50px")
+					| 
+					input(type="hidden" name="PRMIMGNAME")
+					input(type="file" onchange="imgUpload(this)")
+					input(type="button" id="btn_myFile1" value="삭제")
+			tr
+				th 상세이미지
+				td(colspan="3")
+					img(src="/images/empty.png" width="50px")
+					| 
+					input(type="hidden" name="PRDIMGNAME")
+					input(type="file" onchange="imgUpload(this)")
+					input(type="button" id="addImage" value="추가")
+					| 
+					input(type="button" onclick="deleteImg(this)" value="삭제")
+			tr#prdexprow
+				th 설명
+				td(colspan="3")
+					textarea(rows="3" cols="60" id="prdexp" name="PRDEXP" maxlength ="50" class="view_textfiled") #{PRDEXP}
+			tr
+				th 원산지
+				td
+					select(id="ctrcod" name="CTRCOD" style="width :150px")
+						option(value="") 없음
+							option(value="kr") 한국
+							option(value="ch") 중국
+							option(value="jp") 일본
+				th 정렬순서
+				td
+					input(type="text" id="odrnum" name="ORDNUM" value=ORDNUM class="view_textfiled1" maxlength ="5")
+			tr
+				th 판매여부
+				td
+					|판매
+					input(type="radio" name="SALFLG" value="Y" checked=SALFLG=='Y')
+					|미판매
+					input(type="radio" name="SALFLG" value="N" checked=SALFLG=='N')
+				th 주방출력
+				td
+					|출력
+					input(type="radio" name="KITFLG" value="Y" checked=KITFLG=='Y')
+					|미출력
+					input(type="radio" name="KITFLG" value="N" checked=KITFLG=='N')
+			tr
+				td(colspan="4" style="background:white; padding:20px; text-align:center;")
+					img(src="/views/admin/btn_save.gif" onclick="goEdit();" style="cursor:pointer;")
+					img(src="/views/admin/btn_cancel.gif" onclick="goCancel();" style="cursor:pointer;")

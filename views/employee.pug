@@ -1,0 +1,64 @@
+extends store_iframe_layout
+
+block append head
+
+block content
+    script.
+        $("#tab_name").html("직원");
+
+        var nowdat = '2018-03-17';
+
+        var colName01 = ['직원명', '아이디', '포스번호', '전화번호', '핸드폰번호', '시작일', '종료일'];
+        var colModel01 = [
+            {name: 'USRNAM',	index: '직원명', 	width:  8, 	editable: false,		template:textTemplate			},
+            {name: 'USERID', 	index: '아이디', 		width:  8, 	editable: false,		template:textTemplate			},
+            {name: 'POSNUM', 	index: '포스번호',	width:  5, 	editable: false,		template:numberTemplate,		hidden:true			},
+            {name: 'TELNUM', 	index: '전화번호', 	width: 15, 	editable: false,		template:textTemplate			},
+            {name: 'MOBNUM', index: '핸드폰번호', 	width: 15, 	editable: false,		template:textTemplate			},
+            {name: 'STRDAT', 	index: '입사일', 		width: 10, 	editable: false,		template:textTemplate			},
+            {name: 'ENDDAT', 	index: '퇴사일', 		width: 10, 	editable: false,		template:textTemplate			}
+        ];
+        
+        $(document).ready(function(){
+            $("#dataList01").datagrid(null, colName01, colModel01, 450, false);
+            getDataList01();
+        });
+        
+        function getDataList01(){
+            clearDataList01();
+            $.ajax({
+                url: "/pos/setup/employee_select",
+                data:$("[name=form_search01]").serialize(),
+                success: function(data) {
+                    $("#dataList01").setDatagrid(data);
+                }
+            });
+        }
+        
+        function clearDataList01(){
+            $("#dataList01").clearGridData().trigger("reloadGrid");
+        }
+        
+        function getDataForm01Dailog(USERID){
+            var dialog = $.defaultDialog("div_dialog", "/pos/setup/dialog/employee",{USERID:USERID});
+            dialog.dialog( "option", { title:"직원 관리",height:370, width:500 } );
+        }
+        
+        function setDataForm01( savgbn ){
+            var USERID = "";
+            if( savgbn!='I' ){
+                var selData = $("#dataList01").getSelRowData();
+                if(selData==null){ alert("직원을 선택하여 주세요."); return; }
+                USERID = selData.USERID;
+            }
+            getDataForm01Dailog(USERID);
+        } 
+
+    form(name="form_search01")
+        table(border="0" cellspacing="0" cellpadding="0" style="width:100%")
+            tr
+                td.padding3.align_right
+                    img(src="/views/admin/btn_new_save.gif" onclick="setDataForm01('I');" class="pointer")
+                    | 
+                    img(src="/views/admin/btn_edit.gif" onclick="setDataForm01('U');" class="pointer")
+    table#dataList01

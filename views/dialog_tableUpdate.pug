@@ -1,0 +1,56 @@
+script.
+	function chkForm(obj){
+		if(obj==document.getElementById("tblnam")){
+			if(obj.value==""){
+				alert("테이블명를 입력하여 주세요."); 
+				obj.focus();
+				return false;	
+			}
+			return true;
+		} 
+	}
+
+	function goEdit(){
+		if(!chkForm($("#tblnam")[0])) return false;
+		$.ajax({
+			url: "/pos/setup/table_proc",
+			data: $("[name=form_dialog]").serialize(),
+			success: function(data) {
+				if(data.result){
+					goCancel();
+				}else{
+					alert(data.msg);
+				}
+			}
+		});
+	}
+
+	function goCancel() {
+		$("#div_dialog").dialog('close').remove();
+		var data = new Object();
+		data.FLRSEQ = '1';
+		getDataForm02( data );
+	}
+
+form(name="form_dialog")
+	table(class="table_default" style="width:350px; margin:30px 0 0;")
+		colgroup  
+			col(width="30%")
+			col(width="70%")
+		tbody
+			tr(style="display:none")
+				th 저장구분
+				td
+					input(type="text" name="SAVGBN" value="U" readonly="readonly" class="input_readonly")
+			tr(style="display:none")
+				th 테이블번호
+				td
+					input(type="text" name="TBLSEQ" value=TBLSEQ readonly="readonly" class="input_readonly")
+			tr
+				th 테이블명
+				td
+					input(type="text" id="tblnam" name="TBLNAM" maxlength="20" class="view_textfiled3")
+			tr
+				td(colspan="2" style="background:white; padding:20px; text-align:center;")
+					img(src="/views/admin/btn_save.gif" onclick="goEdit();" style="cursor:pointer;")
+					img(src="/views/admin/btn_cancel.gif" onclick="goCancel();" style="cursor:pointer;")

@@ -1,0 +1,19 @@
+extend layout
+
+block content
+    h1 층 등록 (#{title})
+    form(action='/addfloor_p' method="post")
+        label 매장 명
+            select(name = "STOSEQ")
+                each stoinfo in stoinfos
+                    option(value=stoinfo.STOSEQ) #{stoinfo.STONAM}
+        br
+        label 층 번호
+            input(type="text" name="STOFLR")
+        br
+        label 층 이름
+            input(type="text" name="FLRNAM")
+        br
+        label 정렬
+            input(type="number" name="ORDNUM")
+        input(type="submit" value="등록")

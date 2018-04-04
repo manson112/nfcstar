@@ -1,0 +1,18 @@
+extend layout
+
+block content
+    h1 테이블 등록 (#{title})
+    form(action='/addtable_p' method="post")
+        input(type="hidden" name="STOSEQ" value=stoseq)
+        label 층
+            select(name = "FLRSEQ")
+                each flrinfo in flrinfos
+                    option(value=flrinfo.FLRSEQ) #{flrinfo.FLRNAM}
+        br
+        label 테이블 이름
+            input(type="text" name="TBLNAM")
+        br
+        label 정렬
+            input(type="number" name="ORDNUM")
+        br
+        input(type="submit" value="등록")

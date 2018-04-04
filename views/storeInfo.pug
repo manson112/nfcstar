@@ -1,0 +1,52 @@
+extends store_iframe_layout
+
+block append head
+    
+
+block content
+    script.
+        $("#tab_name").html("상점정보");
+    form(name="form_data01")
+    table.table_default
+        colgroup
+            col(width="30%")
+            col(width="70%")
+        tbody
+            tr
+                th 대표자명
+                td #{CHFNAM}
+            tr
+                th 사업자번호
+                td #{REGNUM}
+            tr
+                th 업태
+                td #{STOTYP}
+            tr
+                th 종목
+                td #{STOITM}
+            tr
+                th 전화번호
+                td #{STOTEL}
+            tr
+                th 팩스번호
+                td #{STOFAX}
+            tr
+                th 이메일
+                td #{STOEML}
+            tr
+                th 홈페이지
+                td #{STOHPG}
+            tr
+                th 상점이미지
+                td 
+                    img(src="/images/"+STLOGO width="50px")
+                    |#{STLOGO}
+            tr
+                th 우편번호
+                td #{STOZIP}
+            tr
+                th 주소
+                td #{STOADD}
+            tr
+                th 상세주소
+                td #{STDADD}

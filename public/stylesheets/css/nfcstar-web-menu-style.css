@@ -1,0 +1,181 @@
+﻿
+
+ul,ol{list-style:none}
+a{text-decoration:none}
+a:hover,a:active,a:focus{text-decoration:none;}
+
+/*===================== Style Menu ===================*/
+    
+    
+/*New menu    */
+
+div#menu {
+    height: 46px;
+    padding-left: 10px;
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0);    
+    width:auto;
+}
+
+div#menu ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    float: left;
+}
+div#menu ul.menu {
+    padding-right: 10px;
+    /*background: url(../Content/image/menu/right.png) no-repeat right 0;
+    _background-image: url(images/right.gif);*/
+}
+
+div#menu li {
+    position: relative;
+    margin: 0;
+    padding: 0 0 0 0;
+    display: block;
+    float: left;
+    z-index: 9;
+    width: auto;
+}
+
+div#menu li:hover>div {
+    visibility: visible;
+}
+
+div#menu a {
+    position: relative;
+    z-index: 10;
+    height: 41px;
+    display: block;
+    float: left;
+    line-height: 41px;
+    text-decoration: none;
+    margin-top: 1px;
+    white-space: nowrap;
+    width: auto;
+    padding-right: 5px;
+    text-align: center;
+}
+div#menu span {
+    display: block;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: 95% 0;
+    text-align: center;
+}
+
+/* menu::level1 */
+div#menu a {
+   /* padding: 0 30px 0 0;*/
+   padding: 0 7px;
+    line-height: 40px;
+    height: 46px;
+    margin-right: 5px;
+    _margin-right: 1px;
+    background: none;
+}
+div#menu span {
+    /*margin-top: 2px;
+    padding-left: 30px;
+    color: #000;
+    font: bold 11px Trebuchet MS,Arial,san-serif;
+    background: none;
+    line-height: 40px;*/
+    
+    color: #000000;
+    font: bold 15px/40px Trebuchet MS,Arial,san-serif;
+    margin-top: 2px;
+    padding-left: 7px;
+    padding-right: 7px;
+    
+}
+
+div#menu li {  }
+div#menu li.last { background: none; }
+
+div#menu li.current a,
+div#menu li.current a span,
+div#menu.js-active a:hover,
+div#menu.js-active a:hover span,
+div#menu.js-active a,
+div#menu.js-active span {
+    background:none;
+}
+div#menu.js-active ul.menu>li:hover>a,
+div#menu.js-active ul.menu>li:hover>a span {
+    background:none;
+}
+div#menu li.current a.over {
+   /* background: url(../Content/image/menu/selected-right-sub.png)  no-repeat right -1px;
+    _background-image: url(images/selected-right-sub.gif);*/
+}
+div#menu li.current a.over span {
+  /*  background: url(../Content/image/menu/selected-left-sub.png) no-repeat 0 -3px;
+    _background-image: url(../Content/image/menu/selected-left-sub.gif);*/
+}
+div#menu a.over span {
+    color: #043454;
+}
+
+/* lava lamp */
+div#menu li.back {
+    
+    background:#ccc;
+    /*background: url(../Content/image/menu/lavalamp-left.png) no-repeat 0 0;
+    _background-image: url(../Content/image/menu/lavalamp-left.gif);*/
+    width: 10px;
+    height: 40px;
+    z-index: 8;
+    position: absolute;
+    padding: 0;
+    margin:3px 0 0 0;
+    opacity:0.5;
+     
+    -webkit-border-radius:5px;
+    -moz-border-radius: 5px;
+    border-radius:5px;
+    behavior: url('../Content/PIE.htc'); 
+    
+}
+
+div#menu li.back .left {
+    padding:0;
+    width:auto;
+   /* background: url(../Content/image/menu/lavalamp-right.png) no-repeat right 0;
+    _background-image: url(../Content/image/menu/lavalamp-right.gif);*/
+    height: 46px;
+    margin: 0 5px 0 10px;
+    _margin-right: 2px;
+    float: none;
+    position: relative;
+    top: 0;
+    left: 0;
+    visibility: visible;
+}
+
+
+/* menu bottom*/
+
+.menubottom
+{
+    display:block;    
+    margin-bottom:10px;
+    margin-top:20px;
+    }
+    
+.menubottom li
+{    
+    display:inline;    
+    margin:5px 10px;
+    }
+
+.menubottom li a
+{    
+        font-size:11pt;        
+    }    
+    
+.menubottom li a:hover
+{
+    color:#000;
+    
+    }    

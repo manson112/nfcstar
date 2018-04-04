@@ -1,0 +1,49 @@
+extends store_iframe_layout
+
+block append head
+
+block content
+    script.
+        $("#tab_name").html("결제내역");
+
+        var nowdat = '';
+
+        var colName01 = ['결제번호', '구분', '상태', '승인일자', '시간', '취소일자', '시간', '금액', '승인번호'];
+        var colModel01 = [
+            {name: 'CRDSEQ',	index: '판매번호', 		width:  5, 	editable: false,		template:numberTemplate,		hidden:true		},
+            {name: 'CRDGBN_NM', 	index: '구분',		 	width:  5, 	editable: false,		template:defaultTemplate		},
+            {name: 'CRDSTS_NM', 	index: '상태',		 	width:  8, 	editable: false,		template:defaultTemplate		},
+            {name: 'APPDAT', 	index: '승인일자', 		width: 10, 	editable: false,		template:defaultTemplate		},
+            {name: 'APPTIM', 	index: '시간', 			width:  5, 	editable: false,		template:defaultTemplate		},
+            {name: 'CNLDAT', 	index: '취소일자',		width: 10, 	editable: false,		template:defaultTemplate		},
+            {name: 'CNLTIM', 	index: '시간',				width:  5, 	editable: false,		template:defaultTemplate		},
+            {name: 'APRAMT', 	index: '금액', 			width: 10, 	editable: false,		template:numberTemplate		},
+            {name: 'APRNUM', 	index: '승인번호', 		width:  8, 	editable: false,		template:defaultTemplate		}
+        ];
+        
+        $(document).ready(function(){
+            $("#dataList01").datagrid(null, colName01, colModel01, 450, false);
+            $("#strdat, #enddat").datepicker();
+        });
+        
+        function getDataList01(){
+            clearDataList01();
+            $.ajax({
+                url: "/pos/setup/cardList_select.do",
+                data:$("[name=form_search01]").serialize(),
+                success: function(data) {
+                    $("#dataList01").setDatagrid(data);
+                }
+            });
+        }
+    form(name="form_search01")
+        table(border="0" cellspacing="0" cellpadding="0" class="table_search")
+            tr
+                td(class="padding3 align_left" style="color:black;")
+                    |결제일 : 
+                    input(type="text" id="strdat" name="STRDAT" class="view_textfiled1" value="2018-03-10" maxlength="10" readonly="readonly" style="font-size:14px")
+                    |~ 
+                    input(type="text" id="enddat" name="ENDDAT" class="view_textfiled1" value="2018-03-17" maxlength="10" readonly="readonly" style="font-size:14px")
+                td(class="padding3 align_right")
+                    img(src="/views/admin/btn_search.gif" onclick="getDataList01();" class="pointer")
+    table#dataList01

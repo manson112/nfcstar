@@ -1,0 +1,220 @@
+extends store_iframe_layout
+
+block append head
+
+block content
+    script.
+        $("#tab_name").html("테이블");
+
+        var colName01 = ['층번호', '층명'];
+        var colModel01 = [
+            {name: 'FLRSEQ', 	index: '층번호', 		width: 10, 	editable: false,		template:numberTemplate,		hidden:true			},
+            {name: 'FLRNAM', 	index: '층명', 		width: 10, 	editable: false,		template:textTemplate			}
+        ];
+        
+        $(document).ready(function(){
+            $("#dataList01").datagrid(null, colName01, colModel01, 400, false);
+            $('#dataList01').setGridParam({
+                onCellSelect: function(rowid, iCol, cellcontent, e) {
+                    $("#btn_down_dataList01").attr("disabled", false);
+                    $("#btn_up_dataList01").attr("disabled", false);
+                    if( $(this).getGridParam("reccount")==rowid ){
+                        $("#btn_down_dataList01").attr("disabled", true);
+                    }
+                    if( 1==rowid ){
+                        $("#btn_up_dataList01").attr("disabled", true);
+                    }
+                    
+                    getDataForm02( $(this).getRowData( rowid ) );
+                }
+            });
+            getDataList01();
+        });
+        
+        function getDataList01(){
+            clearDataList01();
+            $.ajax({
+                url: "/pos/setup/floor_select",
+                success: function(data) {
+                    $("#dataList01").setDatagrid(data);
+                    $("#savgbn").val("I");
+                }
+            });
+        }
+        
+        function clearDataList01(){
+            $("#dataList01").clearGridData().trigger("reloadGrid");
+            clearDataForm02();
+        }
+        
+        function getDataForm01Dailog(flrseq){
+            var dialog = $.defaultDialog("div_dialog", "/pos/setup/dialog/table01",{FLRSEQ:flrseq});
+            dialog.dialog( "option", { title:"층명 수정",height: 250,width: 400 } );
+        }
+        
+        function setDataForm01(savgbn){
+            var flrseq = 0;
+            if( savgbn!='I' ){
+                var selData = $("#dataList01").getSelRowData();
+                if(selData==null){ alert("층을 선택하여 주세요."); return; }
+                flrseq = selData.FLRSEQ;
+                if(savgbn=='U'){
+                    getDataForm01Dailog(flrseq);
+                    return;
+                }
+            }
+            $.ajax({
+                url: "/pos/setup/floor_proc",
+                data:{'SAVGBN':savgbn,'FLRSEQ':flrseq},
+                success: function(data) {
+                    if(data.result){
+                        getDataList01();
+                    }else{
+                        alert(data.msg);
+                    }
+                }
+            });
+        }
+        
+        function getDataForm02( rowData ){
+            clearDataForm02();
+            var FLRSEQ 	= rowData.FLRSEQ;
+            $.ajax({
+                url: "/pos/setup/table_select",
+                data:{FLRSEQ:FLRSEQ},
+                success: function(data) {
+                    $.each($("[name=form_data02] td"), function(index, value){
+                        if( data[index]!=null ){
+                            $(this).removeClass();
+                            $(this).addClass('move_btn02');
+                            $(this).html("<div id='"+data[index].TBLSEQ+"' onclick='clickDataForm02(this)'>"+data[index].TBLNAM+"</div>");
+                        }
+                    });
+                }
+            });
+        }
+        
+        function clearDataForm02(){
+            $("[name=form_data02] td").removeClass();
+            $("[name=form_data02] td").addClass("move_btn01");
+            $("[name=form_data02] td").html('');
+            $("#tblseq").val("");
+        }
+        
+        function clickDataForm02(obj){
+            $(".move_btn03").removeClass().addClass('move_btn02');
+            $(obj).parent().removeClass().addClass('move_btn03');
+            $("#tblseq").val( $(obj).attr("id") )
+        }
+        
+        function getDataForm02Dailog(tblseq){
+            var dialog = $.defaultDialog("div_dialog", "/pos/setup/dialog/table02",{TBLSEQ:tblseq});
+            dialog.dialog( "option", { title:"테이블명 수정",height: 250,width: 400 } );
+        }
+        
+        function setDataForm02(savgbn){
+            var selData = $("#dataList01").getSelRowData();
+            if(selData==null){ alert("층을 선택하여 주세요."); return; }
+            var flrseq = selData.FLRSEQ;
+            var tblseq = $("#tblseq").val();
+            if( savgbn!='I' ){
+                if(tblseq==""){ alert("테이블을 선택하여 주세요."); return; }
+                if(savgbn=='U'){
+                    getDataForm02Dailog(tblseq);
+                    return;
+                }
+            }
+            $.ajax({
+                url: "/pos/setup/table_proc",
+                data:{'SAVGBN':savgbn,'FLRSEQ':flrseq,'TBLSEQ':tblseq},
+                success: function(data) {
+                    if(data.result){
+                        var data = new Object();
+                        data.FLRSEQ = flrseq;
+                        getDataForm02( data );
+                    }else{
+                        alert(data.msg);
+                    }
+                }
+            });
+        }
+	
+    table(width="100%" border="0" cellspacing="1" cellpadding="1")
+        tr
+            td(width="35%" height="45" align="center")
+                form(name="form_search01")
+                    table(border="0" cellspacing="0" cellpadding="0" style="width:100%")
+                        tr
+                            td.align_right
+                                img(id="btn_add_dataList01" src="/views/admin/btn_add.gif" onclick="setDataForm01('I');" class="pointer")
+                                | 
+                                img(id="btn_change_dataList01" src="/views/admin/btn_edit.gif" onclick="setDataForm01('U');" class="pointer")
+                                | 
+                                img(id="btn_remove_dataList01" src="/views/admin/btn_del.gif" onclick="setDataForm01('D');" class="pointer")
+                                | 
+                                img(id="btn_up_dataList01" src="/views/admin/btn_up.gif" onclick="setDataForm01('M');" class="pointer")
+                                | 
+                                img(id="btn_down_dataList01" src="/views/admin/btn_down.gif" onclick="setDataForm01('P');" class="pointer")
+            td(width="65%" align="right")
+                form(name="form_search02")
+                    table(border="0" cellspacing="0" cellpadding="0")
+                        tr
+                            td.padding3.align_right
+                                img(id="btn_add_dataList01" src="/views/admin/btn_add.gif" onclick="setDataForm02('I');" class="pointer")
+                                | 
+                                img(id="btn_change_dataList01" src="/views/admin/btn_edit.gif" onclick="setDataForm02('U');" class="pointer")
+                                | 
+                                img(id="btn_remove_dataList01" src="/views/admin/btn_del.gif" onclick="setDataForm02('D');" class="pointer")
+        tr
+            td(valign="top")
+                form(name="form_data01")
+                    table(id="dataList01")
+            
+            td(class="table_con" style="vertical-align:top;")
+                form(name="form_data02")
+                    input(type="hidden" id="tblseq" name="TBLSEQ")
+                    table(width="100%" class="table_table")
+                        colgroup
+                            col(width="16%")
+                            col(width="16%")
+                            col(width="16%")
+                            col(width="16%")
+                            col(width="16%")
+                            col(width="16%")
+                        tbody
+                            tr
+                                td
+                                td
+                                td
+                                td
+                                td
+                                td
+                            tr
+                                td
+                                td
+                                td
+                                td
+                                td
+                                td
+                            tr
+                                td
+                                td
+                                td
+                                td
+                                td
+                                td
+                            tr
+                                td
+                                td
+                                td
+                                td
+                                td
+                                td
+                            tr
+                                td
+                                td
+                                td
+                                td
+                                td
+                                td
+

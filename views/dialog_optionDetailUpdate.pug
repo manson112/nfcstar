@@ -1,0 +1,79 @@
+script.
+	var nowdat = '';
+	
+	$(document).ready(function(){
+		$("#odrnum").numeric();
+	});
+	
+	function chkForm(obj){
+		if(obj==document.getElementById("dtlnam")){
+			if(obj.value==""){
+				alert("옵션명을 입력하여 주세요."); 
+				obj.focus();
+				return false;	
+			}
+			return true;
+		} else if(obj==document.getElementById("dtlcst")){
+			if(obj.value==""){
+				alert("가격을 입력하여 주세요."); 
+				obj.focus();
+				return false;	
+			}
+		} 
+		return true;
+	}
+	
+	function goEdit(){
+		if(!chkForm($("#optnam")[0])) return false;
+		if(!chkForm($("#dtlcst")[0])) return false;
+		
+		$.ajax({
+			url: "/pos/setup/optionDetail_proc",
+			data:$("[name=form_dialog]").serialize(),
+			success: function(data) {
+				if(data.result){
+					goCancel();
+					var seq = data.seq;
+					var data = new Object();
+					data.OPTSEQ = seq;
+					getDataList02( data );
+				}else{
+					alert(data.msg);
+				}
+			}
+		});
+	} 
+	
+	function goCancel() {
+		$("#div_dialog").dialog('close').remove();
+	}
+form(name="form_dialog")
+	table(width="100%" class="table_default")
+		colgroup
+			col(width="30%")
+			col(width="70%")
+		tbody
+			tr(style="display:none")
+				th 저장구분 
+				td
+					input(type="hidden" id="savgbn" name="SAVGBN" value="U")
+			tr(style="display:none")
+				th 분류번호 
+				td
+					input(type="hidden" id="optseq" name="OPTSEQ" value=OPTSEQ)
+			tr(style="display:none")
+				th 옵션번호 
+				td
+					input(type="hidden" id="dtlseq" name="DTLSEQ" value=DTLSEQ)
+			tr
+				th 옵션명 
+				td
+					input(type="text" id="dtlnam" name="DTLNAM" value=DTLNAM class="view_textfiled3" maxlength ="20")
+			tr
+				th 옵션 가격 
+				td
+					input(type="text" id="dtlcst" name="DTLCST" value=DTLCST class="view_textfiled1" maxlength="10")
+			tr
+				td(colspan="2" style="background:white; padding:20px; text-align:center;")
+					img(src="/views/admin/btn_save.gif" onclick="goEdit();" style="cursor:pointer;")
+					img(src="/views/admin/btn_cancel.gif" onclick="goCancel();" style="cursor:pointer;")

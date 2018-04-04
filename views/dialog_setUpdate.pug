@@ -1,0 +1,128 @@
+script.
+	$(document).ready(function(){
+		$("#buyamt, #salamt, #taxamt, #odrnum").numeric();
+	});
+	
+	function chkForm(obj){
+		if(obj==document.getElementById("prdnam")){
+			if(obj.value==""){
+				alert("세트명을 입력하여 주세요."); 
+				obj.focus();
+				return false;
+			}
+			return true;
+		} else if(obj==document.getElementById("totamt")){
+			if(obj.value==""){
+				alert("판매가를 입력하여 주세요."); 
+				obj.focus();
+				return false;	
+			}
+		} else if(obj==document.getElementById("buyamt")){
+			if(obj.value==""){
+				alert("매입가를 입력하여 주세요."); 
+				obj.focus();
+				return false;	
+			}
+		} else if(obj==document.getElementById("odrnum")){
+			if(obj.value==""){
+				alert("정렬순서를 입력하여 주세요."); 
+				obj.focus();
+				return false;	
+			}
+		} 
+		return true;
+	}
+	
+	function goEdit(){
+
+		$.ajax({
+			url: "/pos/setup/set_proc",
+			type: "POST",
+			timeout: 6000,
+			data: $("[name=form_dialog]").serialize(),
+			success: function(data) {
+				if(data.result){
+					goCancel();
+					getDataList01();
+				}else{
+					alert(data.msg);
+				}
+			}
+		});
+	}
+	
+	function goCancel() {
+		$("#div_dialog").dialog('close').remove();
+	}
+	function imgUpload(obj) {
+		if($(obj).val() != "") {
+			var formData = new FormData();
+			formData.append('page', 'Product');
+			formData.append('image', $(obj)[0].files[0]);
+			$.ajax({
+				url: '/imageUpload',
+				data: formData,
+				type: 'POST',
+				cache: false,
+				timeout: 6000,
+				contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+				processData: false, // NEEDED, DON'T OMIT THIS
+				success: function(data) {
+					if(data.result){
+						$(obj).parent().children().eq(0).attr('src', '/images/'+data.file);	
+						$(obj).parent().children().eq(1).attr('value', data.file);
+					}else{
+						alert(data.msg);
+					}
+				}
+			});
+		}
+	}
+
+form(name="form_dialog")
+	table(width="100%" class="table_default")
+		colgroup
+			col(width="30%")
+			col(width="70%")
+		tbody
+			tr(style="display:none")
+				th 저장구분
+				td
+					input(type="text" id="savgbn" name="SAVGBN" value="U")
+			tr(style="display:none")
+				th 상품번호
+				td
+					input(type="text" id="prdseq" name="SETSEQ" value=SETSEQ)
+			tr
+				th 세트명
+				td
+					input(type="text" id="prdnam" name="SETNAM" value=SETNAM class="view_textfiled3" maxlength ="10")
+			tr
+				th 판매가
+				td
+					input(type="text" id="totamt" name="TOTAMT" value=TOTAMT class="view_textfiled2" maxlength ="10")
+			tr
+				th 이미지
+				td
+					img(src="/images/"+SETIMG width="50px")
+					input(type="hidden" name="SETIMG" value=SETIMG)
+					input(type="file" onchange="imgUpload(this)")
+			tr
+				th 설명 
+				td
+					textarea(rows="5" cols="60" id="prdexp" name="SETEXP" maxlength ="50" class="view_textfiled") #{SETEXP}
+			tr
+				th 정렬순서
+				td
+					input(type="text" id="odrnum" name="ORDNUM" value=ORDNUM class="view_textfiled1" maxlength ="5")
+			tr
+				th 판매여부
+				td
+					|판매
+					input(type="radio" name="SALFLG" value="Y" checked=SALFLG=='Y')
+					|미판매
+					input(type="radio" name="SALFLG" value="N" checked=SALFLG=='N')
+			tr
+				td(colspan="2" style="background:white; padding:20px; text-align:center;")
+					img(src="/views/admin/btn_save.gif" onclick="goEdit();" style="cursor:pointer;")
+					img(src="/views/admin/btn_cancel.gif" onclick="goCancel();" style="cursor:pointer;")

@@ -1,0 +1,4 @@
+.ui-jqgrid .ui-jqgrid-htable th div { height:30px }
+.ui-jqgrid-htable .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default { background:#e6e6e6; }
+.ui-jqgrid tr.jqgrow td { height:38px; padding-top:0px; font-size:14px  }
+.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight { border:1px solid #aaaaaa; background:#543900; color:#ffffff;  }

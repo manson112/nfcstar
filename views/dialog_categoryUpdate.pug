@@ -1,0 +1,108 @@
+script.
+	$(document).ready(function(){
+		$("#odrnum").numeric();
+		//- $("#myFile").ajaxImgUpload( $("#ctgimg") );
+		//- $("#myFile").ajaxImgUpload( "setData", {filseq:'', filnam:''} );
+	});
+
+	$("#CTGIMG").change(function(){
+		if($("#CTGIMG").val() != "") {
+			var formData = new FormData();
+			formData.append('page', 'Category');
+			formData.append('image', $('input[name="CTGIMG"]')[0].files[0]);
+			$.ajax({
+				url: '/imageUpload',
+				data: formData,
+				type: 'POST',
+				cache: false,
+				timeout: 6000,
+				contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+				processData: false, // NEEDED, DON'T OMIT THIS
+				success: function(data) {
+				if(data.result){
+					$("#CTGIMGTAG").attr('src', '/images/'+data.file);
+					$("#CTGIMGNAME").attr('value', data.file);
+				}else{
+					alert(data.msg);
+				}
+			}
+			});
+		}
+	});
+
+	
+	function chkForm(obj){
+		if(obj==document.getElementById("ctgnam")){
+			if(obj.value==""){
+				alert("카테고리명을 입력하여 주세요."); 
+				obj.focus();
+				return false;	
+			}
+			return true;
+		} else if(obj==document.getElementById("odrnum")){
+			if(obj.value==""){
+				alert("정렬순서를 입력하여 주세요."); 
+				obj.focus();
+				return false;	
+			}
+		} 
+		return true;
+	}
+	
+	function goEdit(){
+		if(!chkForm($("#ctgnam")[0])) return false;
+		if(!chkForm($("#odrnum")[0])) return false;
+
+		$.ajax({
+			url: "/pos/setup/catagory_proc",
+			type: "POST",
+			timeout: 6000,
+			data: $("[name=form_dialog]").serialize(),
+			success: function(data) {
+				if(data.result){
+					goCancel();
+					getDataList01();
+				}else{
+					alert(data.msg);
+				}
+			}
+		});
+	}
+	
+	function goCancel() {
+		$("#div_dialog").dialog('close').remove();
+	}
+
+form(name="form_dialog")
+	table(width="100%" class="table_default")
+		colgroup
+			col(width="25%")
+			col(width="75%")
+		tbody
+			tr(style="display:none")
+				th 저장구분
+				td
+					input(type="hidden" id="savgbn" name="SAVGBN" value=SAVGBN)
+			tr(style="display:none")
+				th 카테고리번호
+				td
+					input(type="hidden" id="ctgseq" name="CTGSEQ" value=CTGSEQ)
+			tr
+				th 카테고리명
+				td
+					input(type="text" id="ctgnam" name="CTGNAM" value=CTGNAM class="view_textfiled3" maxlength="20")
+			tr
+				th 이미지
+				td
+					img(src="/images/"+CTGIMG id="CTGIMGTAG" width="50px")
+					input(type="hidden" id="CTGIMGNAME" name="CTGIMGNAME" value=CTGIMG)
+					input(type="file" id="CTGIMG" name="CTGIMG")
+					input(type="button" id="btn_myFile" value="삭제")
+			tr
+				th 정렬순서
+				td
+					input(type="text" id="odrnum" name="ORDNUM" value=ORDNUM class="view_textfiled1" maxlength="5")
+			tr
+				td(colspan="2" style="background:white; padding:20px; text-align:center;")
+					img(src="/views/admin/btn_save.gif" onclick="goEdit();" style="cursor:pointer;")
+					img(src="/views/admin/btn_cancel.gif" onclick="goCancel();" style="cursor:pointer;")

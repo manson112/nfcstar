@@ -1,0 +1,162 @@
+script.
+	$(document).ready(function(){
+		$("#odrnum").numeric();
+	});
+	
+	function chkForm(obj){
+		if(obj==document.getElementById("evtnam")){
+			if(obj.value==""){
+				alert("이벤트명을 입력하여 주세요."); 
+				obj.focus();
+				return false;	
+			}
+			return true;
+		} else if(obj==document.getElementById("ttlimg")){
+			if(obj.value==""){
+				alert("메인이미지을 입력하여 주세요."); 
+				obj.focus();
+				return false;	
+			}
+			return true;
+		} else if(obj==document.getElementById("dtlimg")){
+			if(obj.value==""){
+				alert("상세이미지을 입력하여 주세요."); 
+				obj.focus();
+				return false;	
+			}
+		} else if(obj==document.getElementById("odrnum")){
+			if(obj.value==""){
+				alert("정렬순서을 입력하여 주세요."); 
+				obj.focus();
+				return false;	
+			}
+		} 
+		return true;
+	}
+	
+	function goEdit(){
+		$.ajax({
+			url: "/pos/setup/event_proc",
+			data:$("[name=form_dialog]").serialize(),
+			success: function(data) {
+				if(data.result){
+					goCancel();
+					getDataList01();
+				}else{
+					alert(data.msg);
+				}
+			}
+		});
+	}
+	
+	function goCancel() {
+		$("#div_dialog").dialog('close').remove();
+	}
+	var imgord = 2;
+	$("#addImage").click(function() {
+		var row = "<tr>";
+		row += "<th> 상세이미지 </th>";
+		row += "<td colspan='3'>";
+		row += "<img src='/images/empty.png' width='50px'/>";
+		row += "<input type='hidden' name='EVDIMGNAME' />";
+		row += "<input type='hidden' name='IMGORDNUM' value='"+(imgord++)+"' />";
+		row += "<input type='file' onchange='imgUpload(this)'/>";
+		row += "</td><td>";
+		row += $("#selectProduct").clone().html();
+		row += "</td><td colspan='2'><input type='button' onclick='deleterow(this)' value='삭제'/></td>";
+		row += "</tr>";
+		$("#ordrow").before(row);
+	});
+
+	function deleterow(obj) {
+		var row = $(obj).parent().parent();
+		row.remove();
+	};
+
+
+	function imgUpload(obj) {
+		if($(obj).val() != "") {
+			var formData = new FormData();
+			formData.append('page', 'Product');
+			formData.append('image', $(obj)[0].files[0]);
+			$.ajax({
+				url: '/imageUpload',
+				data: formData,
+				type: 'POST',
+				cache: false,
+				timeout: 6000,
+				contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+				processData: false, // NEEDED, DON'T OMIT THIS
+				success: function(data) {
+					if(data.result){
+						$(obj).parent().children().eq(0).attr('src', '/images/'+data.file);	
+						$(obj).parent().children().eq(1).attr('value', data.file);
+					}else{
+						alert(data.msg);
+					}
+				}
+			});
+		}
+	}
+
+form(name="form_dialog")
+	table(width="100%" class="table_default")
+		colgroup
+			col(width="23%")
+			col(width="27%")
+			col(width="23%")
+			col(width="27%")
+		tbody
+			tr(style="display:none")
+				th 저장구분
+				td(colspan="3")
+					input(type="text" id="savgbn" name="SAVGBN" value="I" readonly="readonly" class="input_readonly")
+			tr(style="display:none")
+				th 이벤트번호
+				td(colspan="3")
+					input(type="text" id="evtseq" name="EVTSEQ" value=EVTSEQ readonly="readonly" class="input_readonly")
+			tr
+				th 이벤트명
+				td(colspan="6")
+					input(type="text" id="evtnam" name="EVTNAM" value=EVTNAM class="view_textfiled3" maxlength="10")
+			tr
+				th 시작일
+				td
+					input(type="date" name="STRDAT" value=STRDAT class="view_textfiled2 hasDatepicker" maxlength="10")
+				th 종료일
+				td(colspan="4")
+					input(type="date" name="ENDDAT" value=ENDDAT class="view_textfiled2 hasDatepicker" maxlength="10")
+			tr
+				th 메인이미지
+				td(colspan="6")
+					img(src="/images/empty.png" width="50px")
+					input(type="hidden" name="EVMIMGNAME")
+					input(type="file" onchange="imgUpload(this)")
+			tr
+				th 상세이미지
+				td(colspan="3")
+					img(src="/images/empty.png" width="50px")
+					input(type="hidden" name="EVDIMGNAME")
+					input(type="hidden" name="IMGORDNUM" value='1')
+					input(type="file" onchange="imgUpload(this)")
+				td#selectProduct
+					select#prdselect(name="DTLPRD")
+						each prd in PRODUCT
+							option(value=prd.PRDSEQ) #{prd.PRDNAM}
+				td
+					input#addImage(type="button" value="추가")
+				td
+					input#deleteImage(type="button" value="삭제")
+			tr#ordrow
+				th 정렬순서
+				td(colspan="6")
+					input(type="text" id="odrnum" name="ORDNUM" value=ORDNUM class="view_textfiled1" maxlength="5")
+			tr
+				th 비고
+				td(colspan="6")
+					input(type="text" id="remark" name="REMARK" value=REMARK class="view_textfiled4" maxlength="30")
+			tr
+				td(colspan="7" style="background:white; padding:20px; text-align:center;")
+					img(src="/views/admin/btn_save.gif" onclick="goEdit();" style="cursor:pointer;")
+					| 
+					img(src="/views/admin/btn_cancel.gif" onclick="goCancel();" style="cursor:pointer;")

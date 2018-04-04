@@ -1,0 +1,127 @@
+doctype html
+html
+    head
+        title NFC STAR
+        meta(http-equiv="Content-Type" content="text/html; charset=utf-8")
+        block head
+        link(rel="stylesheet" type="text/css" href="/stylesheets/css/jquery-ui.css")
+        link(rel="stylesheet" type="text/css" href="/jqGrid-4.6.0/css/ui.jqgrid.css" )
+        link(rel="stylesheet" type="text/css" href="/stylesheets/css/nfcstar-pos-setup-jqgrid-styles.css")
+        link(rel="stylesheet" type="text/css" href="/stylesheets/css/nfcstar-pos-styles.css")
+        link(rel="stylesheet" type="text/css" href="/stylesheets/css/nfcstar-pos-setup-styles.css")
+        script(type="text/javascript" src="/jquery/jquery-1.11.1.js")
+        //- script(type="text/javascript" src="/jquery/jquery-3.3.1.min.js")
+        script(type="text/javascript" src="/jquery/jquery-ui.js")
+        script(type="text/javascript" src="/jquery/json2.js")
+        script(type="text/javascript" src="/jquery/jquery.alphanum.js")
+        script(type="text/javascript" src="/jquery/jquery.mask.js")
+        script(type="text/javascript" src="/jquery/jquery.cookie.js")
+        script(type="text/javascript" src="/jquery/ajaxupload.js")
+        script(type="text/javascript" src="/jquery/jquery.form.js")
+        script(type="text/javascript" src="/jquery/jquery.fileupload.js")
+        script(type="text/javascript" src="/jqGrid-4.6.0/js/i18n/grid.locale-kr.js")
+        script(type="text/javascript" src="/jqGrid-4.6.0/js/jquery.jqGrid.src.js")
+        script(type="text/javascript" src="/jqGrid-4.6.0/js/my.jqGrid.js")
+        script(type="text/javascript" src="/jquery/my.jquery.js")
+        script(type="text/javascript" src="/jquery/my.ajaxupload.js")
+        script(type="text/javascript" src="/javascripts/js/common-script.js")
+        script(src="http://dmaps.daum.net/map_js_init/postcode.v2.js")
+        script.
+            function goBack(){
+                location.href = "/pos/sale/sale?RCNTYP=T&FLRSEQ=1";
+                //location.href = "/pos/setup/storeInfo.do";
+            }
+    body
+        div.set_top
+            table(width="100%" border="0" cellspacing="0" cellpadding="0")
+                tr
+                    td
+                        div.set_tab(onClick="goBack()") 이전
+                    td.set_tab(id="tab_name") 상점설정
+                    td(width="10")
+        table(width="100%" border="0" cellspacing="0" cellpadding="0")
+            tr
+                td(width="233" height="674" valign="top" background="/views/pos/set_bg02.jpg")
+                    table(width="100%" border="0" cellspacing="0" cellpadding="0")
+                        tr
+                            td(align="center" style="padding-top: 7px;")
+                                img(src="/views/pos/set_icon.jpg" style="visibility:hidden;")
+                        tr
+                            td(style="padding-left: 9px;")
+                                table(border="0" cellspacing="0" cellpadding="0" class="set_btn")
+                                    tr
+                                        td
+                                            img(src="/views/pos/set_btn02.jpg" class="pointer" onclick="location.href='/pos/setup/storeInfo';" alt="상점정보")
+                                        td
+                                            img(src="/views/pos/set_btn03.jpg" class="pointer" onclick="location.href='/pos/setup/storeSetup';" alt="상점설정")
+                                        td
+                                            img(src="/views/pos/set_btn04.jpg" class="pointer" onclick="location.href='/pos/setup/userEdit';" alt="회원정보")
+                                    tr
+                                        td
+                                            img(src="/views/pos/set_btn05.jpg" class="pointer" onclick="location.href='/pos/setup/employee';" alt="직원")
+                                        td
+                                            img(src="/views/pos/set_btn06.jpg" class="pointer" onclick="location.href='/pos/setup/table';" alt="테이블")
+                                        td
+                                            img(src="/views/pos/set_btn07.jpg" class="pointer" onclick="location.href='/pos/setup/storeDevice';" alt="주변기기")
+                                    tr
+                                        td
+                                            img(src="/views/pos/set_btn08.jpg" class="pointer" onclick="location.href='/pos/setup/call';" alt="호출")
+                                        td
+                                            img(src="/views/pos/set_btn09.jpg" class="pointer" onclick="location.href='/pos/setup/message';" alt="메세지")
+                                        td
+                                            img(src="/views/pos/set_btn10.jpg" class="pointer" onclick="location.href='/pos/setup/option';" alt="상품옵션")
+                                    tr
+                                        td
+                                            img(src="/views/pos/set_btn11.jpg" class="pointer" onclick="location.href='/pos/setup/product';" alt="상품")
+                                        td
+                                            img(src="/views/pos/set_btn12.jpg" class="pointer" onclick="location.href='/pos/setup/set';" alt="세트상품")
+                                        td
+                                            img(src="/views/pos/set_btn13.jpg" class="pointer" onclick="location.href='/pos/setup/promotion';" alt="할인상품")
+                                    tr
+                                        td
+                                            img(src="/views/pos/set_btn14.jpg" class="pointer" onclick="location.href='/pos/setup/saleStart';" alt="영업시작")
+                                        td
+                                            img(src="/views/pos/set_btn15.jpg" class="pointer" onclick="location.href='/pos/setup/saleAccount';" alt="입출금")
+                                        td
+                                            img(src="/views/pos/set_btn16.jpg" class="pointer" onclick="location.href='/pos/setup/saleCheck';" alt="중간정산")
+                                    tr
+                                        td
+                                            img(src="/views/pos/set_btn17.jpg" class="pointer" onclick="location.href='/pos/setup/saleEnd';" alt="영업마감")
+                                        td
+                                            img(src="/views/pos/set_btn19.jpg" class="pointer" onclick="location.href='/pos/setup/saleList';" alt="마감내역")
+                                        td
+                                            img(src="/views/pos/set_btn18.jpg" class="pointer" onclick="location.href='/pos/setup/rcpnList';" alt="판매내역")
+                                    tr
+                                        td
+                                            img(src="/views/pos/set_btn20.jpg" class="pointer" onclick="location.href='/pos/setup/cardList';" alt="결제내역")
+                                        td
+                                            img(src="/views/pos/set_btn26.jpg" class="pointer" onclick="location.href='/pos/setup/event';" alt="이벤트")
+                                        td
+                                            img(src="/views/pos/set_btn21.jpg")
+                                    tr
+                                        td
+                                            img(src="/views/pos/set_btn21.jpg")
+                                        td
+                                            img(src="/views/pos/set_btn21.jpg")
+                                        td
+                                            img(src="/views/pos/set_btn21.jpg")
+                                    tr
+                                        td
+                                            img(src="/views/pos/set_btn21.jpg")
+                                        td
+                                            img(src="/views/pos/set_btn21.jpg")
+                                        td
+                                            img(src="/views/pos/set_btn21.jpg")
+                        tr      
+                            td(style="padding-left: 9px;")
+                                table(border="0" cellspacing="0" cellpadding="0")
+                                    tr
+                                        td
+                                            img(src="/views/pos/set_btn22.jpg")
+                                        td
+                                            img(src="/views/pos/set_btn23.jpg")
+                td(width="782" valign="top" background="/views/pos/set_bg03.jpg")
+                    table(width="760" border="0" cellspacing="0" cellpadding="0")
+                        tr
+                            td(style="padding:41px 0 0 13px;")
+                                block content
