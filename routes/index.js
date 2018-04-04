@@ -4479,7 +4479,7 @@ router.post('/getTagData_m', function(req, res, next){
     let q = "select A.STONAM, B.FLRNAM, C.TBLNAM from STOMST as A "
         + "left join STOFLR as B on B.ID=? "
         + "left join TBLSTO as C on C.ID=? "
-        + "where A.STOSEQ=?;"
+        + "where A.ID=?;"
 
     connection.query(q, [flrseq, tblseq, stoseq], function(err, rows, fields){
         if(err) {
