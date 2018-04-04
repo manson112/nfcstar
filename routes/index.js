@@ -2930,7 +2930,7 @@ router.post('/store_m', function (req, res, next) {
         let STOSEQ = req.body.STOSEQ;
         let FLRSEQ = req.body.FLRSEQ;
         let TBLSEQ = req.body.TBLSEQ;
-        
+
         var query = "select A.ID, A.STONAM, A.STLOGO, A.STOTEL, B.TBLNAM from STOMST as A, TBLSTO as B where A.ID=? and B.ID=?;";
         connection.query(query, [STOSEQ, TBLSEQ], function (err, rows, fields) {
             if (err) {
@@ -3440,8 +3440,8 @@ router.post('/event_m', function (req, res, next) {
     var eventList = [];
 
     var query = "select A.ID, A.EVTNAM, B.FILURL "
-        + "from evtmst as A "
-        + "left join evtfil_m as B "
+        + "from EVTMST as A "
+        + "left join EVTFIL_M as B "
         + "on A.ID = B.EVTSEQ "
         + "where now() >= A.EVTSTR "
         + "and now() < A.EVTEND "
