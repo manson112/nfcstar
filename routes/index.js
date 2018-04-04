@@ -2973,7 +2973,7 @@ router.post('/userlogin_m', function (req, res, next) {
             console.error(err); 
             let obj = new Object();
             obj.ResultCode = 200;
-            obj.msg = "불러오기 실패";
+            obj.msg = "불러오기 실패1";
             res.json(obj);
         } else {
             if (rows.length == 0) {
@@ -2989,7 +2989,7 @@ router.post('/userlogin_m', function (req, res, next) {
                         console.error(err); 
                         let obj = new Object();
                         obj.ResultCode = 200;
-                        obj.msg = "불러오기 실패";
+                        obj.msg = "불러오기 실패2";
                         res.json(obj);
                     } else {
                         if (rows.length == 0) {
@@ -3003,27 +3003,12 @@ router.post('/userlogin_m', function (req, res, next) {
                             obj.USRNAM = rows[0].USRNAM;
                             obj.MOBNUM = rows[0].MOBNUM;
 
-                            connection.query("select STOSEQ from USRSTO where USERID=? ORDER BY USEDAT DESC Limit 1;", [userid], function (err, rows, fields) {
-                                if (err) { 
-                                    console.error(err); 
-                                    let obj = new Object();
-                                    obj.ResultCode = 200;
-                                    obj.msg = "불러오기 실패";
-                                    res.json(obj);
-                                } else {
-                                    if (rows.length == 0) {
-                                        obj.LSTSTO = "";
-                                    } else {
-                                        obj.LSTSTO = rows[0].STOSEQ;
-                                    }
-                                    var fcm = "update USRMST set FCMTOK='" + fcmtoken + "' where USERID='" + userid + "';";
-                                    run_query(fcm, "fcm update");
+                            var fcm = "update USRMST set FCMTOK='" + fcmtoken + "' where USERID='" + userid + "';";
+                            run_query(fcm, "fcm update");
 
-                                    obj.msg = "로그인 성공!";
-                                    obj.ResultCode = 100;
-                                    res.json(obj);
-                                }
-                            });
+                            obj.msg = "로그인 성공!";
+                            obj.ResultCode = 100;
+                            res.json(obj);
                         }
                     }
                 });
@@ -3482,7 +3467,7 @@ router.post('/event_detail_m', function (req, res, next) {
 
 
     var q = "select A.FILTYP, A.FILURL, A.PRDSEQ, B.PRDNAM, B.PRDEXP, B.PRDCST "
-        + "from evtfil_d as A "
+        + "from EVTFIL_D as A "
         + "left join prdmst as B "
         + "on A.PRDSEQ = B.ID "
         + "where A.STOSEQ=? and A.EVTSEQ=? "
