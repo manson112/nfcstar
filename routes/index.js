@@ -3142,7 +3142,7 @@ router.post('/prdopt_m', function (req, res, next) {
     var array_name = "options";
     var options = [];
     var q = "select A.CATNAM, C.OPTNAM, C.OPTCST from "
-        + stoseq + "_OPTCAT as A, PRDOPT as B, OPTMST as C "
+        + "OPTCAT as A, PRDOPT as B, OPTMST as C "
         + "where A.STOSEQ=? and B.PRDSEQ=? and B.OPTCAT = A.ID and A.ID = C.OPTCAT;";
 
     connection.query(q, [stoseq, prdseq], function (err, rows2, fields) {
@@ -3332,9 +3332,9 @@ router.post('/findprd_opt_m', function (req, res, next) {
 
                         let options = [];
                         let q2 = "select A.CATNAM, C.OPTNAM, C.OPTCST from "
-                            + stoseq + "_OPTCAT as A, " + stoseq + "_PRDOPT as B, " + stoseq + "_OPTMST as C "
-                            + "where B.PRDSEQ=" + rows[i].ID + " and B.OPTCAT = A.ID and A.ID = C.OPTCAT;";
-                        connection.query(q2, function (err, rows2, fields) {
+                            + "OPTCAT as A, PRDOPT as B, OPTMST as C "
+                            + "where A.STOSEQ=? and B.PRDSEQ=? and B.OPTCAT = A.ID and A.ID = C.OPTCAT;";
+                        connection.query(q2, [stoseq, rows[i].ID], function (err, rows2, fields) {
                             if (err) { console.error(err); }
                             if (rows2.length == 0) { }
                             else {
