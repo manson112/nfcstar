@@ -173,7 +173,7 @@ router.get('/dbcheck', function (req, res, next) {
             for (var j = 0; j < tables.length; j++) {
                 var tmpquery = "select * from " + tables[j] + ";";
                 connection.query(tmpquery, function (err, rows, fields) {
-                    if (err) console.error(err);
+                    if (err) { console.error(err); }
                     var tbl = new Object();
 
                     tbl.name = fields[0].table;
@@ -225,7 +225,7 @@ router.get('/addvan', function (req, res, next) {
 
     connection.query(query, function (err, rows, fields) {
         if (err) {
-            console.error(err);
+            { console.error(err); }
         } else {
             for (var i = 0; i < rows.length; i++) {
                 var sto = new Object();
@@ -2904,56 +2904,54 @@ router.post('/store_m', function (req, res, next) {
 
     var tagseq = req.body.TAGSEQ;
     if (tagseq == 'A') { // 모든 종류 태그
-        let stoseq = req.body.STOSEQ;    
-        console.log("A Tagged");
-        console.log("STOSEQ : " + stoseq);
-        console.log("TAGSEQ : " + tagseq);
-        console.log("FLRSEQ : " + flrseq);
-        console.log("TBLSEQ : " + tblseq);
+        let STOSEQ = req.body.STOSEQ;    
 
-
-        var query = "select ID, STONAM, STLOGO, STOTEL from STOMST where ID=" + stoseq + ";";
+        var query = "select ID, STONAM, STLOGO, STOTEL from STOMST where ID=" + STOSEQ + ";";
         connection.query(query, function (err, rows, fields) {
-            if (err) console.error(err);
+            if (err) {
+                console.error(err);
+                let obj = new Object();
+                obj.ResultCode = 200;
+                obj.msg = "불러오기 실패";
+                res.json(obj);
+            } else {
+                // 매장 정보 
+                var obj = new Object;
+                obj.STOSEQ = rows[0].ID;
+                obj.STONAM = rows[0].STONAM;
+                obj.STLOGO = rows[0].STLOGO;
+                obj.STOTEL = rows[0].STOTEL;
 
-            // 매장 정보 
-            var obj = new Object;
-            obj.STOSEQ = rows[0].ID;
-            obj.STONAM = rows[0].STONAM;
-            obj.STLOGO = rows[0].STLOGO;
-            obj.STOTEL = rows[0].STOTEL;
-
-
-            obj.CATS = category;
-            obj.ResultCode = 100;
-            res.json(obj);
-
+                obj.CATS = category;
+                obj.ResultCode = 100;
+                res.json(obj);
+            }
         });
     } else if (tagseq == 'T') { // 테이블 태그 시
-        let stoseq = req.body.STOSEQ;
+        let STOSEQ = req.body.STOSEQ;
         let flrseq = req.body.FLRSEQ;
         let tblseq = req.body.TBLSEQ;
-        console.log("Table Tagged");
-        console.log("STOSEQ : " + stoseq);
-        console.log("TAGSEQ : " + tagseq);
-        console.log("FLRSEQ : " + flrseq);
-        console.log("TBLSEQ : " + tblseq);
 
-        var query = "select A.ID, A.STONAM, A.STLOGO, A.STOTEL, B.TBLNAM from STOMST as A, "+ stoseq +"_TBLSTO as B where A.ID=" + stoseq + " and B.ID="+ tblseq +";";
-        connection.query(query, function (err, rows, fields) {
-            if (err) console.error(err);
+        var query = "select A.ID, A.STONAM, A.STLOGO, A.STOTEL, B.TBLNAM from STOMST as A, TBLSTO as B where A.ID=? and B.ID=?;";
+        connection.query(query, [STOSEQ, TBLSEQ], function (err, rows, fields) {
+            if (err) {
+                console.error(err);
+                let obj = new Object();
+                obj.ResultCode = 200;
+                obj.msg = "불러오기 실패";
+                res.json(obj);
+            } else {
+                // 매장 정보 
+                var obj = new Object;
+                obj.STOSEQ = rows[0].ID;
+                obj.STONAM = rows[0].STONAM;
+                obj.STLOGO = rows[0].STLOGO;
+                obj.STOTEL = rows[0].STOTEL;
+                obj.TBLNAM = rows[0].TBLNAM;
 
-            // 매장 정보 
-            var obj = new Object;
-            obj.STOSEQ = rows[0].ID;
-            obj.STONAM = rows[0].STONAM;
-            obj.STLOGO = rows[0].STLOGO;
-            obj.STOTEL = rows[0].STOTEL;
-            obj.TBLNAM = rows[0].TBLNAM;
-
-            obj.ResultCode = 100;
-            res.json(obj);
-
+                obj.ResultCode = 100;
+                res.json(obj);
+            }
         });
     } else if (tagseq == 'D') {
 
@@ -2970,46 +2968,67 @@ router.post('/store_m', function (req, res, next) {
 router.post('/userlogin_m', function (req, res, next) {
     let userid = req.body.USERID;
     let fcmtoken = req.body.FCMTOKEN;
-    let query = "select ID, USERID from USRMST where USERID = '" + userid + "';";
-    connection.query(query, function (err, rows, fields) {
-        if (err) console.error(err);
-        if (rows.length == 0) {
-            var obj = new Object;
+    let query = "select ID, USERID from USRMST where USERID=?;";
+    connection.query(query, [userid], function (err, rows, fields) {
+        if (err) { 
+            console.error(err); 
+            let obj = new Object();
             obj.ResultCode = 200;
-            obj.msg = "존재하는 아이디가 없습니다";
+            obj.msg = "불러오기 실패";
             res.json(obj);
         } else {
-            var userpw = req.body.USERPW;
-            var query2 = "select * from USRMST A where USERPW = '" + userpw + "' and USERID='" + userid + "';";
-            connection.query(query2, function (err, rows, fields) {
-                if (err) console.error(err);
-                if (rows.length == 0) {
-                    var obj = new Object;
-                    obj.ResultCode = 200;
-                    obj.msg = "비밀번호가 틀립니다";
-                    res.json(obj);
-                } else {
-                    var obj = new Object;
-                    obj.USERID = rows[0].USERID;
-                    obj.USRNAM = rows[0].USRNAM;
-                    obj.MOBNUM = rows[0].MOBNUM;
-
-                    connection.query("select STOSEQ from USRSTO where USERID='" + userid + "' ORDER BY USEDAT DESC Limit 1;", function (err, rows, fields) {
-                        if (err) console.error(err);
-                        if (rows.length == 0) {
-                            obj.LSTSTO = "";
-                        } else {
-                            obj.LSTSTO = rows[0].STOSEQ;
-                        }
-                        var fcm = "update USRMST set FCMTOK='" + fcmtoken + "' where USERID='" + userid + "';";
-                        run_query(fcm, "fcm update");
-
-                        obj.msg = "로그인 성공!";
-                        obj.ResultCode = 100;
+            if (rows.length == 0) {
+                var obj = new Object;
+                obj.ResultCode = 200;
+                obj.msg = "존재하는 아이디가 없습니다";
+                res.json(obj);
+            } else {
+                var userpw = req.body.USERPW;
+                var query2 = "select * from USRMST A where USERPW = ? and USERID=?;";
+                connection.query(query2, [userpw, userid], function (err, rows, fields) {
+                    if (err) { 
+                        console.error(err); 
+                        let obj = new Object();
+                        obj.ResultCode = 200;
+                        obj.msg = "불러오기 실패";
                         res.json(obj);
-                    });
-                }
-            });
+                    } else {
+                        if (rows.length == 0) {
+                            var obj = new Object;
+                            obj.ResultCode = 200;
+                            obj.msg = "비밀번호가 틀립니다";
+                            res.json(obj);
+                        } else {
+                            var obj = new Object;
+                            obj.USERID = rows[0].USERID;
+                            obj.USRNAM = rows[0].USRNAM;
+                            obj.MOBNUM = rows[0].MOBNUM;
+
+                            connection.query("select STOSEQ from USRSTO where USERID=? ORDER BY USEDAT DESC Limit 1;", [userid], function (err, rows, fields) {
+                                if (err) { 
+                                    console.error(err); 
+                                    let obj = new Object();
+                                    obj.ResultCode = 200;
+                                    obj.msg = "불러오기 실패";
+                                    res.json(obj);
+                                } else {
+                                    if (rows.length == 0) {
+                                        obj.LSTSTO = "";
+                                    } else {
+                                        obj.LSTSTO = rows[0].STOSEQ;
+                                    }
+                                    var fcm = "update USRMST set FCMTOK='" + fcmtoken + "' where USERID='" + userid + "';";
+                                    run_query(fcm, "fcm update");
+
+                                    obj.msg = "로그인 성공!";
+                                    obj.ResultCode = 100;
+                                    res.json(obj);
+                                }
+                            });
+                        }
+                    }
+                });
+            }
         }
     });
 });
@@ -3026,39 +3045,46 @@ router.post('/register_m', function (req, res, next) {
 
     var query = "select * from USRMST where USERID='" + userid + "';";
     connection.query(query, function (err, rows, fields) {
-        if (err) console.error(err);
-        if (rows.length == 0) {
-            var query2 = "select * from USRMST where MOBNUM='" + mobnum + "';";
-            connection.query(query2, function (err, rows, fields) {
-                if (err) console.error(err);
-                if (rows.length == 0) {
-                    var q = "INSERT INTO USRMST (USERID, USERPW, USRNAM, MOBNUM, BIRDAY, SEXCOD, EMLADD, FCMTOK, REGDAT, REGSTO) VALUES ('" + userid + "', '" + userpw + "', '" + username + "', '" + mobnum + "', " + birthday + ", '" + sexcod + "', '" + emladd + "', NULL, NOW(), " + stoseq + ");";
-                    connection.query(q, function (err, rows, fields) {
-                        if (err) console.error(err);
-                        var obj = new Object;
-                        obj.ResultCode = 100;
-                        obj.msg = "회원가입 완료";
-                        res.json(obj);
-                    });
-                } else {
-                    var obj = new Object;
-                    obj.ResultCode = 200;
-                    obj.msg = "중복되는 전화번호가 존재합니다";
-                    res.json(obj);
-                }
-            });
-        } else {
-            var obj = new Object;
+        if (err) { 
+            console.error(err); 
+            let obj = new Object();
             obj.ResultCode = 200;
-            obj.msg = "중복되는 아이디가 존재합니다";
+            obj.msg = "불러오기 실패";
             res.json(obj);
+        } else {
+            if (rows.length == 0) {
+                var query2 = "select * from USRMST where MOBNUM='" + mobnum + "';";
+                connection.query(query2, function (err, rows, fields) {
+                    if (err) { console.error(err); }
+                    if (rows.length == 0) {
+                        var q = "INSERT INTO USRMST (USERID, USERPW, USRNAM, MOBNUM, BIRDAY, SEXCOD, EMLADD, FCMTOK, REGDAT, REGSTO) VALUES ('" + userid + "', '" + userpw + "', '" + username + "', '" + mobnum + "', " + birthday + ", '" + sexcod + "', '" + emladd + "', NULL, NOW(), " + stoseq + ");";
+                        connection.query(q, function (err, rows, fields) {
+                            if (err) { console.error(err); }
+                            var obj = new Object;
+                            obj.ResultCode = 100;
+                            obj.msg = "회원가입 완료";
+                            res.json(obj);
+                        });
+                    } else {
+                        var obj = new Object;
+                        obj.ResultCode = 200;
+                        obj.msg = "중복되는 전화번호가 존재합니다";
+                        res.json(obj);
+                    }
+                });
+            } else {
+                var obj = new Object;
+                obj.ResultCode = 200;
+                obj.msg = "중복되는 아이디가 존재합니다";
+                res.json(obj);
+            }
         }
     });
 
 });
 
 router.post('/findprd_m', function (req, res, next) {
-    var stoseq = req.body.STOSEQ;
+    var STOSEQ = req.body.STOSEQ;
     var catseq = req.body.CATSEQ;
     var catnam = req.body.CATNAM;
 
@@ -3067,29 +3093,39 @@ router.post('/findprd_m', function (req, res, next) {
     } else if (catnam == "할인") {
 
     } else {
-        var q = "select A.ID, A.PRDNAM, A.PRDEXP, A.PRDCST, B.FILURL from " + stoseq + "_PRDMST as A left join " + stoseq + "_PRDFIL_M as B on A.ID = B.PRDSEQ where A.CATSEQ = " + catseq + " order by A.ORDNUM;";
+        var q = "select A.ID, A.PRDNAM, A.PRDEXP, A.PRDCST, B.FILURL from PRDMST as A left join PRDFIL_M as B on A.ID = B.PRDSEQ where A.STOSEQ=? A.CATSEQ =? order by A.ORDNUM;";
         connection.query(q, function (err, rows, fields) {
-            if (err) console.error(err);
-            if (rows.length == 0) {
-                res.json("{'ResultCode':200, 'msg':'이 카테고리에 제품이 없습니다.'}");
+            if (err) { 
+                console.error(err); 
+                let obj = new Object();
+                obj.ResultCode = 200;
+                obj.msg = "불러오기 실패";
+                res.json(obj);
             } else {
-                var products = [];
-                var array_name = "products";
-                for (var i = 0; i < rows.length; i++) {
-                    var obj = new Object;
-                    obj.PRDSEQ = rows[i].ID;
-                    obj.PRDNAM = rows[i].PRDNAM;
-                    obj.PRDEXP = rows[i].PRDEXP;
-                    obj.PRDCST = rows[i].PRDCST;
-                    obj.FILURL = rows[i].FILURL;
-                    products.push(obj);
+                if (rows.length == 0) {
+                    let obj = new Object();
+                    obj.ResultCode = 200;
+                    obj.msg = "이 카테고리에 제품이 없습니다";
+                    res.json(obj);
+                } else {
+                    var products = [];
+                    var array_name = "products";
+                    for (var i = 0; i < rows.length; i++) {
+                        var obj = new Object;
+                        obj.PRDSEQ = rows[i].ID;
+                        obj.PRDNAM = rows[i].PRDNAM;
+                        obj.PRDEXP = rows[i].PRDEXP;
+                        obj.PRDCST = rows[i].PRDCST;
+                        obj.FILURL = rows[i].FILURL;
+                        products.push(obj);
+                    }
+                    var result = new Object;
+                    result.ResultCode = 100;
+                    result.array_name = array_name;
+                    result[array_name] = products;
+                    console.log(result);
+                    res.json(result);
                 }
-                var result = new Object;
-                result.ResultCode = 100;
-                result.array_name = array_name;
-                result[array_name] = products;
-                console.log(result);
-                res.json(result);
             }
         });
     }
@@ -3106,112 +3142,22 @@ router.post('/prdopt_m', function (req, res, next) {
     var array_name = "options";
     var options = [];
     var q = "select A.CATNAM, C.OPTNAM, C.OPTCST from "
-        + stoseq + "_OPTCAT as A, " + stoseq + "_PRDOPT as B, " + stoseq + "_OPTMST as C "
-        + "where B.PRDSEQ=" + prdseq + " and B.OPTCAT = A.ID and A.ID = C.OPTCAT;";
+        + stoseq + "_OPTCAT as A, PRDOPT as B, OPTMST as C "
+        + "where A.STOSEQ=? and B.PRDSEQ=? and B.OPTCAT = A.ID and A.ID = C.OPTCAT;";
 
-    connection.query(q, function (err, rows2, fields) {
-        if (err) console.error(err);
-        if (rows2.length == 0) { }
+    connection.query(q, [stoseq, prdseq], function (err, rows2, fields) {
+        if (err) { console.error(err); }
         else {
-            var catnam = rows2[0].CATNAM;
-            var obj = new Object;
-            var option_detail = [];
-            var option = new Object;
-
-            for (var i = 0; i < rows2.length; i++) {
-                if (catnam == rows2[i].CATNAM) {
-                    option = new Object;
-                    option.OPTNAM = rows2[i].OPTNAM;
-                    option.OPTCST = rows2[i].OPTCST;
-                    option_detail.push(option);
-
-                    if (i == rows2.length - 1) {
-                        obj.CATNAM = catnam;
-                        obj.OPTDET = option_detail;
-                        options.push(obj);
-                    }
-                } else {
-                    obj.CATNAM = catnam;
-                    obj.OPTDET = option_detail;
-
-                    options.push(obj);
-
-                    catnam = rows2[i].CATNAM;
-
-                    obj = new Object;
-                    option = new Object;
-                    option_detail = new Array;
-
-                    option.OPTNAM = rows2[i].OPTNAM;
-                    option.OPTCST = rows2[i].OPTCST;
-                    option_detail.push(option);
-
-                    if (i == rows2.length - 1) {
-                        obj.CATNAM = catnam;
-                        obj.OPTDET = option_detail;
-                        options.push(obj);
-                    }
-                }
-            }
-            result.ResultCode = 100;
-            result[array_name] = options;
-            result.array_name = array_name;
-            console.log(result);
-            res.json(result);
-        }
-
-    });
-
-});
-
-router.post('/prdinfo_m', function (req, res, next) {
-    var stoseq = req.body.STOSEQ;
-    var prdseq = req.body.PRDSEQ;
-    var prdnam = req.body.PRDNAM;
-
-    var result = new Object;
-    var images = [];
-    var options = [];
-
-    var q = "select FILURL from " + stoseq + "_PRDFIL_D "
-        + "where PRDSEQ='" + prdseq + "' order by ORDNUM;";
-
-    connection.query(q, function (err, rows, fields) {
-        if (err) console.error(err);
-
-        for (var i = 0; i < rows.length; i++) {
-            images.push(rows[i].FILURL);
-        }
-
-        result.images = images;
-
-        let q2 = "select A.CATNAM, D.PRDNAM, D.PRDEXP, D.PRDCST, C.ID, C.OPTNAM, C.OPTCST from " + stoseq + "_OPTCAT as A " 
-            + "left join " + stoseq + "_PRDOPT as B on A.ID = B.OPTCAT "
-            + "left join " + stoseq + "_OPTMST as C on A.ID = C.OPTCAT "
-            + "left join " + stoseq + "_PRDMST as D on D.ID = " + prdseq + " "
-            + "where B.PRDSEQ = " + prdseq + ";"
-        connection.query(q2, function (err, rows2, fields) {
-            if (err) console.error(err);
-            if (rows2.length == 0) { 
-                result.ResultCode = 100;
-                result.images = images;
-                result.options = [];
-                res.json(result);
-            }
+            if (rows2.length == 0) { }
             else {
                 var catnam = rows2[0].CATNAM;
                 var obj = new Object;
                 var option_detail = [];
                 var option = new Object;
-                let PRDNAM = rows2[0].PRDNAM;
-                let PRDEXP = rows2[0].PRDEXP;
-                let PRDCST = rows2[0].PRDCST;
 
                 for (var i = 0; i < rows2.length; i++) {
-                    
                     if (catnam == rows2[i].CATNAM) {
                         option = new Object;
-                        option.OPTSEQ = rows2[i].ID;
                         option.OPTNAM = rows2[i].OPTNAM;
                         option.OPTCST = rows2[i].OPTCST;
                         option_detail.push(option);
@@ -3233,7 +3179,6 @@ router.post('/prdinfo_m', function (req, res, next) {
                         option = new Object;
                         option_detail = new Array;
 
-                        option.OPTSEQ = rows2[i].ID;                       
                         option.OPTNAM = rows2[i].OPTNAM;
                         option.OPTCST = rows2[i].OPTCST;
                         option_detail.push(option);
@@ -3246,17 +3191,109 @@ router.post('/prdinfo_m', function (req, res, next) {
                     }
                 }
                 result.ResultCode = 100;
-                result.PRDNAM = PRDNAM;
-                result.PRDEXP = PRDEXP;
-                result.PRDCST = PRDCST;
-                result.images = images;
-                result.options = options;
-                console.log(result.options[0].OPTDET);
+                result[array_name] = options;
+                result.array_name = array_name;
                 console.log(result);
                 res.json(result);
             }
-        });
+        }
+    });
 
+});
+
+router.post('/prdinfo_m', function (req, res, next) {
+    var stoseq = req.body.STOSEQ;
+    var prdseq = req.body.PRDSEQ;
+    var prdnam = req.body.PRDNAM;
+
+    var result = new Object;
+    var images = [];
+    var options = [];
+
+    var q = "select FILURL from PRDFIL_D "
+        + "where STOSEQ=? and PRDSEQ=? order by ORDNUM;";
+
+    connection.query(q, [stoseq, prdseq], function (err, rows, fields) {
+        if (err) { console.error(err); }
+        else {
+            for (var i = 0; i < rows.length; i++) {
+                images.push(rows[i].FILURL);
+            }
+
+            result.images = images;
+
+            let q2 = "select A.CATNAM, D.PRDNAM, D.PRDEXP, D.PRDCST, C.ID, C.OPTNAM, C.OPTCST from OPTCAT as A " 
+                + "left join PRDOPT as B on A.ID = B.OPTCAT "
+                + "left join OPTMST as C on A.ID = C.OPTCAT "
+                + "left join PRDMST as D on D.ID = ? "
+                + "where A.STOSEQ=? and D.STOSEQ=? and B.PRDSEQ = ?;"
+            connection.query(q2, [prdseq, stoseq, stoseq, prdseq], function (err, rows2, fields) {
+                if (err) { console.error(err); }
+                if (rows2.length == 0) { 
+                    result.ResultCode = 100;
+                    result.images = images;
+                    result.options = [];
+                    res.json(result);
+                }
+                else {
+                    var catnam = rows2[0].CATNAM;
+                    var obj = new Object;
+                    var option_detail = [];
+                    var option = new Object;
+                    let PRDNAM = rows2[0].PRDNAM;
+                    let PRDEXP = rows2[0].PRDEXP;
+                    let PRDCST = rows2[0].PRDCST;
+
+                    for (var i = 0; i < rows2.length; i++) {
+                        
+                        if (catnam == rows2[i].CATNAM) {
+                            option = new Object;
+                            option.OPTSEQ = rows2[i].ID;
+                            option.OPTNAM = rows2[i].OPTNAM;
+                            option.OPTCST = rows2[i].OPTCST;
+                            option_detail.push(option);
+
+                            if (i == rows2.length - 1) {
+                                obj.CATNAM = catnam;
+                                obj.OPTDET = option_detail;
+                                options.push(obj);
+                            }
+                        } else {
+                            obj.CATNAM = catnam;
+                            obj.OPTDET = option_detail;
+
+                            options.push(obj);
+
+                            catnam = rows2[i].CATNAM;
+
+                            obj = new Object;
+                            option = new Object;
+                            option_detail = new Array;
+
+                            option.OPTSEQ = rows2[i].ID;                       
+                            option.OPTNAM = rows2[i].OPTNAM;
+                            option.OPTCST = rows2[i].OPTCST;
+                            option_detail.push(option);
+
+                            if (i == rows2.length - 1) {
+                                obj.CATNAM = catnam;
+                                obj.OPTDET = option_detail;
+                                options.push(obj);
+                            }
+                        }
+                    }
+                    result.ResultCode = 100;
+                    result.PRDNAM = PRDNAM;
+                    result.PRDEXP = PRDEXP;
+                    result.PRDCST = PRDCST;
+                    result.images = images;
+                    result.options = options;
+                    console.log(result.options[0].OPTDET);
+                    console.log(result);
+                    res.json(result);
+                }
+            });
+        }
     });
 
 
@@ -3273,175 +3310,171 @@ router.post('/findprd_opt_m', function (req, res, next) {
 
     } else {
         let q = "select A.ID, A.PRDNAM, A.PRDEXP, A.PRDCST, B.FILURL "
-            + "from " + stoseq + "_PRDMST as A "
-            + "left join " + stoseq + "_PRDFIL_M as B on (A.ID = B.PRDSEQ) "
-            + "where A.CATSEQ = " + catseq + " order by A.ORDNUM;";
-        connection.query(q, function (err, rows, fields) {
-            if (err) console.error(err);
-            if (rows.length == 0) {
-                res.json("{'ResultCode':200, 'msg':'이 카테고리에 제품이 없습니다.'}");
-            } else {
-                let products = [];
-                let array_name = "products";
-                for (let i = 0; i < rows.length; i++) {
-                    let obj = new Object;
-                    obj.PRDSEQ = rows[i].ID;
-                    obj.PRDNAM = rows[i].PRDNAM;
-                    obj.PRDEXP = rows[i].PRDEXP;
-                    obj.PRDCST = rows[i].PRDCST;
-                    obj.FILURL = rows[i].FILURL;
+            + "from PRDMST as A "
+            + "left join PRDFIL_M as B on (A.ID = B.PRDSEQ) "
+            + "where A.STOSEQ=? and A.CATSEQ = ? order by A.ORDNUM;";
+        connection.query(q, [stoseq, catseq], function (err, rows, fields) {
+            if (err) { console.error(err); }
+            else {
+                if (rows.length == 0) {
+                    res.json("{'ResultCode':200, 'msg':'이 카테고리에 제품이 없습니다.'}");
+                } else {
+                    let products = [];
+                    let array_name = "products";
+                    for (let i = 0; i < rows.length; i++) {
+                        let obj = new Object;
+                        obj.PRDSEQ = rows[i].ID;
+                        obj.PRDNAM = rows[i].PRDNAM;
+                        obj.PRDEXP = rows[i].PRDEXP;
+                        obj.PRDCST = rows[i].PRDCST;
+                        obj.FILURL = rows[i].FILURL;
 
 
-                    let options = [];
-                    let q2 = "select A.CATNAM, C.OPTNAM, C.OPTCST from "
-                        + stoseq + "_OPTCAT as A, " + stoseq + "_PRDOPT as B, " + stoseq + "_OPTMST as C "
-                        + "where B.PRDSEQ=" + rows[i].ID + " and B.OPTCAT = A.ID and A.ID = C.OPTCAT;";
-                    connection.query(q2, function (err, rows2, fields) {
-                        if (err) console.error(err);
-                        if (rows2.length == 0) { }
-                        else {
-                            let optcatnam = rows2[0].CATNAM;
-                            let obj2 = new Object;
-                            let option_detail = [];
-                            let option = new Object;
+                        let options = [];
+                        let q2 = "select A.CATNAM, C.OPTNAM, C.OPTCST from "
+                            + stoseq + "_OPTCAT as A, " + stoseq + "_PRDOPT as B, " + stoseq + "_OPTMST as C "
+                            + "where B.PRDSEQ=" + rows[i].ID + " and B.OPTCAT = A.ID and A.ID = C.OPTCAT;";
+                        connection.query(q2, function (err, rows2, fields) {
+                            if (err) { console.error(err); }
+                            if (rows2.length == 0) { }
+                            else {
+                                let optcatnam = rows2[0].CATNAM;
+                                let obj2 = new Object;
+                                let option_detail = [];
+                                let option = new Object;
 
-                            for (let k = 0; k < rows2.length; k++) {
-                                if (optcatnam == rows2[k].CATNAM) {
-                                    option = new Object;
-                                    option.OPTNAM = rows2[k].OPTNAM;
-                                    option.OPTCST = rows2[k].OPTCST;
-                                    option_detail.push(option);
+                                for (let k = 0; k < rows2.length; k++) {
+                                    if (optcatnam == rows2[k].CATNAM) {
+                                        option = new Object;
+                                        option.OPTNAM = rows2[k].OPTNAM;
+                                        option.OPTCST = rows2[k].OPTCST;
+                                        option_detail.push(option);
 
-                                    if (k == rows2.length - 1) {
+                                        if (k == rows2.length - 1) {
+                                            obj2.CATNAM = optcatnam;
+                                            obj2.OPTDET = option_detail;
+                                            options.push(obj2);
+                                        }
+                                    } else {
                                         obj2.CATNAM = optcatnam;
                                         obj2.OPTDET = option_detail;
+
                                         options.push(obj2);
-                                    }
-                                } else {
-                                    obj2.CATNAM = optcatnam;
-                                    obj2.OPTDET = option_detail;
 
-                                    options.push(obj2);
+                                        optcatnam = rows2[k].CATNAM;
 
-                                    optcatnam = rows2[k].CATNAM;
+                                        obj2 = new Object;
+                                        option = new Object;
+                                        option_detail = new Array;
 
-                                    obj2 = new Object;
-                                    option = new Object;
-                                    option_detail = new Array;
+                                        option.OPTNAM = rows2[k].OPTNAM;
+                                        option.OPTCST = rows2[k].OPTCST;
+                                        option_detail.push(option);
 
-                                    option.OPTNAM = rows2[k].OPTNAM;
-                                    option.OPTCST = rows2[k].OPTCST;
-                                    option_detail.push(option);
-
-                                    if (k == rows2.length - 1) {
-                                        obj2.CATNAM = optcatnam;
-                                        obj2.OPTDET = option_detail;
-                                        options.push(obj2);
+                                        if (k == rows2.length - 1) {
+                                            obj2.CATNAM = optcatnam;
+                                            obj2.OPTDET = option_detail;
+                                            options.push(obj2);
+                                        }
                                     }
                                 }
+                                obj.options = options;
+                                console.log(obj);
+                                console.log("----");
+                                products.push(obj);
                             }
-                            obj.options = options;
-                            console.log(obj);
-                            console.log("----");
-                            products.push(obj);
-                        }
-                    });
+                        });
 
+                    }
+                    //
+                    setTimeout(function () {
+                        var result = new Object;
+                        result.ResultCode = 100;
+                        result.array_name = array_name;
+                        result[array_name] = products;
+                        console.log(result);
+                        res.json(result);
+                    }, 500);
                 }
-
-                //
-
-
-                //
-                setTimeout(function () {
-                    var result = new Object;
-                    result.ResultCode = 100;
-                    result.array_name = array_name;
-                    result[array_name] = products;
-                    console.log(result);
-                    res.json(result);
-                }, 500);
             }
         });
     }
 });
 
-
 router.post('/category_m', function (req, res, next) {
-    var stoseq = 1;
+    var stoseq = req.body.STOSEQ;
 
     // 매장 카테고리 정보
 
     var array_name = "CATS";
     var obj = new Object;
-    var query = "select ID, CATNAM, CATFIL from " + stoseq + "_CATMST;";
+    var query = "select ID, CATNAM, CATFIL from CATMST where STOSEQ=?;";
 
-    connection.query(query, function (err, rows2, fields) {
+    connection.query(query, [stoseq], function (err, rows2, fields) {
         if (err) {
+            console.error(err);
             obj.ResultCode = 200;
             res.json(obj);
-            console.error(err);
+        } else {
+            var category = [];
+            for (var i = 0; i < rows2.length; i++) {
+                var obj2 = new Object;
+                obj2.CATSEQ = rows2[i].ID;
+                obj2.CATNAM = rows2[i].CATNAM;
+                obj2.CATFIL = rows2[i].CATFIL;
+                category.push(obj2);
+            }
+            obj[array_name] = category;
+            obj.array_name = array_name;
+            obj.ResultCode = 100;
+            res.json(obj);
         }
-        var category = [];
-        for (var i = 0; i < rows2.length; i++) {
-            var obj2 = new Object;
-            obj2.CATSEQ = rows2[i].ID;
-            obj2.CATNAM = rows2[i].CATNAM;
-            obj2.CATFIL = rows2[i].CATFIL;
-            category.push(obj2);
-        }
-        obj[array_name] = category;
-        obj.array_name = array_name;
-        obj.ResultCode = 100;
-        res.json(obj);
     });
 });
 
 router.post('/event_m', function (req, res, next) {
 
-    var stoseq = "1";
+    var stoseq = req.body.STOSEQ;
     var array_name = "EVENTS";
 
     var result = new Object();
     var eventList = [];
 
     var query = "select A.ID, A.EVTNAM, B.FILURL "
-        + "from " + stoseq + "_evtmst as A "
-        + "left join " + stoseq + "_evtfil_m as B "
+        + "from evtmst as A "
+        + "left join evtfil_m as B "
         + "on A.ID = B.EVTSEQ "
         + "where now() >= A.EVTSTR "
         + "and now() < A.EVTEND "
+        + "and A.STOSEQ=" + stoseq +" "
         + "order by A.ORDNUM ASC;";
 
     connection.query(query, function (err, rows, fields) {
         if (err) {
+            console.error(err);
             result.ResultCode = 200;
             result.msg = "이벤트를 불러오는 데 실패하였습니다";
             res.json(result);
-            console.error(err);
-        }
-
-
-        for (var i = 0; i < rows.length; i++) {
-            var obj = new Object();
-            obj.EVTSEQ = rows[i].ID;
-            obj.EVTNAM = rows[i].EVTNAM;
-            if (rows[i].FILURL == null) {
-                obj.FILURL = "event_default.png";
-            } else {
-                obj.FILURL = rows[i].FILURL;
+        } else {
+            for (var i = 0; i < rows.length; i++) {
+                var obj = new Object();
+                obj.EVTSEQ = rows[i].ID;
+                obj.EVTNAM = rows[i].EVTNAM;
+                if (rows[i].FILURL == null) {
+                    obj.FILURL = "event_default.png";
+                } else {
+                    obj.FILURL = rows[i].FILURL;
+                }
+                // console.log(obj);
+                eventList.push(obj);
             }
-            // console.log(obj);
-            eventList.push(obj);
+    
+            result[array_name] = eventList;
+            result.array_name = array_name;
+            result.ResultCode = 100;
+            res.json(result);
         }
-
-        result[array_name] = eventList;
-        result.array_name = array_name;
-        result.ResultCode = 100;
-        res.json(result);
     });
-
-
 });
 
 router.post('/event_detail_m', function (req, res, next) {
@@ -3450,39 +3483,39 @@ router.post('/event_detail_m', function (req, res, next) {
 
 
     var q = "select A.FILTYP, A.FILURL, A.PRDSEQ, B.PRDNAM, B.PRDEXP, B.PRDCST "
-        + "from " + stoseq + "_evtfil_d as A "
-        + "left join " + stoseq + "_prdmst as B "
+        + "from evtfil_d as A "
+        + "left join prdmst as B "
         + "on A.PRDSEQ = B.ID "
-        + "where A.EVTSEQ=" + evtseq + " "
+        + "where A.STOSEQ=? and A.EVTSEQ=? "
         + "order by A.ORDNUM;";
 
     var array_name = "event_datails";
     var result = new Object;
     var details = [];
 
-    connection.query(q, function (err, rows, fields) {
+    connection.query(q, [stoseq, evtseq], function (err, rows, fields) {
         if (err) {
+            console.error(err);
             result.ResultCode = 200;
             result.msg = "이벤트를 불러오는 데 실패하였습니다";
             res.json(result);
-            console.error(err);
+        } else {
+            for (let i = 0; i < rows.length; i++) {
+                let obj = new Object;
+                obj.FILTYP = rows[i].FILTYP;
+                obj.FILURL = rows[i].FILURL;
+                obj.PRDSEQ = rows[i].PRDSEQ;
+                obj.PRDNAM = rows[i].PRDNAM;
+                obj.PRDEXP = rows[i].PRDEXP;
+                obj.PRDCST = rows[i].PRDCST;
+                details.push(obj);
+            }
+    
+            result.ResultCode = 100;
+            result.array_name = array_name;
+            result[array_name] = details;
+            res.json(result);
         }
-
-        for (let i = 0; i < rows.length; i++) {
-            let obj = new Object;
-            obj.FILTYP = rows[i].FILTYP;
-            obj.FILURL = rows[i].FILURL;
-            obj.PRDSEQ = rows[i].PRDSEQ;
-            obj.PRDNAM = rows[i].PRDNAM;
-            obj.PRDEXP = rows[i].PRDEXP;
-            obj.PRDCST = rows[i].PRDCST;
-            details.push(obj);
-        }
-
-        result.ResultCode = 100;
-        result.array_name = array_name;
-        result[array_name] = details;
-        res.json(result);
     });
 });
 
@@ -3493,95 +3526,98 @@ router.post('/poslogin_m', function (req, res, next) {
     var pospw = req.body.POSPW;
     var fcmtoken = req.body.FCMTOKEN;
 
-    console.log(posid);
-    console.log(pospw);
-
-    var adminQuery = "select ID, ADMID from ADMMST where ADMID='" + posid + "';";
+    var adminQuery = "select ID, ADMID from ADMMST where ADMID=?;";
 
     var obj = new Object;
 
-    connection.query(adminQuery, function (err, rows, fields) {
-        if (err) console.error(err);
+    connection.query(adminQuery, [posid], function (err, rows, fields) {
+        if (err) { console.error(err); }
         if (rows.length != 0) {
-            var q = "select * from ADMMST where ADMPW='" + pospw + "' and ADMID='" + posid + "';";
-            connection.query(q, function (err, rows, fields) {
-                if (err) console.error(err);
-                if (rows.length == 0) {
-                    obj.ResultCode = 200;
-                    obj.msg = "비밀번호가 틀립니다";
-                    res.json(obj);
-                } else {
-                    obj.ResultCode = 300;
-                    obj.msg = "관리자로 로그인합니다";
-                    res.json(obj);
+            var q = "select * from ADMMST where ADMPW=? and ADMID=?;";
+            connection.query(q, [pospw, posid], function (err, rows, fields) {
+                if (err) { console.error(err); }
+                else {
+                    if (rows.length == 0) {
+                        obj.ResultCode = 200;
+                        obj.msg = "비밀번호가 틀립니다";
+                        res.json(obj);
+                    } else {
+                        obj.ResultCode = 300;
+                        obj.msg = "관리자로 로그인합니다";
+                        res.json(obj);
+                    }
                 }
             });
         } else {
-            var query = "select ID, POSID from POSMST where POSID = '" + posid + "';";
-            connection.query(query, function (err, rows, fields) {
-                if (err) console.error(err);
-                if (rows.length == 0) {
-                    obj.ResultCode = 200;
-                    obj.msg = "존재하는 아이디가 없습니다";
-                    res.json(obj);
-                } else {
-                    var query2 = "select * from POSMST A where POSPW='" + pospw + "' and POSID='" + posid + "';";
-                    connection.query(query2, function (err, rows, fields) {
-                        if (err) console.error(err);
-                        if (rows.length == 0) {
-                            obj.ResultCode = 200;
-                            obj.msg = "비밀번호가 틀립니다";
-                            res.json(obj);
-                        } else {
-
-                            var fcm = "update POSMST set FCMTOK='" + fcmtoken + "' where POSID='" + posid + "';";
-                            run_query(fcm, "fcm update");
-
-                            var r = "select B.POSID, A.ID as STOSEQ, A.STONAM "
-                                + "from STOMST as A "
-                                + "left join POSMST as B on (A.ID = B.STOSEQ) "
-                                + "where B.POSID = '" + posid + "';"
-
-                            connection.query(r, function (error, rows, fields) {
-                                if (err) console.error(err);
-
-                                obj.POSID = rows[0].POSID;
-                                obj.STOSEQ = rows[0].STOSEQ;
-                                obj.STONAM = rows[0].STONAM;
-
-                                var r2 = "select ID, FLRNAM "
-                                    + "from " + rows[0].STOSEQ + "_stoflr "
-                                    + "order by ORDNUM asc;";
-
-                                connection.query(r2, function (err, rows, fields) {
-                                    if (err) console.error(err);
-                                    //층 등록 안한 경우 처리 필요
-
-                                    //층 등록 한 경우
-                                    var array_name = "STOFLR";
-                                    var STOFLR = [];
-                                    for (var i = 0; i < rows.length; i++) {
-                                        var object = new Object;
-                                        object.FLRSEQ = rows[i].ID;
-                                        object.FLRNAM = rows[i].FLRNAM;
-                                        STOFLR.push(object);
-                                    }
-                                    obj.array_name = array_name;
-                                    obj[array_name] = STOFLR;
-                                    obj.ResultCode = 100;
-                                    obj.msg = "로그인 완료";
-                                    console.log(obj);
+            var query = "select ID, POSID from POSMST where POSID =?;";
+            connection.query(query, [posid], function (err, rows, fields) {
+                if (err) { console.error(err); }
+                else {
+                    if (rows.length == 0) {
+                        obj.ResultCode = 200;
+                        obj.msg = "존재하는 아이디가 없습니다";
+                        res.json(obj);
+                    } else {
+                        var query2 = "select * from POSMST A where POSPW=? and POSID=?;";
+                        connection.query(query2, [pospw, posid], function (err, rows, fields) {
+                            if (err) { console.error(err); }
+                            else {
+                                if (rows.length == 0) {
+                                    obj.ResultCode = 200;
+                                    obj.msg = "비밀번호가 틀립니다";
                                     res.json(obj);
-                                });
-                            });
-                        }
-                    });
+                                } else {
+                                    var fcm = "update POSMST set FCMTOK='" + fcmtoken + "' where POSID='" + posid + "';";
+                                    run_query(fcm, "fcm update");
+        
+                                    var r = "select B.POSID, A.ID as STOSEQ, A.STONAM "
+                                        + "from STOMST as A "
+                                        + "left join POSMST as B on (A.ID = B.STOSEQ) "
+                                        + "where B.POSID = ?;"
+        
+                                    connection.query(r, [posid], function (error, rows, fields) {
+                                        if (err) { console.error(err); }
+        
+                                        obj.POSID = rows[0].POSID;
+                                        obj.STOSEQ = rows[0].STOSEQ;
+                                        obj.STONAM = rows[0].STONAM;
+        
+                                        var r2 = "select ID, FLRNAM "
+                                            + "from STOFLR where STOSEQ=? "
+                                            + "order by ORDNUM asc;";
+        
+                                        connection.query(r2, [rows[0].STOSEQ], function (err, rows, fields) {
+                                            if (err) { console.error(err); }
+                                            //층 등록 안한 경우 처리 필요
+        
+                                            //층 등록 한 경우
+                                            else {
+                                                var array_name = "STOFLR";
+                                                var STOFLR = [];
+                                                for (var i = 0; i < rows.length; i++) {
+                                                    var object = new Object;
+                                                    object.FLRSEQ = rows[i].ID;
+                                                    object.FLRNAM = rows[i].FLRNAM;
+                                                    STOFLR.push(object);
+                                                }
+                                                obj.array_name = array_name;
+                                                obj[array_name] = STOFLR;
+                                                obj.ResultCode = 100;
+                                                obj.msg = "로그인 완료";
+                                                console.log(obj);
+                                                res.json(obj);
+                                            }
+                                        });
+                                    });
+                                }
+                            }
+                            
+                        });
+                    }
                 }
             });
         }
     });
-
-
 });
 
 router.post('/ncall2_login_m', function(req, res, next){
@@ -3589,57 +3625,65 @@ router.post('/ncall2_login_m', function(req, res, next){
     var pospw = req.body.POSPW;
     var fcmtoken = req.body.FCMTOKEN;
 
-    console.log(posid);
-    console.log(pospw);
 
-    var adminQuery = "select ID, ADMID from ADMMST where ADMID='" + posid + "';";
+    var adminQuery = "select ID, ADMID from ADMMST where ADMID=?;";
 
     var obj = new Object;
 
-    connection.query(adminQuery, function (err, rows, fields) {
-        if (err) console.error(err);
-    
-        var query = "select ID, POSID from POSMST where POSID = '" + posid + "';";
-        connection.query(query, function (err, rows, fields) {
-            if (err) console.error(err);
-            if (rows.length == 0) {
-                obj.ResultCode = 200;
-                obj.msg = "존재하는 아이디가 없습니다";
-                res.json(obj);
-            } else {
-                var query2 = "select * from POSMST A where POSPW='" + pospw + "' and POSID='" + posid + "';";
-                connection.query(query2, function (err, rows, fields) {
-                    if (err) console.error(err);
+    connection.query(adminQuery, [posid], function (err, rows, fields) {
+        if (err) { console.error(err); }
+        else {
+            var query = "select ID, POSID from POSMST where POSID = ?;";
+            connection.query(query, [posid], function (err, rows, fields) {
+                if (err) { console.error(err); }
+                else {
                     if (rows.length == 0) {
                         obj.ResultCode = 200;
-                        obj.msg = "비밀번호가 틀립니다";
+                        obj.msg = "존재하는 아이디가 없습니다";
                         res.json(obj);
                     } else {
-
-                        var fcm = "update POSMST set FCMTOK2='" + fcmtoken + "' where POSID='" + posid + "';";
-                        run_query(fcm, "fcm update");
-
-                        var r = "select B.POSID, A.ID as STOSEQ, A.STONAM "
-                            + "from STOMST as A "
-                            + "left join POSMST as B on (A.ID = B.STOSEQ) "
-                            + "where B.POSID = '" + posid + "';"
-
-                        connection.query(r, function (error, rows, fields) {
-                            if (err) console.error(err);
-
-                            obj.POSID = rows[0].POSID;
-                            obj.STOSEQ = rows[0].STOSEQ;
-                            obj.STONAM = rows[0].STONAM;
-
-                            obj.ResultCode = 100;
-                            obj.msg = "로그인 완료";
-                            console.log(obj);
-                            res.json(obj);
+                        var query2 = "select * from POSMST A where POSPW='" + pospw + "' and POSID='" + posid + "';";
+                        connection.query(query2, function (err, rows, fields) {
+                            if (err) { console.error(err); }
+                            else {
+                                if (rows.length == 0) {
+                                    obj.ResultCode = 200;
+                                    obj.msg = "비밀번호가 틀립니다";
+                                    res.json(obj);
+                                } else {
+            
+                                    var fcm = "update POSMST set FCMTOK2='" + fcmtoken + "' where POSID='" + posid + "';";
+                                    run_query(fcm, "fcm update");
+            
+                                    var r = "select B.POSID, A.ID as STOSEQ, A.STONAM "
+                                        + "from STOMST as A "
+                                        + "left join POSMST as B on (A.ID = B.STOSEQ) "
+                                        + "where B.POSID = '" + posid + "';"
+            
+                                    connection.query(r, function (error, rows, fields) {
+                                        if (err) { console.error(err); }
+                                        else {
+                                            obj.POSID = rows[0].POSID;
+                                            obj.STOSEQ = rows[0].STOSEQ;
+                                            obj.STONAM = rows[0].STONAM;
+                
+                                            obj.ResultCode = 100;
+                                            obj.msg = "로그인 완료";
+                                            console.log(obj);
+                                            res.json(obj);
+                                        }
+                                    });
+                                }
+                            }
+                            
                         });
                     }
-                });
-            }
-        });
+                }
+                
+            });
+
+        }
+        
         
     });
 });
@@ -3651,23 +3695,25 @@ router.post('/postable_m', function (req, res, next) {
 
     var array_name = "TBL";
     var TBL = [];
-    var query = "select * from " + stoseq + "_tblsto where FLRSEQ=" + flrseq + ";";
+    var query = "select * from TBLSTO where STOSEQ=? and FLRSEQ=?;";
 
-    connection.query(query, function (err, rows, fields) {
-        if (err) console.error(err);
-        for (var i = 0; i < rows.length; i++) {
-            var obj = new Object;
-            obj.TBLSEQ = rows[i].ID;
-            obj.TBLNAM = rows[i].TBLNAM;
-            TBL.push(obj);
+    connection.query(query, [stoseq, flrseq], function (err, rows, fields) {
+        if (err) { console.error(err); }
+        else {
+            for (var i = 0; i < rows.length; i++) {
+                var obj = new Object;
+                obj.TBLSEQ = rows[i].ID;
+                obj.TBLNAM = rows[i].TBLNAM;
+                TBL.push(obj);
+            }
+    
+            result.ResultCode = 100;
+            result.msg = flrseq + " floor 테이블 불러오기 완료";
+            result[array_name] = TBL;
+            result.array_name = array_name;
+            console.log(result);
+            res.json(result);
         }
-
-        result.ResultCode = 100;
-        result.msg = flrseq + " floor 테이블 불러오기 완료";
-        result[array_name] = TBL;
-        result.array_name = array_name;
-        console.log(result);
-        res.json(result);
     });
 });
 
@@ -3678,87 +3724,39 @@ router.post('/callpos_m', function (req, res, next) {
     let tblseq = req.body.TBLSEQ;
     let tblnam = req.body.TBLNAM;
 
-    let q = "select FCMTOK, FCMTOK2 from POSMST where STOSEQ=" + stoseq + ";";
+    let q = "select FCMTOK, FCMTOK2 from POSMST where STOSEQ=?;";
 
     let fcm_array = [];
 
-    connection.query(q, function (err, rows, fields) {
-        if (err) console.error(err);
-        for (let i = 0; i < rows.length; i++) {
-            fcm_array.push(rows[i].FCMTOK);
-            fcm_array.push(rows[i].FCMTOK2);
-        }
-
-        var payload = {
-            notification: {
-                title: msg_from,
-                body: msg_body
-                // ,sound: 'default',
-                // badge: '1',
-                // priority: "high", 
-                // show_in_foreground: true,
-                // content_available: true
-            },
-            data: {
-                TYPE: 'MESSAGE',
-                msg_from: msg_from,
-                msg_to: stoseq,
-                msg: msg_body,
-                tblseq: tblseq,
-                tblnam: tblnam,
-                IMAGE: ''
+    connection.query(q, [stoseq], function (err, rows, fields) {
+        if (err) { console.error(err); }
+        else {
+            for (let i = 0; i < rows.length; i++) {
+                fcm_array.push(rows[i].FCMTOK);
+                fcm_array.push(rows[i].FCMTOK2);
             }
-        };
-
-        admin.messaging().sendToDevice(fcm_array, payload)
-            .then(function (response) {
-                console.log("메세지 전송 완료 :", response);
-                var obj = new Object;
-                obj.ResultCode = 100;
-                res.json(obj);
-            })
-            .catch(function (err) {
-                console.log("메세지 전송 에러 :", err);
-                var obj = new Object;
-                obj.ResultCode = 200;
-                res.json(obj);
-            });
-    });
-
-});
-
-router.post('/calluser_m', function (req, res, next) {
-    //고객 1명한테 보내기
-    let userid = req.body.MSG_TO;
-    let msg_title = req.body.MSG_TITLE;
-    let msg_body = req.body.MSG_BODY;
-    let msg_from = req.body.MSG_FROM;
-
-    let q = "select FCMTOK from USRMST where USERID='" + userid + "';";
-
-    let fcm_array = [];
-
-    connection.query(q, function (err, rows, fields) {
-        if (err) console.error(err);
-        for (let i = 0; i < rows.length; i++) {
-            fcm_array.push(rows[i].FCMTOK);
-            console.log(rows[i].FCMTOK);
-        }
-
-        var payload = {
-            notification: {
-                title: msg_title,
-                body: msg_body
-            },
-            data: {
-                FROM: msg_from,
-                TO: userid,
-                IMAGE: ''
-            }
-        };
-        if (fcm_array.length == 0) {
-            res.send("보낼 대상이 없습니다");
-        } else {
+    
+            var payload = {
+                notification: {
+                    title: msg_from,
+                    body: msg_body
+                    // ,sound: 'default',
+                    // badge: '1',
+                    // priority: "high", 
+                    // show_in_foreground: true,
+                    // content_available: true
+                },
+                data: {
+                    TYPE: 'MESSAGE',
+                    msg_from: msg_from,
+                    msg_to: stoseq,
+                    msg: msg_body,
+                    tblseq: tblseq,
+                    tblnam: tblnam,
+                    IMAGE: ''
+                }
+            };
+    
             admin.messaging().sendToDevice(fcm_array, payload)
                 .then(function (response) {
                     console.log("메세지 전송 완료 :", response);
@@ -3774,7 +3772,57 @@ router.post('/calluser_m', function (req, res, next) {
                 });
         }
     });
+});
 
+router.post('/calluser_m', function (req, res, next) {
+    //고객 1명한테 보내기
+    let userid = req.body.MSG_TO;
+    let msg_title = req.body.MSG_TITLE;
+    let msg_body = req.body.MSG_BODY;
+    let msg_from = req.body.MSG_FROM;
+
+    let q = "select FCMTOK from USRMST where USERID=?;";
+
+    let fcm_array = [];
+
+    connection.query(q, [userid], function (err, rows, fields) {
+        if (err) { console.error(err); }
+        else {
+            for (let i = 0; i < rows.length; i++) {
+                fcm_array.push(rows[i].FCMTOK);
+                console.log(rows[i].FCMTOK);
+            }
+    
+            var payload = {
+                notification: {
+                    title: msg_title,
+                    body: msg_body
+                },
+                data: {
+                    FROM: msg_from,
+                    TO: userid,
+                    IMAGE: ''
+                }
+            };
+            if (fcm_array.length == 0) {
+                res.send("보낼 대상이 없습니다");
+            } else {
+                admin.messaging().sendToDevice(fcm_array, payload)
+                    .then(function (response) {
+                        console.log("메세지 전송 완료 :", response);
+                        var obj = new Object;
+                        obj.ResultCode = 100;
+                        res.json(obj);
+                    })
+                    .catch(function (err) {
+                        console.log("메세지 전송 에러 :", err);
+                        var obj = new Object;
+                        obj.ResultCode = 200;
+                        res.json(obj);
+                    });
+            }
+        }
+    });
 });
 
 router.post('/calluser_image_m', function (req, res, next) {
@@ -3822,51 +3870,50 @@ router.post('/calluser_image_m', function (req, res, next) {
     }).on('end', function (req, ress) {
         console.log('form end:\n\n');
 
-        let q = "select FCMTOK from USRMST where USERID='" + msg_to + "';";
+        let q = "select FCMTOK from USRMST where USERID=?;";
 
         let fcm_array = [];
 
-        connection.query(q, function (err, rows, fields) {
-            if (err) console.error(err);
-            for (let i = 0; i < rows.length; i++) {
-                fcm_array.push(rows[i].FCMTOK);
-                console.log(rows[i].FCMTOK);
-            }
-
-            var payload = {
-                notification: {
-                    title: msg_title,
-                    body: msg_body
-                },
-                data: {
-                    FROM: msg_from,
-                    TO: msg_to,
-                    IMAGE: file_recieved
+        connection.query(q, [msg_to], function (err, rows, fields) {
+            if (err) { console.error(err); }
+            else {
+                for (let i = 0; i < rows.length; i++) {
+                    fcm_array.push(rows[i].FCMTOK);
+                    console.log(rows[i].FCMTOK);
                 }
-            };
-            console.log(msg_title);
-            if (fcm_array.length == 0) {
-                res.send("보낼 대상이 없습니다");
-            } else {
-                admin.messaging().sendToDevice(fcm_array, payload)
-                    .then(function (response) {
-                        console.log("메세지 전송 완료 :", response);
-                        var obj = new Object;
-                        obj.ResultCode = 100;
-                        obj.image_url = file_recieved;
-                        res.json(obj);
-                    })
-                    .catch(function (err) {
-                        console.log("메세지 전송 에러 :", err);
-                        var obj = new Object;
-                        obj.ResultCode = 200;
-                        res.json(obj);
-                    });
+    
+                var payload = {
+                    notification: {
+                        title: msg_title,
+                        body: msg_body
+                    },
+                    data: {
+                        FROM: msg_from,
+                        TO: msg_to,
+                        IMAGE: file_recieved
+                    }
+                };
+                console.log(msg_title);
+                if (fcm_array.length == 0) {
+                    res.send("보낼 대상이 없습니다");
+                } else {
+                    admin.messaging().sendToDevice(fcm_array, payload)
+                        .then(function (response) {
+                            console.log("메세지 전송 완료 :", response);
+                            var obj = new Object;
+                            obj.ResultCode = 100;
+                            obj.image_url = file_recieved;
+                            res.json(obj);
+                        })
+                        .catch(function (err) {
+                            console.log("메세지 전송 에러 :", err);
+                            var obj = new Object;
+                            obj.ResultCode = 200;
+                            res.json(obj);
+                        });
+                }
             }
-
         });
-
-
     });
 });
 router.post('/callpos_image_m', function (req, res, next) {
@@ -3917,40 +3964,42 @@ router.post('/callpos_image_m', function (req, res, next) {
         let fcm_array = [];
 
         connection.query(q, function (err, rows, fields) {
-            if (err) console.error(err);
-            for (let i = 0; i < rows.length; i++) {
-                fcm_array.push(rows[i].FCMTOK);
-                console.log(rows[i].FCMTOK);
-            }
-
-            var payload = {
-                notification: {
-                    title: msg_from,
-                    body: msg_body
-                },
-                data: {
-                    TYPE: 'MESSAGE',
-                    msg_from: msg_from,
-                    msg_to: msg_to,
-                    msg: msg_body,
-                    IMAGE: file_recieved
+            if (err) { console.error(err); }
+            else {
+                for (let i = 0; i < rows.length; i++) {
+                    fcm_array.push(rows[i].FCMTOK);
+                    console.log(rows[i].FCMTOK);
                 }
-            };
-
-            admin.messaging().sendToDevice(fcm_array, payload)
-                .then(function (response) {
-                    console.log("메세지 전송 완료 :", response);
-                    var obj = new Object;
-                    obj.ResultCode = 100;
-                    obj.image_url = file_recieved;
-                    res.json(obj);
-                })
-                .catch(function (err) {
-                    console.log("메세지 전송 에러 :", err);
-                    var obj = new Object;
-                    obj.ResultCode = 200;
-                    res.json(obj);
-                });
+    
+                var payload = {
+                    notification: {
+                        title: msg_from,
+                        body: msg_body
+                    },
+                    data: {
+                        TYPE: 'MESSAGE',
+                        msg_from: msg_from,
+                        msg_to: msg_to,
+                        msg: msg_body,
+                        IMAGE: file_recieved
+                    }
+                };
+    
+                admin.messaging().sendToDevice(fcm_array, payload)
+                    .then(function (response) {
+                        console.log("메세지 전송 완료 :", response);
+                        var obj = new Object;
+                        obj.ResultCode = 100;
+                        obj.image_url = file_recieved;
+                        res.json(obj);
+                    })
+                    .catch(function (err) {
+                        console.log("메세지 전송 에러 :", err);
+                        var obj = new Object;
+                        obj.ResultCode = 200;
+                        res.json(obj);
+                    });
+            }
         });
     });
 });
@@ -3961,44 +4010,46 @@ router.post('/sendusers_m', function (req, res, next) {
 router.post('/usercalllist_m', function (req, res, next) {
     let stoseq = req.body.STOSEQ;
 
-    let query = "select * from " + stoseq + "_stocal where CALCOD='S' order by ORDNUM;";
+    let query = "select * from STOCAL where STOSEQ=? and CALCOD='S' order by ORDNUM;";
 
     let result = new Object;
     let array_name = "CAL";
     let CAL = [];
 
-    connection.query(query, function (err, rows, fields) {
-        if (err) console.error(err);
-        for (let i = 0; i < rows.length; i++) {
-            CAL.push(rows[i].CALNAM);
+    connection.query(query, [stoseq], function (err, rows, fields) {
+        if (err) { console.error(err); }
+        else {
+            for (let i = 0; i < rows.length; i++) {
+                CAL.push(rows[i].CALNAM);
+            }
+            result.array_name = array_name;
+            result[array_name] = CAL;
+            result.ResultCode = 100;
+            res.json(result);
         }
-        result.array_name = array_name;
-        result[array_name] = CAL;
-        result.ResultCode = 100;
-        res.json(result);
     });
-
 });
 router.post('/poscalllist_m', function (req, res, next) {
     let stoseq = req.body.STOSEQ;
 
-    let query = "select * from " + stoseq + "_stocal where CALCOD='C' order by ORDNUM;";
+    let query = "select * from STOCAL where STOSEQ=? and CALCOD='C' order by ORDNUM;";
 
     let result = new Object;
     let array_name = "CAL";
     let CAL = [];
 
-    connection.query(query, function (err, rows, fields) {
-        if (err) console.error(err);
-        for (let i = 0; i < rows.length; i++) {
-            CAL.push(rows[i].CALNAM);
+    connection.query(query, [stoseq], function (err, rows, fields) {
+        if (err) { console.error(err); }
+        else {
+            for (let i = 0; i < rows.length; i++) {
+                CAL.push(rows[i].CALNAM);
+            }
+            result.array_name = array_name;
+            result[array_name] = CAL;
+            result.ResultCode = 100;
+            res.json(result);
         }
-        result.array_name = array_name;
-        result[array_name] = CAL;
-        result.ResultCode = 100;
-        res.json(result);
     });
-
 });
 
 //주문
@@ -4023,64 +4074,65 @@ router.post('/user_order_m', function(req, res, next){
         }
         console.log(optseq);
 
-        let insertRCNMST = "insert into " + stoseq + "_rcnmst (TOTAMT, TBLSEQ, REGDAT, USERID) values (" + totamt + ", " + tblseq + ", " + regdat + ", '" + userid + "');";
+        let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID) values ("+stoseq+", " + totamt + ", " + tblseq + ", " + regdat + ", '" + userid + "');";
         connection.query(insertRCNMST, function(err, rows1, fields){
             if(err) {
                 console.error("RCNMST INSERTION ERROR", err);
                 let obj = new Object;
                 obj.ResultCode = 200;
                 res.json(obj);
+            } else {
+                let rcnseq = rows1.insertId;
+
+                let insertRCNDET = "insert into RCNDET (STOSEQ, RCNSEQ, PRDSEQ, PRDQTY, DETCST) values ("+stoseq+", " + rcnseq + ", " + prdseq + ", " + prdqty + ", " + detcst + ");";
+    
+                connection.query(insertRCNDET, function(err, rows2, fields){
+                    if(err) {
+                        console.error("RCNDET INSERTION ERROR", err);
+                        let obj = new Object;
+                        obj.ResultCode = 200;
+                        res.json(obj);
+                    } else {
+                        let rcndetseq = rows2.insertId;
+                        for(let j=0; j<optnum; j++) {
+                            run_query("insert into OPTSET (STOSEQ, RCNDETSEQ, OPTSEQ) values ("+stoseq+", " + rcndetseq + ", " + optseq[j] +");", "");
+                        }
+                        
+                        let result = new Object;
+                        result.ResultCode = 100;
+                        res.json(result);
+                    }
+                });
             }
-
-            let rcnseq = rows1.insertId;
-
-            let insertRCNDET = "insert into " + stoseq + "_rcndet (RCNSEQ, PRDSEQ, PRDQTY, DETCST) values (" + rcnseq + ", " + prdseq + ", " + prdqty + ", " + detcst + ");";
-
-            connection.query(insertRCNDET, function(err, rows2, fields){
-                if(err) {
-                    console.error("RCNDET INSERTION ERROR", err);
-                    let obj = new Object;
-                    obj.ResultCode = 200;
-                    res.json(obj);
-                }
-
-                let rcndetseq = rows2.insertId;
-                for(let j=0; j<optnum; j++) {
-                    run_query("insert into " + stoseq + "_optset (RCNDETSEQ, OPTSEQ) values (" + rcndetseq + ", " + optseq[j] +");", "");
-                }
-                
-                let result = new Object;
-                result.ResultCode = 100;
-                res.json(result);
-            });
         });
 
     } else {
-        let insertRCNMST = "insert into " + stoseq + "_rcnmst (TOTAMT, TBLSEQ, REGDAT, USERID) values (" + totamt + ", " + tblseq + ", " + regdat + ", '" + userid + "');";
+        let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID) values ("+stoseq+", " + totamt + ", " + tblseq + ", " + regdat + ", '" + userid + "');";
         connection.query(insertRCNMST, function(err, rows1, fields){
             if(err) {
                 console.error("RCNMST INSERTION ERROR", err);
                 let obj = new Object;
                 obj.ResultCode = 200;
                 res.json(obj);
+            } else {
+                let rcnseq = rows1.insertId;
+
+                let insertRCNDET = "insert into RCNDET (STOSEQ, RCNSEQ, PRDSEQ, PRDQTY, DETCST) values ("+stoseq+", " + rcnseq + ", " + prdseq + ", " + prdqty + ", " + detcst + ");";
+    
+                connection.query(insertRCNDET, function(err, rows2, fields){
+                    if(err) {
+                        console.error("RCNDET INSERTION ERROR", err);
+                        let obj = new Object;
+                        obj.ResultCode = 200;
+                        res.json(obj);
+                    } else {
+                        sendOrderToPos(req,res);
+                        let result = new Object;
+                        result.ResultCode = 100;
+                        res.json(result);
+                    }
+                });
             }
-
-            let rcnseq = rows1.insertId;
-
-            let insertRCNDET = "insert into " + stoseq + "_rcndet (RCNSEQ, PRDSEQ, PRDQTY, DETCST) values (" + rcnseq + ", " + prdseq + ", " + prdqty + ", " + detcst + ");";
-
-            connection.query(insertRCNDET, function(err, rows2, fields){
-                if(err) {
-                    console.error("RCNDET INSERTION ERROR", err);
-                    let obj = new Object;
-                    obj.ResultCode = 200;
-                    res.json(obj);
-                }
-                sendOrderToPos(req,res);
-                let result = new Object;
-                result.ResultCode = 100;
-                res.json(result);
-            });
         });
     }
 });
@@ -4111,17 +4163,14 @@ function sendOrderToPos(req, res) {
     let q = "select FCMTOK, FCMTOK2 from POSMST where STOSEQ="+ stoseq +";";
 
     connection.query(q, function(err, rows, fields){
-        if(err) console.error(err);
-        for(let i=0; i<rows.length; i++) {
-            posIds.push(rows[i].FCMTOK);
-            posIds.push(rows[i].FCMTOK2);
+        if(err) { console.error(err); }
+        else {
+            for(let i=0; i<rows.length; i++) {
+                posIds.push(rows[i].FCMTOK);
+                posIds.push(rows[i].FCMTOK2);
+            }
         }
-
-
-
     });
-
-
 }
 
 router.post('/user_cart_order_m', async function(req, res, next) {
@@ -4145,35 +4194,35 @@ router.post('/user_cart_order_m', async function(req, res, next) {
 
     let result = new Object;
 
-    let insertRCNMST = "insert into " + stoseq + "_rcnmst (TOTAMT, TBLSEQ, REGDAT, USERID) values (" + totamt + ", " + tblseq + ", " + regdat + ", '" + userid + "');";
+    let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID) values ("+stoseq+", " + totamt + ", " + tblseq + ", " + regdat + ", '" + userid + "');";
 
     await connection.query(insertRCNMST, function(err, rows, fields){
         if(err) {
             result.ResultCode = 200;
             res.json(result);
-        }
-        let rcnseq = rows.insertId;
-        for(let i=0; i<prdnum; i++) {
-            let insertRCNDET = "insert into " + stoseq + "_rcndet (RCNSEQ, PRDSEQ, PRDQTY, DETCST) values (" + rcnseq + ", " + prdseq[i] + ", " + prdqty[i] + ", " + detcst[i] + ");";
-            connection.query(insertRCNDET, function(err, rows2, fields){
-                if(err) {
-                    result.ResultCode = 200;
-                    res.json(result);
-                }
-                let rcndetseq = rows2.insertId;
-                let options = optseq[i].split(",");
-
-                for(let j=0; j<options.length; j++) {
-                    if(options[j] != "") { 
-                        let insertOPTSET = "insert into " + stoseq + "_optset (RCNDETSEQ, OPTSEQ) values (" + rcndetseq + ", " + options[j] +");";
-                        run_query(insertOPTSET, "");
+        } else {
+            let rcnseq = rows.insertId;
+            for(let i=0; i<prdnum; i++) {
+                let insertRCNDET = "insert into RCNDET (STOSEQ, RCNSEQ, PRDSEQ, PRDQTY, DETCST) values ("+stoseq+", " + rcnseq + ", " + prdseq[i] + ", " + prdqty[i] + ", " + detcst[i] + ");";
+                connection.query(insertRCNDET, function(err, rows2, fields){
+                    if(err) {
+                        result.ResultCode = 200;
+                        res.json(result);
+                    } else {
+                        let rcndetseq = rows2.insertId;
+                        let options = optseq[i].split(",");
+        
+                        for(let j=0; j<options.length; j++) {
+                            if(options[j] != "") { 
+                                let insertOPTSET = "insert into OPTSET (STOSEQ, RCNDETSEQ, OPTSEQ) values ("+stoseq+", " + rcndetseq + ", " + options[j] +");";
+                                run_query(insertOPTSET, "");
+                            }
+                        }
                     }
-                }
-
-            });
+                });
+            }
         }
     });
-
     result.ResultCode = 100;
     await res.json(result);
 });
@@ -4189,192 +4238,192 @@ router.post('/user_history_m', function(req, res, next) {
     let array_name = "history";
 
     let selectRCNMST = "select B.ID, date_format(A.REGDAT, '%Y/%m/%d') as REGDAT, B.PRDSEQ, D.PRDNAM, D.PRDEXP, F.FILURL, E.ID as OPTSEQ, E.OPTNAM, B.PRDQTY, B.DETCST " 
-                    + "from " + stoseq + "_RCNMST as A "
-                    + "left join " + stoseq + "_RCNDET as B on (A.ID = B.RCNSEQ) "
-                    + "left join " + stoseq + "_OPTSET as C on (B.ID = C.RCNDETSEQ) "
-                    + "left join " + stoseq + "_PRDMST as D on (B.PRDSEQ = D.ID) "
-                    + "left join " + stoseq + "_OPTMST as E on (E.ID = C.OPTSEQ) "
-                    + "left join " + stoseq + "_PRDFIL_M as F on (B.PRDSEQ = F.PRDSEQ) "
-                    + "where USERID='" + userid +"' order by A.REGDAT desc, B.ID desc;";
-    connection.query(selectRCNMST, function(err, rows, fields){
+                    + "from RCNMST as A "
+                    + "left join RCNDET as B on (A.ID = B.RCNSEQ) "
+                    + "left join OPTSET as C on (B.ID = C.RCNDETSEQ) "
+                    + "left join PRDMST as D on (B.PRDSEQ = D.ID) "
+                    + "left join OPTMST as E on (E.ID = C.OPTSEQ) "
+                    + "left join PRDFIL_M as F on (B.PRDSEQ = F.PRDSEQ) "
+                    + "where A.STOSEQ=? and USERID=? order by A.REGDAT desc, B.ID desc;";
+    connection.query(selectRCNMST, [stoseq, userid], function(err, rows, fields){
         if(err) {
             console.error("RCNMST SELECTION ERROR", err);
             let obj = new Object;
             obj.ResultCode = 200;
             res.json(obj);
-        }
-        if(rows.length != 0) {
-            let tmpId = rows[0].ID;
-            let OPT = [];
-
-            let obj = new Object;
-            obj.RCNDETSEQ = tmpId;
-            obj.REGDAT    = rows[0].REGDAT;
-            obj.PRDSEQ    = rows[0].PRDSEQ;        
-            obj.PRDNAM    = rows[0].PRDNAM;
-            obj.PRDEXP    = rows[0].PRDEXP;
-            obj.FILURL    = rows[0].FILURL;
-            obj.PRDQTY    = rows[0].PRDQTY;
-            obj.DETCST    = rows[0].DETCST;
-
-            let tmpobj = new Object;
-            
-            for(let i=0; i<rows.length; i++) {
-                if(tmpId == rows[i].ID) {
-                    
-                    tmpobj = new Object;
-
-                    tmpobj.OPTSEQ = rows[i].OPTSEQ;
-                    tmpobj.OPTNAM = rows[i].OPTNAM;
-
-                    OPT.push(tmpobj);
-
-                    if(i == rows.length-1) {
+        } else {
+            if(rows.length != 0) {
+                let tmpId = rows[0].ID;
+                let OPT = [];
+    
+                let obj = new Object;
+                obj.RCNDETSEQ = tmpId;
+                obj.REGDAT    = rows[0].REGDAT;
+                obj.PRDSEQ    = rows[0].PRDSEQ;        
+                obj.PRDNAM    = rows[0].PRDNAM;
+                obj.PRDEXP    = rows[0].PRDEXP;
+                obj.FILURL    = rows[0].FILURL;
+                obj.PRDQTY    = rows[0].PRDQTY;
+                obj.DETCST    = rows[0].DETCST;
+    
+                let tmpobj = new Object;
+                
+                for(let i=0; i<rows.length; i++) {
+                    if(tmpId == rows[i].ID) {
+                        
+                        tmpobj = new Object;
+    
+                        tmpobj.OPTSEQ = rows[i].OPTSEQ;
+                        tmpobj.OPTNAM = rows[i].OPTNAM;
+    
+                        OPT.push(tmpobj);
+    
+                        if(i == rows.length-1) {
+                            obj.OPTION = OPT;
+                            history.push(obj);
+                        }
+    
+                    } else {
                         obj.OPTION = OPT;
+    
                         history.push(obj);
-                    }
-
-                } else {
-                    obj.OPTION = OPT;
-
-                    history.push(obj);
-
-                    OPT = [];
-                    obj = new Object;
-                    obj.RCNDETSEQ = rows[i].ID;
-                    obj.REGDAT    = rows[i].REGDAT;
-                    obj.PRDSEQ    = rows[i].PRDSEQ;
-                    obj.PRDNAM    = rows[i].PRDNAM;
-                    obj.PRDEXP    = rows[i].PRDEXP;
-                    obj.FILURL    = rows[i].FILURL;                
-                    obj.PRDQTY    = rows[i].PRDQTY;
-                    obj.DETCST    = rows[i].DETCST;
-                    
-                    tmpobj = new Object;
-
-                    tmpobj.OPTSEQ = rows[i].OPTSEQ;
-                    tmpobj.OPTNAM = rows[i].OPTNAM;
-                    OPT.push(tmpobj);
-
-                    tmpId = rows[i].ID;
-
-                    if(i == rows.length-1) {
-                        obj.OPTION = OPT;
-                        history.push(obj);
+    
+                        OPT = [];
+                        obj = new Object;
+                        obj.RCNDETSEQ = rows[i].ID;
+                        obj.REGDAT    = rows[i].REGDAT;
+                        obj.PRDSEQ    = rows[i].PRDSEQ;
+                        obj.PRDNAM    = rows[i].PRDNAM;
+                        obj.PRDEXP    = rows[i].PRDEXP;
+                        obj.FILURL    = rows[i].FILURL;                
+                        obj.PRDQTY    = rows[i].PRDQTY;
+                        obj.DETCST    = rows[i].DETCST;
+                        
+                        tmpobj = new Object;
+    
+                        tmpobj.OPTSEQ = rows[i].OPTSEQ;
+                        tmpobj.OPTNAM = rows[i].OPTNAM;
+                        OPT.push(tmpobj);
+    
+                        tmpId = rows[i].ID;
+    
+                        if(i == rows.length-1) {
+                            obj.OPTION = OPT;
+                            history.push(obj);
+                        }
                     }
                 }
+                result.array_name = array_name;
+                result[array_name] = history;
+                result.ResultCode = 100;
+                res.json(result);
+            } else {
+                result.array_name = array_name;
+                result[array_name] = history;
+                result.ResultCode = 100;
+                res.json(result);
             }
-            result.array_name = array_name;
-            result[array_name] = history;
-            result.ResultCode = 100;
-            res.json(result);
-        } else {
-            result.array_name = array_name;
-            result[array_name] = history;
-            result.ResultCode = 100;
-            res.json(result);
         }
     });
-
 });
 
 //전체 주문 목록
 router.post('/getorder_m', function(req, res ,next){
     let stoseq = req.body.STOSEQ;
     
-    let q = "select F.MOBNUM, A.ID as RCNSEQ, B.ID as RCNDETSEQ, A.TBLSEQ, G.TBLNAM, A.TOTAMT, date_format(A.REGDAT, '%Y/%m/%d %H:%i') as REGDAT, A.USERID, D.PRDNAM, B.PRDQTY, E.OPTNAM from " + stoseq + "_RCNMST as A "
-        + "left join " + stoseq + "_RCNDET as B on A.ID=B.RCNSEQ "
-        + "left join " + stoseq + "_OPTSET as C on B.ID=C.RCNDETSEQ "
-        + "left join " + stoseq + "_PRDMST as D on D.ID=B.PRDSEQ "
-        + "left join " + stoseq + "_OPTMST as E on E.ID=C.OPTSEQ "
+    let q = "select F.MOBNUM, A.ID as RCNSEQ, B.ID as RCNDETSEQ, A.TBLSEQ, G.TBLNAM, A.TOTAMT, date_format(A.REGDAT, '%Y/%m/%d %H:%i') as REGDAT, A.USERID, D.PRDNAM, B.PRDQTY, E.OPTNAM from RCNMST as A "
+        + "left join RCNDET as B on A.ID=B.RCNSEQ "
+        + "left join OPTSET as C on B.ID=C.RCNDETSEQ "
+        + "left join PRDMST as D on D.ID=B.PRDSEQ "
+        + "left join OPTMST as E on E.ID=C.OPTSEQ "
         + "left join USRMST as F on F.USERID=A.USERID " 
-        + "left join " + stoseq + "_TBLSTO as G on G.ID=A.TBLSEQ "
+        + "left join TBLSTO as G on G.ID=A.TBLSEQ "
+        + "where A.STOSEQ=? "
         + "order by REGDAT, RCNDETSEQ;"
 
-    connection.query(q, function(err, rows, fields) {
-        if(err) console.error(err);
-        
-        let order_id = rows[0].RCNSEQ;
-        let order_product_id = rows[0].RCNDETSEQ;
-
-        let orders = [];
-        let products = [];
-
-        let order = new Object;
-        let product = new Object;
-
-        order.TBLSEQ = rows[0].TBLSEQ;
-        order.TBLNAM = rows[0].TBLNAM;
-        order.MOBNUM = rows[0].MOBNUM;
-        order.REGDAT = rows[0].REGDAT;
-        order.USERID = rows[0].USERID;
-        order.TOTAMT = rows[0].TOTAMT;
-
-        product.PRDQTY = rows[0].PRDQTY;
-        product.PRDNAM = rows[0].PRDNAM;
-
-        let option = rows[0].OPTNAM;
-
-        for(let i=1; i<rows.length; i++) {
-            if(order_id == rows[i].RCNSEQ) {
-                if(order_product_id == rows[i].RCNDETSEQ) {
-                    option += ", " + rows[i].OPTNAM;
+    connection.query(q, [stoseq], function(err, rows, fields) {
+        if(err) { console.error(err); }
+        else {
+            let order_id = rows[0].RCNSEQ;
+            let order_product_id = rows[0].RCNDETSEQ;
+    
+            let orders = [];
+            let products = [];
+    
+            let order = new Object;
+            let product = new Object;
+    
+            order.TBLSEQ = rows[0].TBLSEQ;
+            order.TBLNAM = rows[0].TBLNAM;
+            order.MOBNUM = rows[0].MOBNUM;
+            order.REGDAT = rows[0].REGDAT;
+            order.USERID = rows[0].USERID;
+            order.TOTAMT = rows[0].TOTAMT;
+    
+            product.PRDQTY = rows[0].PRDQTY;
+            product.PRDNAM = rows[0].PRDNAM;
+    
+            let option = rows[0].OPTNAM;
+    
+            for(let i=1; i<rows.length; i++) {
+                if(order_id == rows[i].RCNSEQ) {
+                    if(order_product_id == rows[i].RCNDETSEQ) {
+                        option += ", " + rows[i].OPTNAM;
+                    } else {
+                        //기존 물품 저장
+                        product.OPTION = option;
+                        products.push(product);
+    
+                        //새로 등록
+                        product = new Object;
+                        product.PRDQTY = rows[i].PRDQTY;
+                        product.PRDNAM = rows[i].PRDNAM;
+                        option = rows[i].OPTNAM;
+    
+                        order_product_id = rows[i].RCNDETSEQ;
+                    }
                 } else {
-                    //기존 물품 저장
+    
                     product.OPTION = option;
                     products.push(product);
-
-                    //새로 등록
+    
                     product = new Object;
                     product.PRDQTY = rows[i].PRDQTY;
                     product.PRDNAM = rows[i].PRDNAM;
                     option = rows[i].OPTNAM;
-
+    
+                    order.products = products;
+                    orders.push(order);
+                    
+                    order = new Object;
+                    products = [];
+    
+                    order.TBLSEQ = rows[i].TBLSEQ;
+                    order.TBLNAM = rows[i].TBLNAM;
+                    order.MOBNUM = rows[i].MOBNUM;                
+                    order.REGDAT = rows[i].REGDAT;
+                    order.USERID = rows[i].USERID;
+                    order.TOTAMT = rows[i].TOTAMT;
+    
                     order_product_id = rows[i].RCNDETSEQ;
+                    order_id = rows[i].RCNSEQ;
                 }
-            } else {
-
-                product.OPTION = option;
-                products.push(product);
-
-                product = new Object;
-                product.PRDQTY = rows[i].PRDQTY;
-                product.PRDNAM = rows[i].PRDNAM;
-                option = rows[i].OPTNAM;
-
-                order.products = products;
-                orders.push(order);
-                
-                order = new Object;
-                products = [];
-
-                order.TBLSEQ = rows[i].TBLSEQ;
-                order.TBLNAM = rows[i].TBLNAM;
-                order.MOBNUM = rows[i].MOBNUM;                
-                order.REGDAT = rows[i].REGDAT;
-                order.USERID = rows[i].USERID;
-                order.TOTAMT = rows[i].TOTAMT;
-
-                order_product_id = rows[i].RCNDETSEQ;
-                order_id = rows[i].RCNSEQ;
+    
+                if(i == rows.length - 1) {
+                    product.OPTION = option;
+                    products.push(product);
+                    order.products = products;
+                    orders.push(order);
+                }
             }
-
-            if(i == rows.length - 1) {
-                product.OPTION = option;
-                products.push(product);
-                order.products = products;
-                orders.push(order);
-            }
+            let result = new Object;
+            array_name = "orders";
+            result.array_name = array_name;
+            result[array_name] = orders;
+            result.ResultCode = 100;
+            res.json(result);
         }
-        let result = new Object;
-        array_name = "orders";
-        result.array_name = array_name;
-        result[array_name] = orders;
-        result.ResultCode = 100;
-        res.json(result);
     });
-    
-    
 });
 
 //NCALL2 동영상 목록 
@@ -4390,26 +4439,28 @@ router.post('/ncall2_url_m', function(req, res, next){
     let result = new Object;
 
     connection.query(q1, function(err, rows, fields){
-        if(err) console.error(err);
-        SHWTIM = rows[0].SHOWTIME;
-        connection.query(q2, function(err, rows, fields) {
-            if(err) {
-                let obj = new Object;
-                
-                obj.ResultCode = 200;
-                res.json(obj);
-            }
-            for(let i=0; i<rows.length; i++) {
-                URLS.push(rows[i].YTBURL);
-
-            }
-            result.array_name = array_name;
-            result[array_name] = URLS;
-            result.SHWTIM = SHWTIM;
-            result.ResultCode = 100;
-            console.log(result);
-            res.json(result);
-        });
+        if(err) { console.error(err); }
+        else {
+            SHWTIM = rows[0].SHOWTIME;
+            connection.query(q2, function(err, rows, fields) {
+                if(err) {
+                    let obj = new Object;
+                    
+                    obj.ResultCode = 200;
+                    res.json(obj);
+                } else {
+                    for(let i=0; i<rows.length; i++) {
+                        URLS.push(rows[i].YTBURL);
+                    }
+                    result.array_name = array_name;
+                    result[array_name] = URLS;
+                    result.SHWTIM = SHWTIM;
+                    result.ResultCode = 100;
+                    console.log(result);
+                    res.json(result);
+                }
+            });
+        }
     });
 });
 
@@ -4421,10 +4472,11 @@ router.post('/getTagData_m', function(req, res, next){
     let tblseq = req.body.TBLSEQ;
 
     let q = "select A.STONAM, B.FLRNAM, C.TBLNAM from STOMST as A "
-        + "left join " + stoseq + "_STOFLR as B on B.ID=" + flrseq + " "
-        + "left join " + stoseq + "_TBLSTO as C on C.ID=" + tblseq + ";";
+        + "left join STOFLR as B on B.ID=? "
+        + "left join TBLSTO as C on C.ID=? "
+        + "where A.STOSEQ=?;"
 
-    connection.query(q, function(err, rows, fields){
+    connection.query(q, [flrseq, tblseq, stoseq], function(err, rows, fields){
         if(err) {
             let result = new Object;
             result.ResultCode = 200;
@@ -4451,56 +4503,55 @@ router.post('/getStoseq_m', function(req, res, next){
 
     connection.query(q, function(err, rows, fields){
         if(err) {
+            console.error(err);
             let result = new Object;
             result.ResultCode = 200;
             res.json(result);
-        }
-        
-
-        for(let i=0; i<rows.length; i++) {
-            let obj = new Object;
-            obj.STOSEQ = rows[i].ID;
-            obj.STONAM = rows[i].STONAM;
-            store.push(obj);
-        }
-
-        let result = new Object;
-        result.array_name = array_name;
-        result[array_name] = store;
-        result.ResultCode = 100;
-        console.log(result);
-        res.json(result);
+        } else {
+            for(let i=0; i<rows.length; i++) {
+                let obj = new Object;
+                obj.STOSEQ = rows[i].ID;
+                obj.STONAM = rows[i].STONAM;
+                store.push(obj);
+            }
     
+            let result = new Object;
+            result.array_name = array_name;
+            result[array_name] = store;
+            result.ResultCode = 100;
+            console.log(result);
+            res.json(result);
+        }
     });
 });
 
 router.post('/getFlrseq_m', function(req, res, next){
     let stoseq = req.body.STOSEQ;
 
-    let q = "select ID, FLRNAM from " + stoseq + "_STOFLR order by ORDNUM";
+    let q = "select ID, FLRNAM from STOFLR where STOSEQ=? order by ORDNUM";
     let floor = [];
     let array_name = "floor";
-    connection.query(q, function(err, rows, fields){
+    connection.query(q, [stoseq], function(err, rows, fields){
         if(err) {
             let result = new Object;
             result.ResultCode = 200;
             res.json(result);
+        } else {
+            for(let i=0; i<rows.length; i++) {
+                let obj = new Object;
+                obj.FLRSEQ = rows[i].ID;
+                obj.FLRNAM = rows[i].FLRNAM;
+                floor.push(obj);
+            }
+    
+            let result = new Object;
+            result.array_name = array_name;
+            result[array_name] = floor;
+            result.ResultCode = 100;
+            console.log(result);
+            
+            res.json(result);
         }
-
-        for(let i=0; i<rows.length; i++) {
-            let obj = new Object;
-            obj.FLRSEQ = rows[i].ID;
-            obj.FLRNAM = rows[i].FLRNAM;
-            floor.push(obj);
-        }
-
-        let result = new Object;
-        result.array_name = array_name;
-        result[array_name] = floor;
-        result.ResultCode = 100;
-        console.log(result);
-        
-        res.json(result);
     });
 });
 
@@ -4508,30 +4559,31 @@ router.post('/getTblseq_m', function(req, res, next){
     let stoseq = req.body.STOSEQ;
     let flrseq = req.body.FLRSEQ;
 
-    let q = "select ID, TBLNAM from " + stoseq + "_TBLSTO where FLRSEQ=" + flrseq + ";";
+    let q = "select ID, TBLNAM from TBLSTO where FLRSEQ=? and STOSEQ=?;";
     let table = [];
     let array_name = "table";
-    connection.query(q, function(err, rows, fields){
+    connection.query(q, [flrseq, stoseq], function(err, rows, fields){
         if(err) {
+            console.error(err);
             let result = new Object;
             result.ResultCode = 200;
             res.json(result);
+        } else {
+            for(let i=0; i<rows.length; i++) {
+                let obj = new Object;
+                obj.TBLSEQ = rows[i].ID;
+                obj.TBLNAM = rows[i].TBLNAM;
+                table.push(obj);
+            }
+    
+            let result = new Object;
+            result.array_name = array_name;
+            result[array_name] = table;
+            result.ResultCode = 100;
+            console.log(result);
+            
+            res.json(result);
         }
-
-        for(let i=0; i<rows.length; i++) {
-            let obj = new Object;
-            obj.TBLSEQ = rows[i].ID;
-            obj.TBLNAM = rows[i].TBLNAM;
-            table.push(obj);
-        }
-
-        let result = new Object;
-        result.array_name = array_name;
-        result[array_name] = table;
-        result.ResultCode = 100;
-        console.log(result);
-        
-        res.json(result);
     });
 });
 
@@ -4558,7 +4610,7 @@ router.get('/init', function (req, res, next) {
 var run_query = function (query, message) {
     connection.query(query, function (err, rows, fields) {
         if (err) {
-            console.error(err);
+            { console.error(err); }
         } else {
             if (message) console.log(message);
         }
