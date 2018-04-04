@@ -4471,6 +4471,11 @@ router.post('/getTagData_m', function(req, res, next){
     let flrseq = req.body.FLRSEQ;
     let tblseq = req.body.TBLSEQ;
 
+    console.log(stoseq);
+    console.log(rcntyp);
+    console.log(flrseq);
+    console.log(tblseq);
+
     let q = "select A.STONAM, B.FLRNAM, C.TBLNAM from STOMST as A "
         + "left join STOFLR as B on B.ID=? "
         + "left join TBLSTO as C on C.ID=? "
