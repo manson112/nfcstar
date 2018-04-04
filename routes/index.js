@@ -4491,7 +4491,7 @@ router.post('/getTagData_m', function(req, res, next){
             result.STONAM = rows[0].STONAM;
             result.FLRNAM = rows[0].FLRNAM;
             result.TBLNAM = rows[0].TBLNAM;
-            result.RCNTYP = "T";
+            result.RCNTYP = rcntyp;
             result.ResultCode = 100;
 
             res.json(result);
