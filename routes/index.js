@@ -1742,6 +1742,9 @@ router.post('/pos/setup/product_insert_proc', function(req, res, next){
                         }
                     });
                 }
+                let obj = new Object();
+                obj.result = "success";
+                res.send(obj);
             }
         }
     });
