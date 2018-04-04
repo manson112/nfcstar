@@ -2901,7 +2901,6 @@ router.post('/test', function (req, res, next) {
 });
 
 router.post('/store_m', function (req, res, next) {
-
     var tagseq = req.body.TAGSEQ;
     if (tagseq == 'A') { // 모든 종류 태그
         let STOSEQ = req.body.STOSEQ;    
@@ -2929,9 +2928,9 @@ router.post('/store_m', function (req, res, next) {
         });
     } else if (tagseq == 'T') { // 테이블 태그 시
         let STOSEQ = req.body.STOSEQ;
-        let flrseq = req.body.FLRSEQ;
-        let tblseq = req.body.TBLSEQ;
-
+        let FLRSEQ = req.body.FLRSEQ;
+        let TBLSEQ = req.body.TBLSEQ;
+        
         var query = "select A.ID, A.STONAM, A.STLOGO, A.STOTEL, B.TBLNAM from STOMST as A, TBLSTO as B where A.ID=? and B.ID=?;";
         connection.query(query, [STOSEQ, TBLSEQ], function (err, rows, fields) {
             if (err) {
