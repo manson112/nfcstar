@@ -4483,6 +4483,7 @@ router.post('/getTagData_m', function(req, res, next){
 
     connection.query(q, [flrseq, tblseq, stoseq], function(err, rows, fields){
         if(err) {
+            console.error(err);
             let result = new Object;
             result.ResultCode = 200;
             res.json(result);
