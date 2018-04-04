@@ -3093,8 +3093,8 @@ router.post('/findprd_m', function (req, res, next) {
     } else if (catnam == "할인") {
 
     } else {
-        var q = "select A.ID, A.PRDNAM, A.PRDEXP, A.PRDCST, B.FILURL from PRDMST as A left join PRDFIL_M as B on A.ID = B.PRDSEQ where A.STOSEQ=? A.CATSEQ =? order by A.ORDNUM;";
-        connection.query(q, function (err, rows, fields) {
+        var q = "select A.ID, A.PRDNAM, A.PRDEXP, A.PRDCST, B.FILURL from PRDMST as A left join PRDFIL_M as B on A.ID = B.PRDSEQ where A.STOSEQ=? and A.CATSEQ=? order by A.ORDNUM;";
+        connection.query(q, [STOSEQ, catseq], function (err, rows, fields) {
             if (err) { 
                 console.error(err); 
                 let obj = new Object();
