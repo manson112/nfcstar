@@ -7,69 +7,14 @@ html
     script(src="/javascripts/js/common-script.js")
     script(src="/javascripts/js/socket.io.js")
     script(src="/javascripts/js/html5shiv.js")
-    script. 
-      $(document).ready(function(){
-        setTimeout("realtimeClock()", 1000);
-        var socket = io.connect("http://nfcstar.com:9090");
-        //var socket = io.connect("http://nfcstar.com:9090");
-        socket.on('38', function(msg){
-          var jsonMsg = JSON.parse(msg);
-          if( jsonMsg.MSGTYP == "CALL" ){
-            reloadCall();
-          } else if ( jsonMsg.MSGTYP == "TABLE" ){
-            reloadTable(jsonMsg.TBLSEQ);
-          } else if ( jsonMsg.MSGTYP == "DELIVERY" ){
-            reloadDelivery();
-          } else if( jsonMsg.MSGTYP == "TEST" ){
-            alert("123");
-          }
-        });
-      });
-      function reloadCall(){ 
-        $.ajax({
-          url: "/pos/sale/call_select.do",
-          success: function(data) {
-            //$("#select_call option").remove();
-            $("#select_call").empty();
-            $.each(data, function(index, value){
-              $("#select_call").append("<option value='"+value.CALSEQ+"' onclick='checkCall(this)'>"+value.CALTXT+"</option>");
-            });
-            document.embeds[0].Play();
-            //document.getElementsByTagName('embed')[0].Play();
-            }
-        });
-      }
-      function checkCall(obj){ 
-        $.ajax({
-          url: "/pos/sale/call_update.do",
-          data:{ CALSEQ:obj.value, CHKFLG:"Y" },
-          success: function(data) {
-            if(data.flag){
-              $(obj).remove();
-            }
-            }
-        });
-      }
-      function reloadTable(tblseq){
-        var obj_table = $('#iframe_body').contents().find("#tblseq_"+tblseq);
-        if(obj_table.length>0) $('#iframe_body').attr('src', $('#iframe_body').attr('src'));
-      }
-      function reloadDelivery(){ 
-        var obj_delivery = $('#iframe_body').contents().find("#td_delivery");
-        if(obj_delivery.length>0) $('#iframe_body').attr('src', $('#iframe_body').attr('src'));
-      }
-      function realtimeClock() {
-        $("#sysdate").html(getTimeStamp());
-        setTimeout("realtimeClock()", 1000);
-      }
+    script.
       function logout() {
         var conf = confirm("종료하시겠습니까?");
         if(conf){
-          location.href = "/user/logout.do";
+          location.href = "/logout";
           self.close();
         }
       }
-    
   body
     embed#file_alarm(src="/sound/alarm.wav" autoplay="false" hidden="true")
       //- #document

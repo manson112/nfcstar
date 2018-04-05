@@ -34,19 +34,14 @@ mysql_dbc.test_open(connection);
 //로그인 설정
 
 passport.serializeUser(function (user, done) {
-    done(null, user.POSID);
+    done(null, user);
 });
 
-passport.deserializeUser(function (id, done) {
-    console.log("deserialize " + id);
-    connection.query("SELECT * FROM POSMST WHERE POSID='" + id + "';", function (err, rows) {
-        var user = rows[0];
-        done(err, user);
-    });
-
+passport.deserializeUser(function (user, done) {
+    done(null, user);
 });
 
-passport.use(new LocalStrategy({
+passport.use('login', new LocalStrategy({
     usernameField: 'username',
     passwordField: 'password',
     passReqToCallback: true
@@ -271,12 +266,34 @@ router.get('/addcpn', function (req, res, next) {
 });
 
 router.get('/login', function (req, res, next) {
+    console.log(req.user);
     console.log(req.flash('error'));
     if (req.user) {
         res.send('already login');
     } else {
         res.render('login');
     }
+});
+router.post('/login', passport.authenticate('login', {
+    successRedirect: '/',
+    failureRedirect: '/login',
+    failureFlash: true
+}));
+router.get('/logout', function(req, res, next){
+    req.logout();
+    req.session.save(function(){
+        res.redirect('/login');
+    });
+});
+router.get('/count', function(req, res, next){
+    if(req.session.count) {
+        req.session.count++;
+    } else {
+        req.session.count = 1;
+    }
+
+    res.send('count: ' + req.session.count);
+
 });
 
 
@@ -2885,11 +2902,7 @@ router.post('/addncall2url_p', function(req, res, next){
 });
 
 
-router.post('/login', passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/login',
-    failureFlash: true
-}));
+
 
 
 

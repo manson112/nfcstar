@@ -27,9 +27,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 //passport
 app.use(session({
-    secret: 'enter secret key',
+    secret: 'qwexefsx01ex@',
     resave: false,
-    saveUnitialized: false
+    rolling : true,
+    saveUnitialized: true,
+    cookie:{maxAge : 30 * 60 * 1000}
 }));
 app.use(flash());
 app.use(passport.initialize());
