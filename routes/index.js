@@ -32,7 +32,6 @@ mysql_dbc.test_open(connection);
 
 
 //로그인 설정
-
 passport.serializeUser(function (user, done) {
     done(null, user);
 });
@@ -2483,7 +2482,9 @@ router.get('/temp', function (req, res, next) {
     run_query(create.STOMST(),"");
     run_query(create.USRMST(),"");
     run_query(create.STOCAL(),"");
+
     
+    run_query(create.SALMST(),"");
 });
 
 
