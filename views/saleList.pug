@@ -32,7 +32,7 @@ block content
         function getDataList01(){
             clearDataList01();
             $.ajax({
-                url: "/pos/setup/saleList_select.do",
+                url: "/pos/setup/saleList_select",
                 data:$("[name=form_search01]").serialize(),
                 success: function(data) {
                     $("#dataList01").setDatagrid(data);
@@ -45,7 +45,7 @@ block content
         }
         
         function getDataForm01Dailog(data){
-            var dialog = $.defaultDialog("div_dialog", "/pos/setup/dialog/saleList.do",{SALSEQ:data.SALSEQ});
+            var dialog = $.defaultDialog("div_dialog", "/pos/setup/dialog/saleList", {SALSEQ:data.SALSEQ});
             dialog.dialog( "option", { title:"영업 내역",height:400, width:500 } );
         }
     form(name="form_search01")
@@ -53,9 +53,9 @@ block content
             tr
                 td(class="padding3 align_left" style="color:black;")
                     |영업시작일 : 
-                    input(type="text" id="strdat" name="STRDAT" class="view_textfiled1" value="2018-03-10" maxlength="10" readonly="readonly")
+                    input(type="text" id="strdat" name="STRDAT" class="view_textfiled1" value=STRDAT maxlength="10" readonly="readonly")
                     |~ 
-                    input(type="text" id="enddat" name="ENDDAT" class="view_textfiled1" value="2018-03-17" maxlength="10" readonly="readonly")
+                    input(type="text" id="enddat" name="ENDDAT" class="view_textfiled1" value=ENDDAT maxlength="10" readonly="readonly")
                 td.padding3.align_right
                     img(src="/views/admin/btn_search.gif" onclick="getDataList01();" class="pointer")
     table#dataList01

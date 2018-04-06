@@ -477,6 +477,7 @@ exports.SALMST = function() {
     + "     `DLVAMT`  INT            NULL, "
     + "     `DLVCNT`  INT            NULL, "
     + "     `TOTAMT`  INT            NULL, "
+    + "     `TOTCNT`  INT            NULL, "
     + "     `CSHAMT`  INT            NULL, "
     + "     `CRDAMT`  INT            NULL, "
     + "     `DISAMT`  INT            NULL, "
@@ -500,6 +501,21 @@ exports.CATMST = function() {
     + " ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
 };
 
+exports.SALSIO = function() {
+    return "CREATE TABLE IF NOT EXISTS SALSIO "
+    + " ("
+    + "     `ID`      INT             NOT NULL    AUTO_INCREMENT COMMENT '입출금번호', "
+    + "     `STOSEQ`  INT             NULL        COMMENT '가게번호', "
+    + "     `SALSEQ`  INT             NULL        COMMENT '영업번호', "
+    + "     `SIOCOD`  VARCHAR(6)      CHARACTER SET utf8  NULL        COMMENT '입출금코드', " 
+    + "     `SIONAM`  VARCHAR(10)     CHARACTER SET utf8  NULL        COMMENT '입출금구분', "
+    + "     `REMARK`  VARCHAR(100)    CHARACTER SET utf8  NULL        COMMENT '비고', "
+    + "     `SIODAT`  DATETIME        NULL        COMMENT '입출금날짜', "
+    + "     `SIOAMT`  INT             NULL        COMMENT '입출금금액', "
+    + "     `REGUSR`  VARCHAR(20)     CHARACTER SET utf8  NULL        COMMENT '등록자', "
+    + "     PRIMARY KEY (ID)"
+    + " ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;"
+}
 
 //주문관련
 exports.RCNMST = function() {

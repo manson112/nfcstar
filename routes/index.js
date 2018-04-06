@@ -118,24 +118,24 @@ format_next = function date2str(x, y) {
 
 //전체 페이지 목록
 var pages = [{ url: '/addstore', name: '가게 등록(업체, 관리자)' },
-{ url: '/addadmin', name: '관리자 등록' },
-{ url: '/adduser', name: '회원 등록' },
-{ url: '/addfloor', name: "층 등록(로그인 필요)" },
-{ url: '/addtable', name: "테이블 등록(로그인 필요)" },
-{ url: '/addcategory', name: "카테고리 등록(로그인 필요)" },
-{ url: '/addproduct', name: "제품 등록(로그인 필요)" },
-{ url: '/addoption', name: "옵션 등록(로그인 필요)" },
-{ url: '/addset', name: "세트 등록(로그인 필요)" },
-{ url: '/addevent', name: "이벤트 등록(로그인 필요)" },
-{ url: '/addcall', name: "호출 등록(로그인 필요)" },
-{ url: '/addncall2url', name: "NCALL2 동영상 추가"},
-{ url: '/addvan', name: "밴 등록(업체, 관리자)" },
-{ url: '/addpos', name: "포스 등록(업체, 관리자)" },
-{ url: '/addcpn', name: "업체 등록(관리자)" },
-{ url: '/dbcheck', name: "DB 확인" },
-{ url: '/init', name: "테이블 생성" },
-{ url: '/login', name: "로그인" }
-];
+            { url: '/addadmin', name: '관리자 등록' },
+            { url: '/adduser', name: '회원 등록' },
+            { url: '/addfloor', name: "층 등록(로그인 필요)" },
+            { url: '/addtable', name: "테이블 등록(로그인 필요)" },
+            { url: '/addcategory', name: "카테고리 등록(로그인 필요)" },
+            { url: '/addproduct', name: "제품 등록(로그인 필요)" },
+            { url: '/addoption', name: "옵션 등록(로그인 필요)" },
+            { url: '/addset', name: "세트 등록(로그인 필요)" },
+            { url: '/addevent', name: "이벤트 등록(로그인 필요)" },
+            { url: '/addcall', name: "호출 등록(로그인 필요)" },
+            { url: '/addncall2url', name: "NCALL2 동영상 추가"},
+            { url: '/addvan', name: "밴 등록(업체, 관리자)" },
+            { url: '/addpos', name: "포스 등록(업체, 관리자)" },
+            { url: '/addcpn', name: "업체 등록(관리자)" },
+            { url: '/dbcheck', name: "DB 확인" },
+            { url: '/init', name: "테이블 생성" },
+            { url: '/login', name: "로그인" }
+        ];
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -194,7 +194,7 @@ router.get('/dbcheck', function (req, res, next) {
             }
             setTimeout(function () {
                 res.render('dbcheck', { title: 'Database Check', tables: total });
-            }, 500);
+            }, 1000);
         }
     });
 
@@ -2117,7 +2117,7 @@ router.post('/pos/setup/saleStart_proc', function(req, res, next){
 });
 
 
-//
+//입출금
 router.get('/pos/setup/saleAccount', function(req, res, next){
     if(req.isAuthenticated()){
         res.render('saleAccount', {});
@@ -2125,6 +2125,100 @@ router.get('/pos/setup/saleAccount', function(req, res, next){
         res.redirect('/login');
     }
 });
+
+router.post('/pos/setup/saleAccount_select', function(req, res, next){
+    if(req.isAuthenticated()){
+        let STOSEQ = req.user.STOSEQ;
+        let q = "select ID, SALSEQ, SIOCOD, SIONAM, date_format(SIODAT, '%Y/%m/%d %H:%i') as SIODAT, SIOAMT, REMARK from SALSIO where STOSEQ=? order by SIODAT";
+        connection.query(q, [STOSEQ], function(err, rows, fields){
+            if(err) {
+                console.error(err);
+                res.send("<script> alert('에러 발생'); window.location.href('/');</script>");
+            } else {
+                let SIO = [];
+                for(let i=0; i<rows.length; i++){
+                    let obj = new Object();
+                    obj.SALSEQ = rows[i].SALSEQ;
+                    obj.SIOSEQ = rows[i].ID;
+                    obj.SIOCOD = rows[i].SIOCOD;
+                    obj.SIONAM = rows[i].SIONAM;
+                    obj.SIODAT = rows[i].SIODAT;
+                    obj.SIOAMT = rows[i].SIOAMT;
+                    obj.REMARK = rows[i].REMARK;
+                    SIO.push(obj);
+                }
+                res.send(SIO);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+router.post('/pos/setup/dialog/saleAccount', function(req, res, next){
+    if(req.isAuthenticated()) {
+        res.render('dialog_saleAccount');
+    } else {
+        res.redirect('/login');
+    }
+});
+router.post('/pos/setup/saleAccount_proc', function(req, res, next){
+    if(req.isAuthenticated()){
+        let STOSEQ = req.user.STOSEQ;
+        let SIOCOD = req.body.SIOCOD;
+        let SIOAMT = req.body.SIOAMT;
+        let REMARK = req.body.REMARK;
+        let SIONAM = "입금";
+        let AMT = SIOAMT*1;
+        if(SIOCOD == "O") {
+            SIONAM = "출금";
+            AMT = AMT*(-1);
+        }
+        let q1 = "select ID from SALMST where STOSEQ=? and ENDFLG='N';";
+        connection.query(q1, [STOSEQ], function(err, rows, fields){
+            if(err) {
+                console.error(err);
+                let obj = new Object();
+                obj.msg = "영업 확인 오류";
+                res.send(obj);
+            } else {
+                if(rows.length == 0) {
+                    let obj = new Object();
+                    obj.msg = "영업중이 아닙니다";
+                    res.send(obj);
+                } else {
+                    let SALSEQ = rows[0].ID;
+                    let q2 = "insert into SALSIO (STOSEQ, SALSEQ, SIOCOD, SIONAM, REMARK, SIODAT, SIOAMT, REGUSR) values (?, ?, ?, ?, ?, now(), ?, ?);"
+                    connection.query(q2, [STOSEQ, SALSEQ, SIOCOD, SIONAM, REMARK, SIOAMT, req.user.POSID], function(err, rows2, fields){
+                        if(err) {
+                            console.error(err);
+                            let obj = new Object();
+                            obj.msg = "입출금 입력 오류";
+                            res.send(obj);
+                        } else {
+                            let q3 = "update SALMST set ACTAMT=ACTAMT+? where ID=?";
+                            connection.query(q3, [AMT, SALSEQ], function(err, rows, fields){
+                                if(err){
+                                    console.error(err);
+                                    let obj = new Object();
+                                    obj.msg = "입출금 입력 오류";
+                                    res.send(obj);
+                                } else {
+                                    let obj = new Object();
+                                    obj.result = "success";
+                                    res.send(obj);
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 
 router.get('/pos/setup/saleCheck', function(req, res, next){
     if(req.isAuthenticated()){
@@ -2205,7 +2299,7 @@ router.get('/pos/setup/saleEnd', function(req, res, next){
 router.post('/pos/setup/saleEnd_proc', function(req, res, next){
     if(req.isAuthenticated()) {
         let STOSEQ = req.user.STOSEQ;
-        let q = "update SALMST set ENDTIM = now(), ENDFLG='Y' where STOSEQ=? and ENDFLG='N';";
+        let q = "update SALMST set ENDTIM=now(), ENDFLG='Y' where STOSEQ=? and ENDFLG='N';";
         connection.query(q, [STOSEQ], function(err, rows, fields){
             if(err){
                 console.error(err);
@@ -2220,16 +2314,78 @@ router.post('/pos/setup/saleEnd_proc', function(req, res, next){
     } else {
         res.send("<script> alert('로그인 해주세요'); parent.location.href='/login';</script>");
     }
-
 });
 
 router.get('/pos/setup/saleList', function(req, res, next){
     if(req.isAuthenticated()){
-        res.render('saleList', {});
+        let now_date = new Date();
+        let before_date = new Date();
+        let before = new Date(before_date.getTime() - (60*60*24*7*1000));
+        let n = format(now_date, "yyyy-MM-dd");
+        let b = format(before, "yyyy-MM-dd");
+
+        res.render('saleList', {STRDAT: b, ENDDAT: n});
     } else {
         res.redirect('/login');
     }
 });
+router.post('/pos/setup/saleList_select', function(req, res, next){
+    if(req.isAuthenticated()) {
+        let STOSEQ = req.user.STOSEQ;
+        let STRDAT = req.body.STRDAT;
+        let end_date = req.body.ENDDAT.split('-');
+        end_date[1] = end_date[1]*1 + 1;
+        let ENDDAT = end_date[0] + "-" + end_date[1] + "-" + end_date[2];
+
+        let q = "select ID, date_format(STRTIM, '%Y/%m/%d %H:%i') as STRTIM, date_format(ENDTIM, '%Y/%m/%d %H:%i') as ENDTIM, TOTAMT, DLVCNT, DLVAMT, TBLCNT, TBLAMT from SALMST where STOSEQ=? and STRTIM >= ? and ENDTIM <= ? and ENDFLG='Y';";
+        connection.query(q, [STOSEQ, STRDAT, ENDDAT], function(err, rows, fields){
+            if(err){
+                console.error(err);
+                let obj = new Object();
+                obj.msg = "조회에 실패했습니다";
+                res.send(obj);
+            } else {
+                let saleList = [];
+                for(let i=0; i<rows.length; i++){
+                    let obj = new Object();
+                    obj.SALSEQ = rows[i].ID;
+                    obj.STRDAT = rows[i].STRTIM;
+                    obj.ENDDAT = rows[i].ENDTIM;
+                    obj.SALSTR = rows[i].TOTAMT;
+                    obj.DLVSTR = rows[i].DLVCNT + " / " + rows[i].DLVAMT;
+                    obj.TBLSTR = rows[i].TBLCNT + " / " + rows[i].TBLAMT;
+                    saleList.push(obj);
+                }
+                res.send(saleList);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+router.post('/pos/setup/dialog/saleList', function(req, res, next){
+    if(req.isAuthenticated()){
+        let SALSEQ = req.body.SALSEQ;
+        console.log(SALSEQ);
+        let q = "select STRAMT, ACTAMT, CSHAMT, CRDAMT, DISAMT from SALMST where ID=?;";
+        connection.query(q, [SALSEQ], function(err, rows, fields){
+            if(err){
+                console.error(err);
+                res.send("<script> alert('불러오기 실패');</script>");
+            } else {
+                let STRAMT = rows[0].STRAMT;
+                let ACTAMT = rows[0].ACTAMT;
+                let CSHAMT = rows[0].CSHAMT;
+                let CRDAMT = rows[0].CRDAMT;
+                let DISAMT = rows[0].DISAMT;
+                res.render('dialog_saleList', {STRAMT: STRAMT, ACTAMT: ACTAMT, CSHAMT: CSHAMT, CRDAMT: CRDAMT, DISAMT: DISAMT});
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 
 router.get('/pos/setup/rcpnList', function(req, res, next){
     if(req.isAuthenticated()){
@@ -2598,8 +2754,8 @@ router.get('/temp', function (req, res, next) {
     run_query(create.USRMST(),"");
     run_query(create.STOCAL(),"");
 
-    
     run_query(create.SALMST(),"");
+    run_query(create.SALSIO(),"");
 });
 
 

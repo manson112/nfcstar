@@ -1,0 +1,61 @@
+script.
+	$(document).ready(function(){
+		$("#sioamt").numeric();
+	});
+	
+	function chkForm(obj){
+		if(obj==document.getElementById("sioamt")){
+			if(obj.value=="" || obj.value=="0"){
+				alert("금액을 입력하여 주세요."); 
+				obj.focus();
+				return false;	
+			}
+			return true;
+		}
+		return true;
+	}
+	
+	function goEdit(){
+		if(!chkForm($("#sioamt")[0])) return false;
+		$.ajax({
+			url: "/pos/setup/saleAccount_proc",
+			data:$("[name=form_dialog]").serialize(),
+			success: function(data) {
+				if(data.result){
+					goCancel();
+					getDataList01();
+				}else{
+					alert(data.msg);
+				}
+			}
+		});
+	}
+	
+	function goCancel() {
+		$("#div_dialog").dialog('close').remove();
+	}
+
+form(name="form_dialog")
+	table(width="100%" class="table_default")
+		colgroup
+			col(width="25%")
+			col(width="75%")
+		tbody
+			tr
+				th 구분
+				td
+					select(id="siocod" name="SIOCOD" style="width:300px")
+						option(value="I") 입금
+						option(value="O") 출금
+			tr
+				th 금액
+				td
+					input(type="text" id="sioamt" name="SIOAMT" value="0" class="view_textfiled3" maxlength="10")
+			tr
+				th 비고
+				td
+					input(type="text" name="REMARK" class="view_textfiled3")
+			tr
+				td(colspan="2" style="background:white; padding:20px; text-align:center;")
+					img(src="/views/admin/btn_save.gif" onclick="goEdit();" style="cursor:pointer;")
+					img(src="/views/admin/btn_cancel.gif" onclick="goCancel();" style="cursor:pointer;")
