@@ -265,12 +265,11 @@ router.get('/addcpn', function (req, res, next) {
 });
 
 router.get('/login', function (req, res, next) {
-    console.log(req.user);
     console.log(req.flash('error'));
     if (req.user) {
         res.send('already login');
     } else {
-        res.render('login');
+        res.render('login', {title: 'NFCSTAR'});
     }
 });
 router.post('/login', passport.authenticate('login', {
@@ -2075,11 +2074,48 @@ router.get('/pos/setup/promotion', function(req, res, next){
 //영업 시작
 router.get('/pos/setup/saleStart', function(req, res, next){
     if(req.isAuthenticated()){
-        res.render('saleStart', {});    
+        let STOSEQ = req.user.STOSEQ;
+        let q = "select * from SALMST where STOSEQ=? and ENDFLG='N';";
+
+        connection.query(q, [STOSEQ], function(err, rows, fields){
+            if(err) {
+                console.error(err);
+                res.send("<script> alert('에러 발생'); window.location.href='/';</script>");
+            } else {
+                if(rows.length == 0) {
+                    console.log("영업 아님");
+                    //영업 중 x
+                    let date = new Date();
+                    let sysdat = format(date, "yyyy-MM-dd hh:mm:ss");
+                    res.render('saleStart', {sysdat: sysdat});    
+                } else {
+                    //영업 중
+                    res.send("<script> alert('현재 영업중입니다'); window.location.href='/pos/setup/saleEnd';</script>");
+                }
+            }
+        });
     } else {
         res.redirect('/login');
     }
 });
+router.post('/pos/setup/saleStart_proc', function(req, res, next){
+    let STOSEQ = req.user.STOSEQ;
+    let STRAMT = req.body.STRAMT;
+    let q = "insert into SALMST(STOSEQ, STRTIM, ENDTIM, ENDFLG, STRAMT, ACTAMT, TBLAMT, TBLCNT, DLVAMT, DLVCNT, TOTAMT, CSHAMT, CRDAMT, DISAMT, REGDAT, REGUSR) values (?, now(), '', 'N', ?, 0, 0, 0, 0, 0, 0, 0, 0, 0, now(), ?);";
+
+    connection.query(q, [STOSEQ, STRAMT, req.user.POSID], function(err, rows, fields){
+        if(err){
+            console.error(err);
+            res.send("<script> alert('에러 발생'); window.location.href='/';</script>");
+        } else {
+            let obj = new Object();
+            obj.result = "success";
+            obj.msg = "영업 시작";
+            res.send(obj);
+        }
+    });
+});
+
 
 //
 router.get('/pos/setup/saleAccount', function(req, res, next){
@@ -2101,10 +2137,60 @@ router.get('/pos/setup/saleCheck', function(req, res, next){
 //영업 종료
 router.get('/pos/setup/saleEnd', function(req, res, next){
     if(req.isAuthenticated()){
-        res.render('saleEnd', {});
+        let STOSEQ = req.user.STOSEQ;
+        let q = "select date_format(STRTIM, '%Y/%m/%d %H:%i:%s') as STRTIM, STRAMT, ACTAMT, TBLAMT, TBLCNT, DLVAMT, DLVCNT, TOTAMT, CSHAMT, CRDAMT, DISAMT from SALMST where STOSEQ=? and ENDFLG='N';";
+        connection.query(q, [STOSEQ], function(err, rows, fields){
+            if(err){
+                console.error(err);
+                res.send("<script> alert('에러 발생'); parent.location.href='/';</script>");
+            } else {
+                if(rows.length == 0) {
+                    //영업중 아님
+                    res.send("<script> alert('영업이 시작되지 않았습니다'); window.location.href='/pos/setup/saleStart';</script>");
+                } else {
+                    //영업중
+                    let STRTIM = rows[0].STRTIM;
+                    let STRAMT = rows[0].STRAMT;
+                    let ACTAMT = rows[0].ACTAMT;
+                    let TBLAMT = rows[0].TBLAMT;
+                    let TBLCNT = rows[0].TBLCNT;
+                    let DLVAMT = rows[0].DLVAMT;
+                    let DLVCNT = rows[0].DLVCNT;
+                    let TOTAMT = rows[0].TOTAMT;
+                    let CSHAMT = rows[0].CSHAMT;
+                    let CRDAMT = rows[0].CRDAMT;
+                    let DISAMT = rows[0].DISAMT;
+
+                    let TOTCNT = TBLCNT*1 + DLVCNT*1;
+
+                    res.render('saleEnd', {STRTIM: STRTIM, STRAMT: STRAMT, ACTAMT: ACTAMT, TBLAMT: TBLAMT, TBLCNT: TBLCNT, DLVAMT: DLVAMT, DLVCNT: DLVCNT, 
+                                            TOTCNT: TOTCNT, TOTAMT: TOTAMT, CSHAMT: CSHAMT, CRDAMT: CRDAMT, DISAMT: DISAMT});
+                }
+            }
+        });
     } else {
         res.redirect('/login');
     }
+});
+router.post('/pos/setup/saleEnd_proc', function(req, res, next){
+    if(req.isAuthenticated()) {
+        let STOSEQ = req.user.STOSEQ;
+        let q = "update SALMST set ENDTIM = now(), ENDFLG='Y' where STOSEQ=? and ENDFLG='N';";
+        connection.query(q, [STOSEQ], function(err, rows, fields){
+            if(err){
+                console.error(err);
+                res.send("<script> alert('에러 발생'); parent.location.href='/pos/setup/saleEnd';</script>");
+            } else {
+                let obj = new Object();
+                obj.result = "success";
+                obj.msg = "영업이 종료되었습니다";
+                res.send(obj);
+            }
+        });
+    } else {
+        res.send("<script> alert('로그인 해주세요'); parent.location.href='/login';</script>");
+    }
+
 });
 
 router.get('/pos/setup/saleList', function(req, res, next){
@@ -2452,9 +2538,8 @@ router.get('/pos/sale/sale', function(req, res, next){
     }
 });
 router.post('/pos/sale/dialog/saleStart', function(req, res, next){
-
+    
 });
-
 
 router.get('/temp', function (req, res, next) {
     run_query(create.ADMMST(),"");

@@ -1,5 +1,5 @@
 var mysql = require('mysql2');
-var config = require('./db_info').local;
+var config = require('./db_info').real;
 
 module.exports = function() {
     return {

@@ -8,11 +8,11 @@ module.exports = (function () {
         database: 'nfcstar'
       },
       real: { // real server db info
-        host: '',
-        port: '',
-        user: '',
-        password: '',
-        database: ''
+        host: 'nfcdbinstance.c81uecsarmxy.ap-northeast-2.rds.amazonaws.com',
+        port: '5306',
+        user: 'root',
+        password: 'rootroot',
+        database: 'nfcstar'
       },
       dev: { // dev server db info
         host: '',

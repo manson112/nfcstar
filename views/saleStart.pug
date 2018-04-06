@@ -2,5 +2,61 @@ extends store_iframe_layout
 
 block append head
 
-
 block content 
+	script.
+		$("#tab_name").html("영업시작");
+		
+		$(document).ready(function(){
+			$("#stramt").numeric();
+		});
+			
+		function chkForm(obj){
+			if(obj==document.getElementById("stramt")){
+				if(obj.value==""){
+					alert("시작금액을 입력하여 주세요."); 
+					obj.focus();
+					return false;	
+				}
+			} 
+			return true;
+		}
+		
+		function goEdit(){
+			if(!chkForm($("#stramt")[0])) return false;
+			$.ajax({
+				url: "/pos/setup/saleStart_proc",
+				data: $("[name=form_data01]").serialize(),
+
+				success: function(data) {
+					if(data.result){
+						alert(data.msg);
+						window.location.href="/pos/setup/saleCheck";
+					}else{
+						alert(data.msg);
+					}
+				}
+			});
+		} 
+		
+		function goCancel() {
+			window.location.reload();
+		}
+
+	form(name="form_data01")
+		table(class="table_default")
+			colgroup
+				col(width="30%")
+				col(width="70%")
+			tbody
+				tr
+					th 영업일자
+					td #{sysdat}
+				tr
+					th 시작금액
+					td
+						input(type="text" id="stramt" name="STRAMT" maxlength="10" class="view_textfiled2 align_right" value="0")
+				tr
+					td(colspan="2" style="background:white; padding:20px; text-align:center;")
+						img(src="/views/admin/btn_save.gif" onclick="goEdit();" style="cursor:pointer;")
+						| 
+						img(src="/views/admin/btn_cancel.gif" onclick="goCancel();" style="cursor:pointer;")

@@ -461,6 +461,7 @@ exports.SALPRD = function() {
     + " ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
 };
 
+//영업
 exports.SALMST = function() {
     return "CREATE TABLE IF NOT EXISTS SALMST "
     + " ("
@@ -484,7 +485,7 @@ exports.SALMST = function() {
     + "     PRIMARY KEY (ID)"
     + " ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
 };
-   
+
 exports.CATMST = function() {
     return "CREATE TABLE IF NOT EXISTS CATMST "
     + " ("
