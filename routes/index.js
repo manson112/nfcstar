@@ -2128,7 +2128,37 @@ router.get('/pos/setup/saleAccount', function(req, res, next){
 
 router.get('/pos/setup/saleCheck', function(req, res, next){
     if(req.isAuthenticated()){
-        res.render('saleCheck', {});
+        let STOSEQ = req.user.STOSEQ;
+        let q = "select date_format(STRTIM, '%Y/%m/%d %H:%i:%s') as STRTIM, STRAMT, ACTAMT, TBLAMT, TBLCNT, DLVAMT, DLVCNT, TOTAMT, CSHAMT, CRDAMT, DISAMT from SALMST where STOSEQ=? and ENDFLG='N';";
+        connection.query(q, [STOSEQ], function(err, rows, fields){
+            if(err){
+                console.error(err);
+                res.send("<script> alert('에러 발생'); parent.location.href='/';</script>");
+            } else {
+                if(rows.length == 0) {
+                    //영업중 아님
+                    res.send("<script> alert('영업이 시작되지 않았습니다'); window.location.href='/pos/setup/saleStart';</script>");
+                } else {
+                    //영업중
+                    let STRTIM = rows[0].STRTIM;
+                    let STRAMT = rows[0].STRAMT;
+                    let ACTAMT = rows[0].ACTAMT;
+                    let TBLAMT = rows[0].TBLAMT;
+                    let TBLCNT = rows[0].TBLCNT;
+                    let DLVAMT = rows[0].DLVAMT;
+                    let DLVCNT = rows[0].DLVCNT;
+                    let TOTAMT = rows[0].TOTAMT;
+                    let CSHAMT = rows[0].CSHAMT;
+                    let CRDAMT = rows[0].CRDAMT;
+                    let DISAMT = rows[0].DISAMT;
+
+                    let TOTCNT = TBLCNT*1 + DLVCNT*1;
+
+                    res.render('saleCheck', {STRTIM: STRTIM, STRAMT: STRAMT, ACTAMT: ACTAMT, TBLAMT: TBLAMT, TBLCNT: TBLCNT, DLVAMT: DLVAMT, DLVCNT: DLVCNT, 
+                                            TOTCNT: TOTCNT, TOTAMT: TOTAMT, CSHAMT: CSHAMT, CRDAMT: CRDAMT, DISAMT: DISAMT});
+                }
+            }
+        });
     } else {
         res.redirect('/login');
     }

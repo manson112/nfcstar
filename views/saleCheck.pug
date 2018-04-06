@@ -3,53 +3,58 @@ extends store_iframe_layout
 block append head
 
 block content
-    script.
-        $("#tab_name").html("중간정산");
+	script.
+		$("#tab_name").html("중간정산");
 
-    form(name="form_data01")
-        table.table_default(style="width:100%")
-            colgroup
-                col(width="20%") 
-                col(width="30%")
-                col(width="30%")
-            tbody
-                tr
-                    th 영업시작일
-                    td(colspan="2") 2018-03-16 21:50:15
-                tr
-                    th 엽업종료일
-                    td(colspan="2")
-                tr
-                    th(colspan="3") 주문현황
-                tr
-                    th 총주문건/금액
-                    td 0
-                    td 0
-                tr
-                    th 배달건/금액
-                    td 0
-                    td 0 
-                tr
-                    th 테이블건/금액
-                    td 0
-                    td 0
-                tr
-                    th(colspan="3") 입금현황
-                tr
-                    th 시작금액
-                    td(colspan="2") 500
-                tr
-                    th 입출금
-                    td(colspan="2") 0
-                tr
-                    th 현금
-                    td(colspan="2") 0
-                tr
-                    th 카드
-                    td(colspan="2") 0
-                tr
-                    th 할인
-                    td(colspan="2") 0
-                tr
-                    th 돈통금액
-                    td(colspan="2") 500
+	form(name="form_data01")
+		table.table_default(style="width:100%")
+			colgroup
+				col(width="20%") 
+				col(width="30%")
+				col(width="30%")
+			tbody
+				tr
+					th 영업시작일
+					td(colspan="2") #{STRTIM}
+				tr
+					th 엽업종료일
+					td(colspan="2")
+				tr
+					th(colspan="3") 주문현황
+				tr
+					th 총주문건/금액
+					td #{TOTCNT}
+					td #{TOTAMT}
+				tr
+					th 배달건/금액
+					td #{DLVCNT}
+					td #{DLVAMT}
+				tr
+					th 테이블건/금액
+					td #{TBLCNT}
+					td #{TBLAMT}
+				tr
+					th(colspan="3") 입금현황
+				tr
+					th 시작금액
+					td(colspan="2") #{STRAMT}
+				tr
+					th 입출금
+					td(colspan="2") #{ACTAMT}
+				tr
+					th 현금
+					td(colspan="2") #{CSHAMT}
+				tr
+					th 카드
+					td(colspan="2") #{CRDAMT}
+				tr
+					th 할인
+					td(colspan="2") #{DISAMT}
+				tr
+					th 돈통금액
+					td(colspan="2") 
+				tr
+					td(colspan="3" style="background:white; padding:20px; text-align:center;")
+						img(src="/views/admin/btn_save.gif" onclick="goEdit();" style="cursor:pointer;")
+						| 
+						img(src="/views/admin/btn_cancel.gif" onclick="goCancel();" style="cursor:pointer;")
