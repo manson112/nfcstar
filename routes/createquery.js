@@ -527,14 +527,35 @@ exports.RCNMST = function() {
         + " `TBLSEQ`  INT            NULL        COMMENT '테이블 번호', "
         + " `REGDAT`  DATETIME       NULL        COMMENT '주문 날짜', "
         + " `USERID`  VARCHAR(20)    CHARACTER SET utf8 NULL        COMMENT '주문 고객', "
+        + " `CHKFLG`  VARCHAR(3)     CHARACTER SET utf8 NULL        COMMENT '확인 여부', "
+        + " `PAYFLG`  VARCHAR(3)     CHARACTER SET utf8 NULL        COMMENT '결제 여부', "
+        + " `FINISH`  VARCHAR(3)     CHARACTER SET utf8 NULL        COMMENT '판매 완료 여부', "
         + " PRIMARY KEY (ID)"
         + " ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
 };
+
+exports.RCNRCT = function() {
+    return "CREATE TABLE IF NOT EXISTS RCNRCT "
+        + " ("
+        + " `ID`      INT           NOT NULL      AUTO_INCREMENT, "
+        + " `STOSEQ`  INT           NULL, "
+        + " `RCNSEQ`  INT           NULL          COMMENT '주문 번호', "
+        + " `PAYDAT`  DATETIME      NULL          COMMENT '결제 날짜', "
+        + " `TOTAMT`  INT           NULL          COMMENT '결제 총 가격', "
+        + " `CSHAMT`  INT           NULL          COMMENT '현금 결제 가격', "
+        + " `CRDAMT`  INT           NULL          COMMENT '카드 결제 가격', "
+        + " `DISAMT`  INT           NULL          COMMENT '할인 가격', "
+        + " `REGDAT`  DATETIME      NULL          COMMENT '등록 날짜', "
+        + " `REGUSR`  VARCHAR(20)   CHARACTER SET utf8 NULL   COMMENT '등록자', "
+        + " PRIMARY KEY (ID)"
+        + " ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
+}
+
 exports.RCNDET = function() {
     return "CREATE TABLE IF NOT EXISTS RCNDET "
         + " ("
         + " `ID`      INT    NULL        AUTO_INCREMENT COMMENT '주문 세부 번호', "
-        + " `STOSEQ`  INT    NULL, "            
+        + " `STOSEQ`  INT    NULL,                           "            
         + " `RCNSEQ`  INT    NULL        COMMENT '주문 번호', "
         + " `PRDSEQ`  INT    NULL        COMMENT '제품 번호', "
         + " `PRDQTY`  INT    NULL        COMMENT '제품 수량', "
@@ -546,7 +567,7 @@ exports.OPTSET = function() {
     return "CREATE TABLE IF NOT EXISTS OPTSET "
         + " ("
         + " `ID`         INT    NOT NULL    AUTO_INCREMENT, "
-        + " `STOSEQ`  INT            NULL, "        
+        + " `STOSEQ`  INT           NULL,                   "        
         + " `RCNDETSEQ`  INT    NULL        COMMENT '주문 세부 번호', "
         + " `OPTSEQ`     INT    NULL        COMMENT '옵션 번호', "
         + " PRIMARY KEY (ID)"

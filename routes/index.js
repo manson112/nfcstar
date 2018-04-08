@@ -2389,15 +2389,46 @@ router.post('/pos/setup/dialog/saleList', function(req, res, next){
 
 router.get('/pos/setup/rcpnList', function(req, res, next){
     if(req.isAuthenticated()){
-        res.render('rcpnList', {});
+        let now_date = new Date();
+        let before_date = new Date();
+        let before = new Date(before_date.getTime() - (60*60*24*7*1000));
+        let n = format(now_date, "yyyy-MM-dd");
+        let b = format(before, "yyyy-MM-dd");
+
+        res.render('rcpnList', {STRDAT: b, ENDDAT: n});
     } else {
         res.redirect('/login');
     }
 });
 
+router.post('/pos/setup/rcpnList_select', function(req, res, next){
+    if(req.isAuthenticated()){
+        let STOSEQ = req.user.STOSEQ;
+        let STRDAT = req.body.STRDAT;
+        let end_date = req.body.ENDDAT.split('-');
+        end_date[1] = end_date[1]*1 + 1;
+        let ENDDAT = end_date[0] + "-" + end_date[1] + "-" + end_date[2];
+
+        let q = "select A.TOTAMT, A.TBLSEQ, B.PAYDAT, B.CSHAMT, B.CRDAMT, B.DISAMT from RCNMST as A ";
+              + "left join RCNRCT as B on A.ID=B.RCNSEQ ";
+              + "where A.STOSEQ=? and A.FINISH='Y';";
+        
+            
+    } else {
+        res.redirect('/login');
+    }
+});
+
+
 router.get('/pos/setup/cardList', function(req, res, next){
     if(req.isAuthenticated()){
-        res.render('cardList', {});
+        let now_date = new Date();
+        let before_date = new Date();
+        let before = new Date(before_date.getTime() - (60*60*24*7*1000));
+        let n = format(now_date, "yyyy-MM-dd");
+        let b = format(before, "yyyy-MM-dd");
+
+        res.render('cardList', {STRDAT: b, ENDDAT: n});
     } else {
         res.redirect('/login');
     }
@@ -2728,34 +2759,38 @@ router.post('/pos/sale/dialog/saleStart', function(req, res, next){
 });
 
 router.get('/temp', function (req, res, next) {
-    run_query(create.ADMMST(),"");
-    run_query(create.CATMST(),"");
-    run_query(create.EVTFIL_D(),"");
-    run_query(create.EVTFIL_M(),"");
-    run_query(create.EVTMST(),"");
-    run_query(create.OPTCAT(),"");
-    run_query(create.OPTMST(),"");
-    run_query(create.OPTSET(),"");
-    run_query(create.PRDFIL_D(),"");
-    run_query(create.PRDFIL_M(),"");
-    run_query(create.PRDMST(),"");
-    run_query(create.PRDOPT(),"");
-    run_query(create.PRDSET(),"");
-    run_query(create.RCNDET(),"");
-    run_query(create.RCNMST(),"");
-    run_query(create.SETMST(),"");
-    run_query(create.STODVC(),"");
-    run_query(create.STOFLR(),"");
-    run_query(create.TBLSTO(),"");
-    run_query(create.NCALL2(),"");
-    run_query(create.NCALL2INFO(),"");
-    run_query(create.POSMST(),"");
-    run_query(create.STOMST(),"");
-    run_query(create.USRMST(),"");
-    run_query(create.STOCAL(),"");
 
-    run_query(create.SALMST(),"");
-    run_query(create.SALSIO(),"");
+    // run_query(create.ADMMST(),"");
+    // run_query(create.CATMST(),"");
+    // run_query(create.EVTFIL_D(),"");
+    // run_query(create.EVTFIL_M(),"");
+    // run_query(create.EVTMST(),"");
+    // run_query(create.OPTCAT(),"");
+    // run_query(create.OPTMST(),"");
+    // run_query(create.OPTSET(),"");
+    // run_query(create.PRDFIL_D(),"");
+    // run_query(create.PRDFIL_M(),"");
+    // run_query(create.PRDMST(),"");
+    // run_query(create.PRDOPT(),"");
+    // run_query(create.PRDSET(),"");
+    // run_query(create.RCNDET(),"");
+    // run_query(create.RCNMST(),"");
+    // run_query(create.SETMST(),"");
+    // run_query(create.STODVC(),"");
+    // run_query(create.STOFLR(),"");
+    // run_query(create.TBLSTO(),"");
+    // run_query(create.NCALL2(),"");
+    // run_query(create.NCALL2INFO(),"");
+    // run_query(create.POSMST(),"");
+    // run_query(create.STOMST(),"");
+    // run_query(create.USRMST(),"");
+    // run_query(create.STOCAL(),"");
+
+    // run_query(create.SALMST(),"");
+    // run_query(create.SALSIO(),"");
+
+    run_query(create.RCNDET(), "완료");
+    run_query(create.OPTSET(), "완료");
 });
 
 

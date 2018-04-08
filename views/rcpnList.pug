@@ -39,7 +39,7 @@ block content
         function getDataList01(){
             clearDataList01();
             $.ajax({
-                url: "/pos/setup/rcpnList_select.do",
+                url: "/pos/setup/rcpnList_select",
                 data:$("[name=form_search01]").serialize(),
                 success: function(data) {
                     $("#dataList01").setDatagrid(data);
@@ -52,7 +52,7 @@ block content
         }
         
         function getDataForm01Dailog(data){
-            var dialog = $.defaultDialog("div_dialog", "/pos/setup/dialog/rcpnList.do",{RCNSEQ:data.RCNSEQ});
+            var dialog = $.defaultDialog("div_dialog", "/pos/setup/dialog/rcpnList",{RCNSEQ:data.RCNSEQ});
             dialog.dialog( "option", { title:"판매 내역",height:400, width:500 } );
         }
     form(name="form_search01")
@@ -60,9 +60,9 @@ block content
             tr
                 td(class="padding3 align_left" style="color:black;")
                     |판매일 : 
-                    input(type="text" id="strdat" name="STRDAT" class="view_textfiled1" value="2018-03-10" maxlength="10" readonly="readonly" style="font-size:14px")
+                    input(type="text" id="strdat" name="STRDAT" class="view_textfiled1" value=STRDAT maxlength="10" readonly="readonly" style="font-size:14px")
                     |~ 
-                    input(type="text" id="enddat" name="ENDDAT" class="view_textfiled1" value="2018-03-17" maxlength="10" readonly="readonly" style="font-size:14px")
+                    input(type="text" id="enddat" name="ENDDAT" class="view_textfiled1" value=ENDDAT maxlength="10" readonly="readonly" style="font-size:14px")
                 td(class="padding3 align_right")
                     img(src="/views/admin/btn_search.gif" onclick="getDataList01();" class="pointer")
     table#dataList01
