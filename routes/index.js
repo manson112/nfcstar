@@ -1,5 +1,10 @@
 var express = require('express');
 
+//
+var socketApi = require('../socketApi');
+var io = socketApi.io;
+
+//underscore
 var _ = require('underscore');
 
 //multipart
@@ -45,6 +50,7 @@ passport.use('login', new LocalStrategy({
     passwordField: 'password',
     passReqToCallback: true
 }, function (req, username, password, done) {
+
     process.nextTick(function () {
         connection.query("SELECT * FROM POSMST WHERE POSID='" + username + "';", function (err, rows) {
             var user = rows[0];
@@ -145,7 +151,7 @@ router.get('/', function (req, res, next) {
         let posid = req.user.ID;
         let date = new Date();
         let dat = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate(); 
-        res.render('index', { title: 'NFCSTAR', USER:user, DATE:dat, POSID:posid});
+        res.render('index', { title: 'NFC STAR', STOSEQ: req.user.STOSEQ, USER:user, DATE:dat, POSID:posid});
     } else {
         res.redirect('/login');
     }
@@ -2693,6 +2699,29 @@ router.post('/pos/setup/event_proc', function(req, res, next){
     }
 });
 
+//호출 조회
+router.post('/pos/setup/call_select', function(req, res, next){
+    let STOSEQ = req.user.STOSEQ;
+
+    let q = "select A.ID, A.CALNAM, A.USERID, C.FLRNAM, B.TBLNAM from CALMST as A left join TBLSTO as B on A.TBLSEQ=B.ID "
+          + "left join STOFLR as C on C.ID=B.FLRSEQ "
+          + "where A.STOSEQ=? and A.CALTYP='C' order by A.REGDAT desc;";
+    
+    connection.query(q, [STOSEQ], function(err, rows, fields){
+        if(err){
+            console.error(err);
+        } else {
+            let call = [];
+            for(let i=0; i<rows.length; i++) {
+                let obj = new Object();
+                obj.CALSEQ = rows[i].ID;
+                obj.CALNAM = "[" + rows[i].FLRNAM + "-" + rows[i].TBLNAM + "] " + rows[i].CALNAM;
+                call.push(obj); 
+            }
+            res.send(call);
+        }
+    });
+});
 
 
 //테이블 페이지
@@ -2789,8 +2818,10 @@ router.get('/temp', function (req, res, next) {
     // run_query(create.SALMST(),"");
     // run_query(create.SALSIO(),"");
 
-    run_query(create.RCNDET(), "완료");
-    run_query(create.OPTSET(), "완료");
+    // run_query(create.RCNDET(), "완료");
+    // run_query(create.OPTSET(), "완료");
+    run_query("drop table CALMST;", "완료");
+    run_query(create.CALMST(), "완료");
 });
 
 
@@ -4060,21 +4091,36 @@ router.post('/callpos_m', function (req, res, next) {
                     IMAGE: ''
                 }
             };
-    
-            admin.messaging().sendToDevice(fcm_array, payload)
-                .then(function (response) {
-                    console.log("메세지 전송 완료 :", response);
-                    var obj = new Object;
-                    obj.ResultCode = 100;
-                    res.json(obj);
-                })
-                .catch(function (err) {
-                    console.log("메세지 전송 에러 :", err);
-                    var obj = new Object;
-                    obj.ResultCode = 200;
-                    res.json(obj);
-                });
+            
+            let q2 = "INSERT INTO CALMST (STOSEQ, CALTYP, CALNAM, USERID, TBLSEQ, POSNAM, CHKFLG, REGDAT) VALUES (?, 'C', ?, ?, ?, '', 'N', now());";
+
+            connection.query(q2, [stoseq, msg_body, msg_from, tblseq], function(err, rows, fields){
+                if(err) {
+                    console.error(err);
+                } else {
+                    admin.messaging().sendToDevice(fcm_array, payload)
+                    .then(function (response) {
+                        console.log("메세지 전송 완료 :", response);
+                        socketApi.sendPosCall(stoseq);
+                        socketApi.sendAlarmCall(stoseq);
+
+                        var obj = new Object;
+                        obj.ResultCode = 100;
+                        res.json(obj);
+                    })
+                    .catch(function (err) {
+                        console.log("메세지 전송 에러 :", err);
+                        var obj = new Object;
+                        obj.ResultCode = 200;
+                        res.json(obj);
+                    });
+                }
+            })
+            
+
+            
         }
+
     });
 });
 
@@ -4896,6 +4942,8 @@ router.post('/getTblseq_m', function(req, res, next){
         }
     });
 });
+
+
 
 // INIT
 router.get('/init', function (req, res, next) {

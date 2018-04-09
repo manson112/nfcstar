@@ -573,3 +573,19 @@ exports.OPTSET = function() {
         + " PRIMARY KEY (ID)"
         + ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
 };
+
+exports.CALMST = function() {
+    return "CREATE TABLE IF NOT EXISTS CALMST "
+    + " ("
+    + "     `ID`      INT            NOT NULL    AUTO_INCREMENT, "
+    + "     `STOSEQ`  INT            NULL        COMMENT '가게 번호', "
+    + "     `CALTYP`  VARCHAR(3)     CHARACTER SET utf8 NULL        COMMENT '호출 타입(방향)', "
+    + "     `CALNAM`  VARCHAR(60)    CHARACTER SET utf8 NULL        COMMENT '호출 내용', "
+    + "     `USERID`  VARCHAR(20)    CHARACTER SET utf8 NULL        COMMENT '호출자', "
+    + "     `TBLSEQ`  INT            NULL        COMMENT '테이블번호', "
+    + "     `POSNAM`  VARCHAR(20)    CHARACTER SET utf8 NULL        COMMENT '포스이름', "
+    + "     `CHKFLG`  VARCHAR(3)     CHARACTER SET utf8 NULL        COMMENT '확인여부', "
+    + "     `REGDAT`  DATETIME       NULL        COMMENT '등록날짜', "
+    + "     PRIMARY KEY (ID)"
+    + " ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;"
+};
