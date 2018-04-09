@@ -4099,22 +4099,25 @@ router.post('/callpos_m', function (req, res, next) {
                 if(err) {
                     console.error(err);
                 } else {
-                    admin.messaging().sendToDevice(fcm_array, payload)
-                    .then(function (response) {
-                        console.log("메세지 전송 완료 :", response);
-                        socketApi.sendPosCall(stoseq);
-                        socketApi.sendAlarmCall(stoseq);
-
-                        var obj = new Object;
-                        obj.ResultCode = 100;
-                        res.json(obj);
-                    })
-                    .catch(function (err) {
-                        console.log("메세지 전송 에러 :", err);
-                        var obj = new Object;
-                        obj.ResultCode = 200;
-                        res.json(obj);
-                    });
+                    socketApi.sendPosCall(stoseq);
+                    socketApi.sendAlarmCall(stoseq);
+                    var obj = new Object;
+                    obj.ResultCode = 100;
+                    res.json(obj);
+                    
+                    // admin.messaging().sendToDevice(fcm_array, payload)
+                    // .then(function (response) {
+                    //     console.log("메세지 전송 완료 :", response);
+                    //     var obj = new Object;
+                    //     obj.ResultCode = 100;
+                    //     res.json(obj);
+                    // })
+                    // .catch(function (err) {
+                    //     console.log("메세지 전송 에러 :", err);
+                    //     var obj = new Object;
+                    //     obj.ResultCode = 200;
+                    //     res.json(obj);
+                    // });
                 }
             })
             
