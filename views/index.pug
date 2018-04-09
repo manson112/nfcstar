@@ -29,16 +29,18 @@ html
 					success: function(data){
 						$("#select_call").empty();
 						$.each(data, function(index, value){
-							$("#select_call").append("<option value='"+value.CALSEQ+"' onclick='checkCall(this)'>"+value.CALNAM+"</option>");
+							$("#select_call").append("<option value='"+value.CALSEQ+"'>"+value.CALNAM+"</option>");
 						});
 						$("#file_alarm").trigger("play");
 					}
 				});
 			}
-			function checkCall(obj){ 
+			function checkCall(){
+				var selectBox = $("#select_call");
+
 				$.ajax({
 					url: "/pos/sale/call_update",
-					data:{ CALSEQ:obj.value, CHKFLG:"Y" },
+					data:{ CALSEQ:selectBox.options[selectBox.selectedIndex], CHKFLG:"Y" },
 					success: function(data) {
 						if(data.flag){
 							$(obj).remove();
@@ -91,7 +93,7 @@ html
 							tbody
 								tr
 									td
-										select#select_call(style="font-size:15px;")
+										select#select_call(style="font-size:15px;" onchange="checkCall();")
 					.top_btn  
 						img(src="/views/pos/top_btn_close.jpg" onclick="logout();" style="cursor:pointer;")
 		.content_wrap
