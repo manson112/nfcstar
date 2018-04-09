@@ -10,7 +10,7 @@ html
 		script.
 			$(document).ready(function(){
 				setTimeout("realtimeClock()", 1000);
-				var socket = io("http://localhost:3000");
+				var socket = io("http://13.124.122.190");
 				socket.on("#{STOSEQ}_POS", function(jsonMsg) {
 					if(jsonMsg.MSGTYP == "CALL") {
 						reloadCall();
