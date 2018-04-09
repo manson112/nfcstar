@@ -71,7 +71,8 @@ html
 			}
 			
 	body
-		embed#file_alarm(src="/sound/alarm.wav" autoplay="false" hidden="true")
+		audio#file_alarm(autoplay="false" hidden="true")
+			source(src="/sound/alarm.wav" type="audio/wav")
 		header
 			.in_1014
 				.top_wrap
