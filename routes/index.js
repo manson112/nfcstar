@@ -4463,10 +4463,18 @@ router.post('/user_order_m', function(req, res, next){
                         for(let j=0; j<optnum; j++) {
                             run_query("insert into OPTSET (STOSEQ, RCNDETSEQ, OPTSEQ) values ("+stoseq+", " + rcndetseq + ", " + optseq[j] +");", "");
                         }
-                        
-                        let result = new Object;
-                        result.ResultCode = 100;
-                        res.json(result);
+                        let q2 = "INSERT INTO CALMST (STOSEQ, CALTYP, CALNAM, USERID, TBLSEQ, POSNAM, CHKFLG, REGDAT) VALUES (?, 'C', '신규 주문이 있습니다', ?, ?, '', 'N', now());";
+                        connection.query(q2, [stoseq, userid, tblseq], function(err, rows, fields){
+                            if(err){
+                                console.error(err);
+                            } else {
+                                socketApi.sendPosCall(stoseq);
+                                socketApi.sendAlarmCall(stoseq);
+                                let result = new Object;
+                                result.ResultCode = 100;
+                                res.json(result);
+                            }
+                        });
                     }
                 });
             }
