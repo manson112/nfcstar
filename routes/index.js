@@ -4070,6 +4070,7 @@ router.post('/callpos_m', function (req, res, next) {
                 fcm_array.push(rows[i].FCMTOK);
                 fcm_array.push(rows[i].FCMTOK2);
             }
+            console.log(fcm_array);
     
             var payload = {
                 notification: {
