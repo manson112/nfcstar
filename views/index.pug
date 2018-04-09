@@ -26,7 +26,7 @@ html
 
 			function reloadCall() {
 				$.ajax({
-					url: "/pos/setup/call_select",
+					url: "/pos/setup/reload_call",
 					success: function(data){
 						$("#select_call").empty();
 						$.each(data, function(index, value){
