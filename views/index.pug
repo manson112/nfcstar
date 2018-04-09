@@ -10,6 +10,7 @@ html
 		script.
 			$(document).ready(function(){
 				setTimeout("realtimeClock()", 1000);
+				reloadCall();
 				var socket = io("http://13.124.122.190");
 				socket.on("#{STOSEQ}_POS", function(jsonMsg) {
 					if(jsonMsg.MSGTYP == "CALL") {
@@ -18,8 +19,6 @@ html
 						reloadTable(jsonMsg.TBLSEQ);
 					} else if ( jsonMsg.MSGTYP == "DELIVERY" ){
 						reloadDelivery();
-					} else if( jsonMsg.MSGTYP == "TEST" ){
-						alert("123");
 					}
 				});
 			});
