@@ -36,11 +36,11 @@ html
 				});
 			}
 			function checkCall(){
-				var selectBox = $("#select_call");
+				var selectBox = socument.getElementById('select_call');
 
 				$.ajax({
 					url: "/pos/sale/call_update",
-					data:{ CALSEQ:selectBox.options[selectBox.selectedIndex], CHKFLG:"Y" },
+					data:{ CALSEQ:selectBox.options[selectBox.selectedIndex].value, CHKFLG:"Y" },
 					success: function(data) {
 						if(data.flag){
 							$(obj).remove();
