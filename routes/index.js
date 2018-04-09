@@ -2700,7 +2700,7 @@ router.post('/pos/setup/event_proc', function(req, res, next){
 });
 
 //호출 조회
-router.post('/pos/setup/reload_call', function(req, res, next){
+router.get('/pos/setup/reload_call', function(req, res, next){
     let STOSEQ = req.user.STOSEQ;
 
     let q = "select A.ID, A.CALNAM, A.USERID, C.FLRNAM, B.TBLNAM from CALMST as A left join TBLSTO as B on A.TBLSEQ=B.ID "
