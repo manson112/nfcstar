@@ -31,7 +31,7 @@ html
 						$.each(data, function(index, value){
 							$("#select_call").append("<option value='"+value.CALSEQ+"' onclick='checkCall(this)'>"+value.CALNAM+"</option>");
 						});
-						document.embeds[0].Play();
+						$("#file_alarm").Play();
 					}
 				});
 			}
@@ -72,13 +72,6 @@ html
 			
 	body
 		embed#file_alarm(src="/sound/alarm.wav" autoplay="false" hidden="true")
-			//- #document
-			//-   html
-			//-     head
-			//-       meta(name="viewport" content="width=device-width")
-			//-     body
-			//-       video(controls autoplay name="media")
-			//-         source(src="http://nfcstar.com/sound/alarm.wav" type="audio/x-wav")
 		header
 			.in_1014
 				.top_wrap

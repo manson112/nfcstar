@@ -4036,12 +4036,8 @@ router.post('/ncall2_login_m', function(req, res, next){
                         });
                     }
                 }
-                
             });
-
         }
-        
-        
     });
 });
 
@@ -4139,12 +4135,8 @@ router.post('/callpos_m', function (req, res, next) {
                         res.json(obj);
                     });
                 }
-            })
-            
-
-            
+            });
         }
-
     });
 });
 
