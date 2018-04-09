@@ -31,7 +31,7 @@ html
 						$.each(data, function(index, value){
 							$("#select_call").append("<option value='"+value.CALSEQ+"' onclick='checkCall(this)'>"+value.CALNAM+"</option>");
 						});
-						$("#file_alarm").Play();
+						$("#file_alarm").trigger("play");
 					}
 				});
 			}
@@ -71,8 +71,7 @@ html
 			}
 			
 	body
-		audio#file_alarm(autoplay="false" hidden="true")
-			source(src="/sound/alarm.wav" type="audio/wav")
+		audio#file_alarm(autoplay="false" src="/sound/alarm.wav" hidden="true")
 		header
 			.in_1014
 				.top_wrap
