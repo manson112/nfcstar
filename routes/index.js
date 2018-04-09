@@ -2701,26 +2701,48 @@ router.post('/pos/setup/event_proc', function(req, res, next){
 
 //호출 조회
 router.get('/pos/setup/reload_call', function(req, res, next){
-    let STOSEQ = req.user.STOSEQ;
+    if(req.isAuthenticated()) {
+        let STOSEQ = req.user.STOSEQ;
 
-    let q = "select A.ID, A.CALNAM, A.USERID, C.FLRNAM, B.TBLNAM from CALMST as A left join TBLSTO as B on A.TBLSEQ=B.ID "
-          + "left join STOFLR as C on C.ID=B.FLRSEQ "
-          + "where A.STOSEQ=? and A.CALTYP='C' order by A.REGDAT desc;";
-    
-    connection.query(q, [STOSEQ], function(err, rows, fields){
-        if(err){
-            console.error(err);
-        } else {
-            let call = [];
-            for(let i=0; i<rows.length; i++) {
-                let obj = new Object();
-                obj.CALSEQ = rows[i].ID;
-                obj.CALNAM = "[" + rows[i].FLRNAM + "-" + rows[i].TBLNAM + "] " + rows[i].CALNAM;
-                call.push(obj); 
+        let q = "select A.ID, A.CALNAM, A.USERID, C.FLRNAM, B.TBLNAM from CALMST as A left join TBLSTO as B on A.TBLSEQ=B.ID "
+              + "left join STOFLR as C on C.ID=B.FLRSEQ "
+              + "where A.STOSEQ=? and A.CALTYP='C' and CHKFLG='N' order by A.REGDAT desc;";
+        
+        connection.query(q, [STOSEQ], function(err, rows, fields){
+            if(err){
+                console.error(err);
+            } else {
+                let call = [];
+                for(let i=0; i<rows.length; i++) {
+                    let obj = new Object();
+                    obj.CALSEQ = rows[i].ID;
+                    obj.CALNAM = "[" + rows[i].FLRNAM + "-" + rows[i].TBLNAM + "] " + rows[i].CALNAM;
+                    call.push(obj); 
+                }
+                res.send(call);
             }
-            res.send(call);
-        }
-    });
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+//호출 확인
+router.post('/pos/sale/call_update', function(req, res, next){
+    if(req.isAuthenticated()) {
+        let CALSEQ = req.body.CALSEQ;
+        let q = "update CALMST set CHKFLG='Y' where ID=?";
+        connection.query(q, [CALSEQ], function(err, rows, fields){
+            if(err) {
+                console.error(err);
+            } else {
+                let obj = new Object();
+                obj.flag= true;
+                res.send(obj);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }   
 });
 
 
