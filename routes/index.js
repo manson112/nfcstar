@@ -4526,17 +4526,30 @@ function sendOrderToPos(req, res) {
         }
     };
 
-    let q = "select FCMTOK, FCMTOK2 from POSMST where STOSEQ="+ stoseq +";";
+    let q2 = "INSERT INTO CALMST (STOSEQ, CALTYP, CALNAM, USERID, TBLSEQ, POSNAM, CHKFLG, REGDAT) VALUES (?, 'C', '신규 주문이 있습니다', ?, ?, '', 'N', now());";
+    connection.query(q2, [stoseq, userid, tblseq], function(err, rows, fields){
+        if(err){
+            console.error(err);
+        } else {
+            socketApi.sendPosCall(stoseq);
+            socketApi.sendAlarmCall(stoseq);
 
-    connection.query(q, function(err, rows, fields){
-        if(err) { console.error(err); }
-        else {
-            for(let i=0; i<rows.length; i++) {
-                posIds.push(rows[i].FCMTOK);
-                posIds.push(rows[i].FCMTOK2);
-            }
+            let q = "select FCMTOK, FCMTOK2 from POSMST where STOSEQ="+ stoseq +";";
+
+            connection.query(q, function(err, rows, fields){
+                if(err) { console.error(err); }
+                else {
+                    for(let i=0; i<rows.length; i++) {
+                        posIds.push(rows[i].FCMTOK);
+                        posIds.push(rows[i].FCMTOK2);
+                    }
+                }
+            });
         }
     });
+
+
+    
 }
 
 router.post('/user_cart_order_m', async function(req, res, next) {
@@ -4584,6 +4597,16 @@ router.post('/user_cart_order_m', async function(req, res, next) {
                                 run_query(insertOPTSET, "");
                             }
                         }
+                        
+                        let q2 = "INSERT INTO CALMST (STOSEQ, CALTYP, CALNAM, USERID, TBLSEQ, POSNAM, CHKFLG, REGDAT) VALUES (?, 'C', '신규 주문이 있습니다', ?, ?, '', 'N', now());";
+                        connection.query(q2, [stoseq, userid, tblseq], function(err, rows, fields){
+                            if(err){
+                                console.error(err);
+                            } else {
+                                socketApi.sendPosCall(stoseq);
+                                socketApi.sendAlarmCall(stoseq);
+                            }
+                        });
                     }
                 });
             }

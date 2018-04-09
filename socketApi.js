@@ -7,6 +7,7 @@ socketApi.io = io;
 io.on('connection', function(socket) {
     console.log("A user connected");
 
+
     socket.on('disconnect', function(){
         console.log('user disconneted');
     });
@@ -20,6 +21,7 @@ socketApi.sendPosCall = function(stoseq) {
 
 socketApi.sendAlarmCall = function(stoseq) {
     let obj = new Object();
+
     obj.MSGTYP = "CALL";
     io.sockets.emit(stoseq+"_ALARM", obj);
 }
