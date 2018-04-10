@@ -604,6 +604,7 @@ router.post('/imageUpload', function(req, res, next){
     
     form.on('error', function (err) {
         console.log(err);
+        console.log("fdafasf");
         let obj = new Object;
         obj.ResultCode = 200;
         obj.msg = "사진 전송에 실패하였습니다";
@@ -3586,68 +3587,70 @@ router.post('/prdinfo_m', function (req, res, next) {
                 + "where A.STOSEQ=? and D.STOSEQ=? and B.PRDSEQ = ?;"
             connection.query(q2, [prdseq, stoseq, stoseq, prdseq], function (err, rows2, fields) {
                 if (err) { console.error(err); }
-                if (rows2.length == 0) { 
-                    result.ResultCode = 100;
-                    result.images = images;
-                    result.options = [];
-                    res.json(result);
-                }
                 else {
-                    var catnam = rows2[0].CATNAM;
-                    var obj = new Object;
-                    var option_detail = [];
-                    var option = new Object;
-                    let PRDNAM = rows2[0].PRDNAM;
-                    let PRDEXP = rows2[0].PRDEXP;
-                    let PRDCST = rows2[0].PRDCST;
-
-                    for (var i = 0; i < rows2.length; i++) {
-                        
-                        if (catnam == rows2[i].CATNAM) {
-                            option = new Object;
-                            option.OPTSEQ = rows2[i].ID;
-                            option.OPTNAM = rows2[i].OPTNAM;
-                            option.OPTCST = rows2[i].OPTCST;
-                            option_detail.push(option);
-
-                            if (i == rows2.length - 1) {
+                    if (rows2.length == 0) { 
+                        result.ResultCode = 100;
+                        result.images = images;
+                        result.options = [];
+                        res.json(result);
+                    }
+                    else {
+                        var catnam = rows2[0].CATNAM;
+                        var obj = new Object;
+                        var option_detail = [];
+                        var option = new Object;
+                        let PRDNAM = rows2[0].PRDNAM;
+                        let PRDEXP = rows2[0].PRDEXP;
+                        let PRDCST = rows2[0].PRDCST;
+    
+                        for (var i = 0; i < rows2.length; i++) {
+                            
+                            if (catnam == rows2[i].CATNAM) {
+                                option = new Object;
+                                option.OPTSEQ = rows2[i].ID;
+                                option.OPTNAM = rows2[i].OPTNAM;
+                                option.OPTCST = rows2[i].OPTCST;
+                                option_detail.push(option);
+    
+                                if (i == rows2.length - 1) {
+                                    obj.CATNAM = catnam;
+                                    obj.OPTDET = option_detail;
+                                    options.push(obj);
+                                }
+                            } else {
                                 obj.CATNAM = catnam;
                                 obj.OPTDET = option_detail;
+    
                                 options.push(obj);
-                            }
-                        } else {
-                            obj.CATNAM = catnam;
-                            obj.OPTDET = option_detail;
-
-                            options.push(obj);
-
-                            catnam = rows2[i].CATNAM;
-
-                            obj = new Object;
-                            option = new Object;
-                            option_detail = new Array;
-
-                            option.OPTSEQ = rows2[i].ID;                       
-                            option.OPTNAM = rows2[i].OPTNAM;
-                            option.OPTCST = rows2[i].OPTCST;
-                            option_detail.push(option);
-
-                            if (i == rows2.length - 1) {
-                                obj.CATNAM = catnam;
-                                obj.OPTDET = option_detail;
-                                options.push(obj);
+    
+                                catnam = rows2[i].CATNAM;
+    
+                                obj = new Object;
+                                option = new Object;
+                                option_detail = new Array;
+    
+                                option.OPTSEQ = rows2[i].ID;                       
+                                option.OPTNAM = rows2[i].OPTNAM;
+                                option.OPTCST = rows2[i].OPTCST;
+                                option_detail.push(option);
+    
+                                if (i == rows2.length - 1) {
+                                    obj.CATNAM = catnam;
+                                    obj.OPTDET = option_detail;
+                                    options.push(obj);
+                                }
                             }
                         }
+                        result.ResultCode = 100;
+                        result.PRDNAM = PRDNAM;
+                        result.PRDEXP = PRDEXP;
+                        result.PRDCST = PRDCST;
+                        result.images = images;
+                        result.options = options;
+                        console.log(result.options[0].OPTDET);
+                        console.log(result);
+                        res.json(result);
                     }
-                    result.ResultCode = 100;
-                    result.PRDNAM = PRDNAM;
-                    result.PRDEXP = PRDEXP;
-                    result.PRDCST = PRDCST;
-                    result.images = images;
-                    result.options = options;
-                    console.log(result.options[0].OPTDET);
-                    console.log(result);
-                    res.json(result);
                 }
             });
         }
@@ -4463,8 +4466,8 @@ router.post('/user_order_m', function(req, res, next){
                         for(let j=0; j<optnum; j++) {
                             run_query("insert into OPTSET (STOSEQ, RCNDETSEQ, OPTSEQ) values ("+stoseq+", " + rcndetseq + ", " + optseq[j] +");", "");
                         }
-                        let q2 = "INSERT INTO CALMST (STOSEQ, CALTYP, CALNAM, USERID, TBLSEQ, POSNAM, CHKFLG, REGDAT) VALUES (?, 'C', '신규 주문이 있습니다', ?, ?, '', 'N', now());";
-                        connection.query(q2, [stoseq, userid, tblseq], function(err, rows, fields){
+                        let q2 = "INSERT INTO CALMST (STOSEQ, CALTYP, CALNAM, USERID, TBLSEQ, RCNSEQ, POSNAM, CHKFLG, REGDAT) VALUES (?, 'C', '신규 주문이 있습니다', ?, ?, ?, '', 'N', now());";
+                        connection.query(q2, [stoseq, userid, tblseq, rcnseq], function(err, rows, fields){
                             if(err){
                                 console.error(err);
                             } else {
@@ -4500,8 +4503,8 @@ router.post('/user_order_m', function(req, res, next){
                         obj.ResultCode = 200;
                         res.json(obj);
                     } else {
-                        let q2 = "INSERT INTO CALMST (STOSEQ, CALTYP, CALNAM, USERID, TBLSEQ, POSNAM, CHKFLG, REGDAT) VALUES (?, 'C', '신규 주문이 있습니다', ?, ?, '', 'N', now());";
-                        connection.query(q2, [stoseq, userid, tblseq], function(err, rows, fields){
+                        let q2 = "INSERT INTO CALMST (STOSEQ, CALTYP, CALNAM, USERID, TBLSEQ, RCNSEQ, POSNAM, CHKFLG, REGDAT) VALUES (?, 'C', '신규 주문이 있습니다', ?, ?, ?, '', 'N', now());";
+                        connection.query(q2, [stoseq, userid, tblseq, rcnseq], function(err, rows, fields){
                             if(err){
                                 console.error(err);
                             } else {
@@ -4607,8 +4610,8 @@ router.post('/user_cart_order_m', async function(req, res, next) {
                     }
                 });
             }
-            let q2 = "INSERT INTO CALMST (STOSEQ, CALTYP, CALNAM, USERID, TBLSEQ, POSNAM, CHKFLG, REGDAT) VALUES (?, 'C', '신규 주문이 있습니다', ?, ?, '', 'N', now());";
-            connection.query(q2, [stoseq, userid, tblseq], function(err, rows, fields){
+            let q2 = "INSERT INTO CALMST (STOSEQ, CALTYP, CALNAM, USERID, TBLSEQ, RCNSEQ, POSNAM, CHKFLG, REGDAT) VALUES (?, 'C', '신규 주문이 있습니다', ?, ?, ?, '', 'N', now());";
+            connection.query(q2, [stoseq, userid, tblseq, rcnseq], function(err, rows, fields){
                 if(err){
                     console.error(err);
                 } else {
@@ -4986,6 +4989,13 @@ router.post('/getTblseq_m', function(req, res, next){
             res.json(result);
         }
     });
+});
+
+router.post('/mobile/alarm/call_select', function(req, res, next){
+    let STOSEQ = req.body.STOSEQ;
+
+    let q = "select * from "
+
 });
 
 

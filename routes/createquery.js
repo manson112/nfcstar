@@ -583,6 +583,7 @@ exports.CALMST = function() {
     + "     `CALNAM`  VARCHAR(60)    CHARACTER SET utf8 NULL        COMMENT '호출 내용', "
     + "     `USERID`  VARCHAR(20)    CHARACTER SET utf8 NULL        COMMENT '호출자', "
     + "     `TBLSEQ`  INT            NULL        COMMENT '테이블번호', "
+    + "     `RCNSEQ`  INT            NULL        COMMENT '주문 번호', "
     + "     `POSNAM`  VARCHAR(20)    CHARACTER SET utf8 NULL        COMMENT '포스이름', "
     + "     `CHKFLG`  VARCHAR(3)     CHARACTER SET utf8 NULL        COMMENT '확인여부', "
     + "     `REGDAT`  DATETIME       NULL        COMMENT '등록날짜', "
