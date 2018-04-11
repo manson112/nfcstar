@@ -2847,6 +2847,14 @@ router.get('/temp', function (req, res, next) {
     run_query(create.CALMST(), "완료");
 });
 
+router.get('/temp2', function(req, res, next){
+    run_query(create.CALMST(), "완료");
+    run_query(create.RCNRCT(), "완료");
+    run_query(create.SALMST(), "완료");
+    run_query(create.SALSIO(), "완료");
+    
+});
+
 
 //POST pages
 
@@ -5006,7 +5014,98 @@ router.post('/getTblseq_m', function(req, res, next){
 router.post('/mobile/alarm/call_select', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
 
-    let q = "select * from "
+    let array_name = "calls";
+    let result = new Object();
+    result.array_name = array_name;
+
+    let q = "select A.ID, A.CALNAM, A.USERID, A.RCNSEQ, B.TBLNAM from CALMST as A "
+    + "left join TBLSTO as B on B.ID=A.TBLSEQ "
+    + "where A.STOSEQ=? and A.CALTYP='C' order by A.REGDAT desc limit 3;";
+
+    connection.query(q, [STOSEQ], function(err, rows, fields){
+        if(err) {
+            console.error(err);
+            result.ResultCode = 200;
+            res.json(result);
+        } else {
+            let calls = [];
+            console.log(rows);
+            for(let i=0; i<rows.length; i++) {
+                if(rows[i].RCNSEQ != null) {
+                    //주문일 경우
+                    let q2 = "select A.ID, B.PRDNAM, A.PRDQTY, D.OPTNAM from RCNDET as A "
+                           + "left join PRDMST as B on B.ID=A.PRDSEQ "
+                           + "left join OPTSET as C on A.ID=C.RCNDETSEQ "
+                           + "left join OPTMST as D on D.ID=C.OPTSEQ "
+                           + "where A.STOSEQ=? and A.RCNSEQ=? "
+                           + "order by B.PRDNAM, A.ID;";
+                    connection.query(q2, [STOSEQ, rows[i].RCNSEQ], function(err, rows2, fields){
+                        if(err) {
+                            console.error(err);
+                            result.ResultCode = 200;
+                            res.json(result);
+                        } else {
+                            console.log(rows2);
+                            let full = "";
+
+                            let id = rows2[0].ID;
+
+                            let prdnam = rows2[0].PRDNAM;
+                            let prdqty = rows2[0].PRDQTY;
+                            let option = "";
+
+                            for(let j=0; j<rows2.length; j++){
+                                if(rows2[j].ID == id) {
+                                    option += rows2[j].OPTNAM + ", ";
+                                    if(j == rows2.length-1) {
+                                        full += prdnam + " (" + option.slice(0,-2) + ") " + prdqty +"개\n";
+                                    }
+                                } else {
+                                    full += prdnam + " (" + option.slice(0,-2) + ") " + prdqty +"개\n";
+                                    
+                                    id = rows2[j].ID;
+                                    prdnam = rows2[j].PRDNAM;
+                                    prdqty = rows2[j].PRDQTY;
+                                    option = rows2[j].OPTNAM + ", ";
+                                    
+                                    if(j == rows2.length-1) {
+                                        full += prdnam + " ( " + option.slice(0,-2) + ") " + prdqty +"개\n";
+                                    }
+                                }
+                            }
+                            let obj = new Object();
+                            obj.TBLNAM = rows[i].TBLNAM;
+                            obj.CALL = full.slice(0,-1);
+                            calls.push(obj);
+
+                            if(i == rows.length-1){
+                                console.log(calls);
+                                result.ResultCode = 100;
+                                result[array_name] = calls;
+                                
+                                res.json(result);
+                            }
+                        }
+                    });
+                } else {
+                    //일반 호출
+                    let obj = new Object();
+                    obj.TBLNAM = rows[i].TBLNAM;
+                    obj.CALL = rows[i].CALNAM;
+                    calls.push(obj);
+
+                    if(i == rows.length-1){
+                        console.log(calls);
+                        result.ResultCode = 100;
+                        result[array_name] = calls;
+                        
+                        res.json(result);
+                    }
+                }
+            }
+            
+        }
+    })
 
 });
 
