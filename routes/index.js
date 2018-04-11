@@ -3451,7 +3451,7 @@ router.post('/findprd_m', function (req, res, next) {
     } else if (catnam == "할인") {
 
     } else {
-        var q = "select A.ID, A.PRDNAM, A.PRDEXP, A.PRDCST, B.FILURL from PRDMST as A left join PRDFIL_M as B on A.ID = B.PRDSEQ where A.STOSEQ=? and A.CATSEQ=? order by A.ORDNUM;";
+        var q = "select A.ID, A.PRDNAM, A.PRDEXP, A.PRDCST, B.FILURL from PRDMST as A left join PRDFIL_M as B on A.ID = B.PRDSEQ where A.STOSEQ=? and A.CATSEQ=? and A.SALFLG='Y' order by A.ORDNUM;";
         connection.query(q, [STOSEQ, catseq], function (err, rows, fields) {
             if (err) { 
                 console.error(err); 
@@ -3564,10 +3564,6 @@ router.post('/prdinfo_m', function (req, res, next) {
     var prdseq = req.body.PRDSEQ;
     var prdnam = req.body.PRDNAM;
 
-    console.log(stoseq);
-    console.log(prdseq);
-    console.log(prdnam);
-
     var result = new Object;
     var images = [];
     var options = [];
@@ -3581,23 +3577,34 @@ router.post('/prdinfo_m', function (req, res, next) {
             for (var i = 0; i < rows.length; i++) {
                 images.push(rows[i].FILURL);
             }
-            console.log(images);
             result.images = images;
 
             let q2 = "select A.CATNAM, D.PRDNAM, D.PRDEXP, D.PRDCST, C.ID, C.OPTNAM, C.OPTCST from OPTCAT as A " 
                 + "left join PRDOPT as B on A.ID = B.OPTCAT "
                 + "left join OPTMST as C on A.ID = C.OPTCAT "
                 + "left join PRDMST as D on D.ID = ? "
-                + "where A.STOSEQ=? and D.STOSEQ=? and B.PRDSEQ = ?;"
-            connection.query(q2, [prdseq, stoseq, stoseq, prdseq], function (err, rows2, fields) {
+                + "where A.STOSEQ=? and B.PRDSEQ = ?;"
+            connection.query(q2, [prdseq, stoseq, prdseq], function (err, rows2, fields) {
                 if (err) { console.error(err); }
                 else {
-                    console.log(rows2);
                     if (rows2.length == 0) { 
-                        result.ResultCode = 100;
-                        result.images = images;
-                        result.options = [];
-                        res.json(result);
+
+                        let q3 = "select * from PRDMST where ID=?;";
+                        connection.query(q3, [prdseq], function(err, rows3, fields){
+                            if(err) {
+                                console.error(err);
+                            } else {
+                                result.ResultCode = 100;
+                                result.PRDNAM = rows3[0].PRDNAM;
+                                result.PRDEXP = rows3[0].PRDEXP;
+                                result.PRDCST = rows3[0].PRDCST;
+                                result.images = images;
+                                result.options = [];
+                                res.json(result);
+                            }
+                        })
+
+                        
                     }
                     else {
                         var catnam = rows2[0].CATNAM;
