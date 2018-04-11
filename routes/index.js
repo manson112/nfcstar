@@ -3856,7 +3856,7 @@ router.post('/event_detail_m', function (req, res, next) {
 
     var q = "select A.FILTYP, A.FILURL, A.PRDSEQ, B.PRDNAM, B.PRDEXP, B.PRDCST "
         + "from EVTFIL_D as A "
-        + "left join prdmst as B "
+        + "left join PRDMST as B "
         + "on A.PRDSEQ = B.ID "
         + "where A.STOSEQ=? and A.EVTSEQ=? "
         + "order by A.ORDNUM;";
