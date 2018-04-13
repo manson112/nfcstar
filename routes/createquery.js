@@ -590,3 +590,26 @@ exports.CALMST = function() {
     + "     PRIMARY KEY (ID)"
     + " ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;"
 };
+
+exports.NCALL = function() {
+    return "CREATE TABLE IF NOT EXISTS NCALL "
+    + " ("
+    + "     `ID`      INT           NOT NULL    AUTO_INCREMENT, "
+    + "     `STOSEQ`  INT           NULL        COMMENT '가게 번호', "
+    + "     `ALMGBN`  INT           NULL        COMMENT '알림 설정', "
+    + "     `ALMTIM`  INT           NULL        COMMENT '알림 시작', "
+    + "     `ALMADV`  VARCHAR(3)    CHARACTER SET utf8 NULL        COMMENT '알림 사용', "
+    + "     PRIMARY KEY (ID)"
+    + " ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
+}
+
+exports.NCALLADV = function() {
+    return "CREATE TABLE NCALLADV "
+    + " ("
+    + "     `ID`      INT             NOT NULL    AUTO_INCREMENT, "
+    + "     `STOSEQ`  INT             NULL, "
+    + "     `FILTYP`  VARCHAR(3)      CHARACTER SET utf8 NULL, "
+    + "     `FILURL`  VARCHAR(100)    CHARACTER SET utf8 NULL, "
+    + "     PRIMARY KEY (ID)"
+    + " ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
+}

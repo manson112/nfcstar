@@ -994,8 +994,8 @@ router.get('/pos/setup/storeDevice', function(req, res, next){
         let q = "select * from STODVC where STOSEQ="+req.user.STOSEQ+";";
         connection.query(q, function(err, rows, fields){
             if(err) {
-                res.send("<script>alert('오류')</script>");
                 console.error(err);
+                res.send("<script>alert('오류')</script>");
             } else {
                 let device = [];
                 for(let i=0; i<rows.length; i++){
@@ -1007,12 +1007,93 @@ router.get('/pos/setup/storeDevice', function(req, res, next){
                     obj.RCPFLG = rows[i].RCPFLG;
                     device.push(obj);
                 }
-                res.render('storeDevice', {deviceNumber: rows.length, devices: JSON.stringify(device)});
+                let q2 = "select * from NCALL where STOSEQ=?;";
+
+
+                connection.query(q2, [req.user.STOSEQ], function(err, rows2, fields){
+                    if(err){
+                        console.error(err);
+                    } else {
+                        if(rows2.length != 0) {
+                            let ALMGBN = rows2[0].ALMGBN;
+                            let ALMTIM = rows2[0].ALMTIM;
+                            let ALMADV = rows2[0].ALMADV;
+                            
+                            let q3 = "select * from NCALLADV where STOSEQ=?;";
+                            connection.query(q3, [req.user.STOSEQ], function(err, rows3, fields){
+                                if(err){
+                                    console.error(err);
+                                } else {
+                                    let advs = [];
+                                    for(let i=0; i<rows3.length; i++) {
+                                        // let obj = new Object();
+                                        // obj.FILTYP = rows3[i].FILTYP;
+                                        // obj.FILURL = rows3[i].FILURL;
+                                        // advs.push(obj);
+                                        advs.push(rows3[i].FILURL);
+                                    }
+                                    res.render('storeDevice', {deviceNumber: rows.length, devices: JSON.stringify(device), ALMGBN: ALMGBN, ALMTIM: ALMTIM, ALMADV: ALMADV, ADVFILES:advs});
+                                }
+                            });
+                        } else {
+                            res.render('storeDevice', {deviceNumber: rows.length, devices: JSON.stringify(device), ALMGBN: "0", ALMTIM: "10", ALMADV: "N", ADVFILES:[]});
+                        }
+                    }
+                });
             }
         });
 
     } else {
         res.redirect('/login');
+    }
+});
+
+router.post('/pos/setup/storeDevice_proc', function(req, res, next){
+    if(req.isAuthenticated()) {
+        let STOSEQ = req.user.STOSEQ;
+        let ALMGBN = req.body.ALMGBN;
+        let ALMTIM = req.body.ALMTIM;
+        let ALMADV = req.body.ALMADV;
+        let ADVFIL = req.body.ADVFIL;
+
+        let q = "update NCALL set ALMGBN=?, ALMTIM=?, ALMADV=? where STOSEQ=?;";
+        connection.query(q, [ALMGBN, ALMTIM, ALMADV, STOSEQ], function(err, rows, fields){
+            if(err){
+                console.error(err);
+            } else {
+                let q2 = "delete from NCALLADV where STOSEQ="+STOSEQ+";";
+                run_query(q2, "");
+
+                if(_.isArray(ADVFIL)){
+                    for(let i=0; i<ADVFIL.length; i++) {
+                        let q3 = "insert into NCALLADV(STOSEQ, FILTYP, FILURL) values (?, 'P', ?);";
+                        connection.query(q3, [STOSEQ, ADVFIL[i]], function(err, rows3, fields){
+                            if(err) {
+                                console.error(err);
+                            } else {
+                                
+                            }
+                        });
+                    }
+                } else {
+                    let q3 = "insert into NCALLADV(STOSEQ, FILTYP, FILURL) values (?, 'P', ?);";
+                    connection.query(q3, [STOSEQ, ADVFIL], function(err, rows3, fields){
+                        if(err) {
+                            console.error(err);
+                        } else {
+                            
+                        }
+                    });
+                }
+                let obj = new Object();
+                obj.result = "success";
+                obj.msg = "저장되었습니다";
+                res.send(obj);
+            }
+        })
+
+    } else {
+
     }
 });
 
@@ -2747,6 +2828,8 @@ router.post('/pos/sale/call_update', function(req, res, next){
 });
 
 
+
+
 //테이블 페이지
 router.get('/pos/sale/sale', function(req, res, next){
     console.log(req.query);
@@ -2843,17 +2926,15 @@ router.get('/temp', function (req, res, next) {
 
     // run_query(create.RCNDET(), "완료");
     // run_query(create.OPTSET(), "완료");
-    run_query("drop table CALMST;", "완료");
-    run_query(create.CALMST(), "완료");
+    // run_query("drop table CALMST;", "완료");
+    // run_query(create.CALMST(), "완료");
+
+    // run_query(create.NCALL(), "완료");
+    // run_query(create.NCALLADV(), "완료");
+    run_query("insert into NCALL (STOSEQ, ALMGBN, ALMTIM, ALMADV) values (1, 0, 15, 'N');", "완료");
 });
 
-router.get('/temp2', function(req, res, next){
-    run_query(create.CALMST(), "완료");
-    run_query(create.RCNRCT(), "완료");
-    run_query(create.SALMST(), "완료");
-    run_query(create.SALSIO(), "완료");
-    
-});
+
 
 
 //POST pages
@@ -4140,8 +4221,6 @@ router.post('/callpos_m', function (req, res, next) {
                 if(err) {
                     console.error(err);
                 } else {
-                    
-                    
                     admin.messaging().sendToDevice(fcm_array, payload)
                     .then(function (response) {
                         console.log("메세지 전송 완료 :", response);
@@ -5011,6 +5090,7 @@ router.post('/getTblseq_m', function(req, res, next){
     });
 });
 
+//모바일 호출 
 router.post('/mobile/alarm/call_select', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
 
@@ -5108,7 +5188,96 @@ router.post('/mobile/alarm/call_select', function(req, res, next){
     })
 
 });
+//NCALL 세팅
+router.post('/mobile/alarm/setting', function(req, res, next){
+    let STOSEQ = req.body.STOSEQ;
 
+    let q = "select * from NCALL where STOSEQ=?";
+    
+    connection.query(q, [STOSEQ], function(err, rows, fields){
+        if(err) {
+            console.error(err);
+            let obj = new Object();
+            obj.ResultCode = 200;
+            obj.msg = "오류 발생";
+            res.json(obj);
+        } else {
+            if(rows.length == 0) {
+                let obj = new Object();
+                obj.ResultCode = 300;
+                obj.msg = "등록된 설정 정보가 없습니다\n주변기기 설정을 확인해주세요";
+                res.json(obj);
+            } else if(rows.length == 1) {
+                let obj = new Object();
+                obj.ResultCode = 100;
+                obj.ALMGBN = rows[0].ALMGBN;
+                obj.ALMTIM = rows[0].ALMTIM;
+                obj.ALMADV = rows[0].ALMADV;
+                res.json(obj);
+            } else {
+                let obj = new Object();
+                obj.ResultCode = 400;
+                obj.msg = "등록된 설정 정보가 두개 이상입니다\n주변기기 설정을 확인해주세요";
+                res.json(obj);
+            }
+            
+        }
+    });
+
+});
+//NCALL 광고
+router.post('/mobile/alarm/adv_select', function(req, res, next){
+    let STOSEQ = req.body.STOSEQ;
+
+    let q = "select * FROM NCALLADV where STOSEQ=? and FILTYP='P';";
+
+    let obj = new Object();
+    
+    connection.query(q, [STOSEQ], function(err, rows, fields){
+        if(err) {
+            console.error(err);
+            obj.ResultCode = 200;
+            obj.msg = "에러 발생";
+            res.json(obj);
+        } else {
+            let advs = [];
+            for(let i=0; i<rows.length; i++) {
+                advs.push(rows[i].FILURL);
+            }
+            obj.ResultCode = 100;
+            obj.advs = advs;
+            res.json(obj);
+        }
+    });
+
+});
+
+//모바일 영업 확인
+router.post('/mobile/checkSale', function(req, res, next){
+    let STOSEQ = req.body.STOSEQ;
+
+    let q = "select * from SALMST where STOSEQ=? and ENDFLG='N';";
+
+    let obj = new Object();
+
+    connection.query(q, [STOSEQ], function(err, rows, fields){
+        if(err) {
+            console.error(err);
+            obj.ResultCode = 200;
+            res.json(obj);
+        } else {
+            if(rows.length == 0) {
+                //영업 중 x
+                obj.ResultCode = 300;
+                res.json(obj);
+            } else {
+                //영업 중
+                obj.ResultCode = 100;
+                res.json(obj);
+            }
+        }
+    });
+});
 
 
 // INIT
