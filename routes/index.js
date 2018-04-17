@@ -589,7 +589,7 @@ router.post('/imageUpload', function(req, res, next){
     form.encoding = "utf-8";
     form.uploadDir = "./public/images/";
     form.keepExtensions = true;
-    form.maxFieldsSize = 1 * 1024 * 1024;
+    form.maxFieldsSize = 10 * 1024 * 1024;
 
     form.parse(req, function (err, fields, files) {
         if (err) {
@@ -2931,7 +2931,11 @@ router.get('/temp', function (req, res, next) {
 
     // run_query(create.NCALL(), "완료");
     // run_query(create.NCALLADV(), "완료");
-    run_query("insert into NCALL (STOSEQ, ALMGBN, ALMTIM, ALMADV) values (1, 0, 15, 'N');", "완료");
+    // run_query("insert into NCALL (STOSEQ, ALMGBN, ALMTIM, ALMADV) values (1, 0, 15, 'N');", "완료");
+
+    // run_query("delete from RCNMST where ID=9");
+    // run_query("update RCNMST set CHKFLG='N', PAYFLG='N', FINISH='N'");
+    
 });
 
 
@@ -4155,19 +4159,19 @@ router.post('/postable_m', function (req, res, next) {
     var query = "select * from TBLSTO where STOSEQ=? and FLRSEQ=?;";
 
     connection.query(query, [stoseq, flrseq], function (err, rows, fields) {
-        if (err) { console.error(err); }
-        else {
+        if (err) { 
+            console.error(err); 
+        } else {
             for (var i = 0; i < rows.length; i++) {
                 var obj = new Object;
                 obj.TBLSEQ = rows[i].ID;
                 obj.TBLNAM = rows[i].TBLNAM;
                 TBL.push(obj);
             }
-    
-            result.ResultCode = 100;
-            result.msg = flrseq + " floor 테이블 불러오기 완료";
+            result.ResultCode  = 100;
+            result.msg         = flrseq + " floor 테이블 불러오기 완료";
             result[array_name] = TBL;
-            result.array_name = array_name;
+            result.array_name  = array_name;
             console.log(result);
             res.json(result);
         }
@@ -4542,8 +4546,8 @@ router.post('/user_order_m', function(req, res, next){
         }
         console.log(optseq);
 
-        let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID) values ("+stoseq+", " + totamt + ", " + tblseq + ", " + regdat + ", '" + userid + "');";
-        connection.query(insertRCNMST, function(err, rows1, fields){
+        let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID, CHKFLG, PAYFLG, FINISH) values (?, ?, ?, ?, ?, 'N', 'N', 'N');";
+        connection.query(insertRCNMST, [stoseq, totamt, tblseq, regdat, userid], function(err, rows1, fields){
             if(err) {
                 console.error("RCNMST INSERTION ERROR", err);
                 let obj = new Object;
@@ -4583,8 +4587,8 @@ router.post('/user_order_m', function(req, res, next){
         });
 
     } else {
-        let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID) values ("+stoseq+", " + totamt + ", " + tblseq + ", " + regdat + ", '" + userid + "');";
-        connection.query(insertRCNMST, function(err, rows1, fields){
+        let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID, CHKFLG, PAYFLG, FINISH) values (?, ?, ?, ?, ?, 'N', 'N', 'N');";
+        connection.query(insertRCNMST, [stoseq, totamt, tblseq, regdat, userid], function(err, rows1, fields){
             if(err) {
                 console.error("RCNMST INSERTION ERROR", err);
                 let obj = new Object;
@@ -4610,7 +4614,6 @@ router.post('/user_order_m', function(req, res, next){
                                 socketApi.sendPosCall(stoseq);
                                 socketApi.sendAlarmCall(stoseq);
 
-                                sendOrderToPos(req,res);
                                 let result = new Object;
                                 result.ResultCode = 100;
                                 res.json(result);
@@ -4623,41 +4626,41 @@ router.post('/user_order_m', function(req, res, next){
     }
 });
 
-function sendOrderToPos(req, res) {
-    let stoseq = req.body.STOSEQ;
-    let userid = req.body.USERID;
-    let totamt = req.body.TOTAMT;
-    let tblseq = req.body.TBLSEQ;
-    let regdat = "now()";
+// function sendOrderToPos(req, res) {
+//     let stoseq = req.body.STOSEQ;
+//     let userid = req.body.USERID;
+//     let totamt = req.body.TOTAMT;
+//     let tblseq = req.body.TBLSEQ;
+//     let regdat = "now()";
 
-    let prdnum = req.body.PRDNUM;
-    let prdseq = req.body.PRDSEQ;
-    let prdqty = req.body.PRDQTY;
-    let detcst = req.body.DETCST;
+//     let prdnum = req.body.PRDNUM;
+//     let prdseq = req.body.PRDSEQ;
+//     let prdqty = req.body.PRDQTY;
+//     let detcst = req.body.DETCST;
 
-    let posIds = [];
+//     let posIds = [];
 
-    let payload = {
-        data: {
-            TYPE: 'ORDER',
-            TBLSEQ: tblseq,
-            TOTAMT: totamt,
-            USERID: userid
-        }
-    };
+//     let payload = {
+//         data: {
+//             TYPE: 'ORDER',
+//             TBLSEQ: tblseq,
+//             TOTAMT: totamt,
+//             USERID: userid
+//         }
+//     };
 
-    let q = "select FCMTOK, FCMTOK2 from POSMST where STOSEQ="+ stoseq +";";
+//     let q = "select FCMTOK, FCMTOK2 from POSMST where STOSEQ="+ stoseq +";";
 
-    connection.query(q, function(err, rows, fields){
-        if(err) { console.error(err); }
-        else {
-            for(let i=0; i<rows.length; i++) {
-                posIds.push(rows[i].FCMTOK);
-                posIds.push(rows[i].FCMTOK2);
-            }
-        }
-    });
-}
+//     connection.query(q, function(err, rows, fields){
+//         if(err) { console.error(err); }
+//         else {
+//             for(let i=0; i<rows.length; i++) {
+//                 posIds.push(rows[i].FCMTOK);
+//                 posIds.push(rows[i].FCMTOK2);
+//             }
+//         }
+//     });
+// }
 
 router.post('/user_cart_order_m', async function(req, res, next) {
     let stoseq = req.body.STOSEQ;
@@ -4673,16 +4676,12 @@ router.post('/user_cart_order_m', async function(req, res, next) {
     let prdqty = req.body.PRDQTY.split("/");
     let detcst = req.body.DETCST.split("/");
 
-    console.log(prdseq);
-    console.log(optseq);
-    console.log(prdqty);
-    console.log(detcst);
 
     let result = new Object;
 
-    let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID) values ("+stoseq+", " + totamt + ", " + tblseq + ", " + regdat + ", '" + userid + "');";
+    let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID, CHKFLG, PAYFLG, FINISH) values (?, ?, ?, ?, ?, 'N', 'N', 'N');";
 
-    await connection.query(insertRCNMST, function(err, rows, fields){
+    await connection.query(insertRCNMST, [stoseq, totamt, tblseq, regdat, userid], function(err, rows, fields){
         if(err) {
             result.ResultCode = 200;
             res.json(result);
@@ -4723,7 +4722,6 @@ router.post('/user_cart_order_m', async function(req, res, next) {
     result.ResultCode = 100;
     await res.json(result);
 });
-
 
 //주문 내역
 router.post('/user_history_m', function(req, res, next) {
@@ -4833,10 +4831,10 @@ router.post('/getorder_m', function(req, res ,next){
         + "left join OPTSET as C on B.ID=C.RCNDETSEQ "
         + "left join PRDMST as D on D.ID=B.PRDSEQ "
         + "left join OPTMST as E on E.ID=C.OPTSEQ "
-        + "left join USRMST as F on F.USERID=A.USERID " 
+        + "left join USRMST as F on F.USERID=A.USERID "
         + "left join TBLSTO as G on G.ID=A.TBLSEQ "
-        + "where A.STOSEQ=? "
-        + "order by REGDAT, RCNDETSEQ;"
+        + "where A.STOSEQ=? and A.FINISH='N' "
+        + "order by REGDAT, RCNDETSEQ;";
 
     connection.query(q, [stoseq], function(err, rows, fields) {
         if(err) { console.error(err); }
@@ -4921,6 +4919,214 @@ router.post('/getorder_m', function(req, res ,next){
             res.json(result);
         }
     });
+});
+
+//테이블용 주문 목록
+router.post('/mobile/pos/getOrder', function(req, res, next){
+    let STOSEQ = req.body.STOSEQ;
+
+    let q = "select F.MOBNUM, A.ID as RCNSEQ, B.ID as RCNDETSEQ, A.TBLSEQ, G.FLRSEQ, G.TBLNAM, A.TOTAMT, date_format(A.REGDAT, '%H:%i') as REGDAT, A.USERID, D.PRDNAM, B.PRDQTY, A.CHKFLG, A.PAYFLG " 
+          + "from RCNMST as A "
+          + "left join RCNDET as B on A.ID=B.RCNSEQ "
+          + "left join OPTSET as C on B.ID=C.RCNDETSEQ "
+          + "left join PRDMST as D on D.ID=B.PRDSEQ "
+          + "left join OPTMST as E on E.ID=C.OPTSEQ "
+          + "left join USRMST as F on F.USERID=A.USERID "
+          + "left join TBLSTO as G on G.ID=A.TBLSEQ "
+          + "where A.STOSEQ=? and A.FINISH='N' "
+          + "group by RCNSEQ, RCNDETSEQ "
+          + "order by REGDAT, RCNDETSEQ, TBLSEQ;";
+
+    connection.query(q, [STOSEQ], function(err, rows, fields) {
+        if(err) { console.error(err); }
+        else {
+            let flrseq   = rows[0].FLRSEQ;
+            let tblseq   = rows[0].TBLSEQ;
+            let rcnseq   = rows[0].RCNSEQ;
+            let tblnam   = rows[0].TBLNAM;
+            let mobnum   = rows[0].MOBNUM.slice(7);
+            let totamt   = rows[0].TOTAMT * 1;
+
+            let result = new Object();
+            
+            let orders = [];
+            let product = [];
+
+            let obj = new Object();
+            let prd = new Object();
+
+            for(let i=0; i<rows.length; i++) {
+                if(rows[i].TBLSEQ == tblseq) {
+                    //같은 테이블
+                    if(rows[i].RCNSEQ == rcnseq) {
+                        prd = new Object();
+                        prd.PRDNAM = rows[i].PRDNAM;
+                        prd.PRDQTY = rows[i].PRDQTY;
+                        product.push(prd);
+
+                        if(i == rows.length - 1) {
+                            obj.FLRSEQ  = flrseq;
+                            obj.TBLSEQ  = tblseq;
+                            obj.TBLNAM  = tblnam;
+                            obj.MOBNUM  = mobnum;
+                            obj.TOTAMT  = totamt;
+                            obj.REGDAT  = rows[i].REGDAT;
+                            obj.product = product;
+                            orders.push(obj);
+                        }
+                    } else {
+                        totamt += rows[i].TOTAMT;
+                        
+                        rcnseq   = rows[i].RCNSEQ;
+
+                        flrseq   = rows[i].FLRSEQ;
+                        tblseq   = rows[i].TBLSEQ;
+                        tblnam   = rows[i].TBLNAM;
+                        rcnseq   = rows[i].RCNSEQ;
+                        mobnum   = rows[i].MOBNUM.slice(7);
+
+                        prd = new Object();
+                        prd.PRDNAM = rows[i].PRDNAM;
+                        prd.PRDQTY = rows[i].PRDQTY;
+                        product.push(prd);
+
+                        if(i == rows.length - 1) {
+                            obj.FLRSEQ  = flrseq;
+                            obj.TBLSEQ  = tblseq;
+                            obj.TBLNAM  = tblnam;
+                            obj.MOBNUM  = mobnum;
+                            obj.TOTAMT  = totamt;
+                            obj.REGDAT  = rows[i].REGDAT;
+                            obj.product = product;
+                            orders.push(obj);
+                        }
+                    }
+                } else {
+                    obj.FLRSEQ  = flrseq;
+                    obj.TBLSEQ  = tblseq;
+                    obj.TBLNAM  = tblnam;
+                    obj.MOBNUM  = mobnum;
+                    obj.TOTAMT  = totamt;
+                    obj.REGDAT  = rows[i].REGDAT;
+                    obj.product = product;
+                    orders.push(obj);
+
+                    obj = new Object();
+                    rcnseq = rows[i].RCNSEQ;
+                    flrseq = rows[i].FLRSEQ;
+                    tblseq = rows[i].TBLSEQ;
+                    tblnam = rows[i].TBLNAM;
+                    mobnum = rows[i].MOBNUM.slice(7);
+                    totamt = rows[i].TOTAMT;
+                    product = [];
+                    prd = new Object();
+                    prd.PRDNAM = rows[i].PRDNAM;
+                    prd.PRDQTY = rows[i].PRDQTY;
+                    product.push(prd);
+
+                    if(i == rows.length - 1) {
+                        obj.FLRSEQ  = flrseq;
+                        obj.TBLSEQ  = tblseq;
+                        obj.TBLNAM  = tblnam;
+                        obj.MOBNUM  = mobnum;
+                        obj.TOTAMT  = totamt;
+                        obj.REGDAT  = rows[i].REGDAT;
+                        obj.product = product;
+                        orders.push(obj);
+                    }
+                }
+            }
+            result.ResultCode = 100;
+            result.orders = orders;
+            res.json(result);
+        }
+    });
+
+
+
+    //         let order_id = rows[0].RCNSEQ;
+    //         let order_product_id = rows[0].RCNDETSEQ;
+    
+    //         let orders = [];
+    //         let products = [];
+    
+    //         let order = new Object();
+    //         let product = new Object();
+    
+    //         order.TBLSEQ = rows[0].TBLSEQ;
+    //         order.TBLNAM = rows[0].TBLNAM;
+    //         order.FLRSEQ = rows[0].FLRSEQ;
+    //         order.MOBNUM = rows[0].MOBNUM.slice(7);
+    //         order.REGDAT = rows[0].REGDAT;
+    //         order.USERID = rows[0].USERID;
+    //         order.TOTAMT = rows[0].TOTAMT;
+    
+    //         product.PRDQTY = rows[0].PRDQTY;
+    //         product.PRDNAM = rows[0].PRDNAM;
+    
+    //         let option = rows[0].OPTNAM;
+    
+    //         for(let i=1; i<rows.length; i++) {
+    //             if(order_id == rows[i].RCNSEQ) {
+    //                 if(order_product_id == rows[i].RCNDETSEQ) {
+    //                     option += ", " + rows[i].OPTNAM;
+    //                 } else {
+    //                     //기존 물품 저장
+    //                     product.OPTION = option;
+    //                     products.push(product);
+    
+    //                     //새로 등록
+    //                     product = new Object;
+    //                     product.PRDQTY = rows[i].PRDQTY;
+    //                     product.PRDNAM = rows[i].PRDNAM;
+    //                     option = rows[i].OPTNAM;
+    
+    //                     order_product_id = rows[i].RCNDETSEQ;
+    //                 }
+    //             } else {
+    
+    //                 product.OPTION = option;
+    //                 products.push(product);
+    
+    //                 product = new Object;
+    //                 product.PRDQTY = rows[i].PRDQTY;
+    //                 product.PRDNAM = rows[i].PRDNAM;
+    //                 option = rows[i].OPTNAM;
+    
+    //                 order.products = products;
+    //                 orders.push(order);
+                    
+    //                 order = new Object;
+    //                 products = [];
+    
+    //                 order.FLRSEQ = rows[i].FLRSEQ;
+    //                 order.TBLSEQ = rows[i].TBLSEQ;
+    //                 order.TBLNAM = rows[i].TBLNAM;
+    //                 order.MOBNUM = rows[i].MOBNUM.slice(7);
+    //                 order.REGDAT = rows[i].REGDAT;
+    //                 order.USERID = rows[i].USERID;
+    //                 order.TOTAMT = rows[i].TOTAMT;
+
+    //                 order_product_id = rows[i].RCNDETSEQ;
+    //                 order_id = rows[i].RCNSEQ;
+    //             }
+    
+    //             if(i == rows.length - 1) {
+    //                 product.OPTION = option;
+    //                 products.push(product);
+    //                 order.products = products;
+    //                 orders.push(order);
+    //             }
+    //         }
+    //         let result = new Object;
+    //         array_name = "orders";
+    //         result.array_name = array_name;
+    //         result[array_name] = orders;
+    //         result.ResultCode = 100;
+    //         res.json(result);
+    //     }
+    // });
+
 });
 
 //NCALL2 동영상 목록 
@@ -5090,7 +5296,7 @@ router.post('/getTblseq_m', function(req, res, next){
     });
 });
 
-//모바일 호출 
+//모바일 호출
 router.post('/mobile/alarm/call_select', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
 
@@ -5299,11 +5505,10 @@ router.get('/init', function (req, res, next) {
 });
 
 //functions
-
 var run_query = function (query, message) {
     connection.query(query, function (err, rows, fields) {
         if (err) {
-            { console.error(err); }
+            console.error(err);
         } else {
             if (message) console.log(message);
         }
