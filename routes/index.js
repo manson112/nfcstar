@@ -2934,8 +2934,10 @@ router.get('/temp', function (req, res, next) {
 
     // run_query("delete from RCNMST where ID=9");
     // run_query("update RCNMST set CHKFLG='N', PAYFLG='N', FINISH='N'");
-    run_query("alter table USRMST add USRGRD int null;", "완료");
+    // run_query("alter table USRMST add USRGRD int null;", "완료");
     run_query("update USRMST set USRGRD=1;", "완료");
+
+    run_query("update RCNMST set REGDAT=now()", "완료");
 
     res.redirect('/dbcheck');
 }); 
@@ -3510,7 +3512,7 @@ router.post('/register_m', function (req, res, next) {
                 connection.query(query2, function (err, rows, fields) {
                     if (err) { console.error(err); }
                     if (rows.length == 0) {
-                        var q = "INSERT INTO USRMST (USERID, USERPW, USRNAM, MOBNUM, BIRDAY, SEXCOD, EMLADD, FCMTOK, REGDAT, REGSTO) VALUES ('" + userid + "', '" + userpw + "', '" + username + "', '" + mobnum + "', " + birthday + ", '" + sexcod + "', '" + emladd + "', NULL, NOW(), " + stoseq + ");";
+                        var q = "INSERT INTO USRMST (USERID, USERPW, USRNAM, MOBNUM, BIRDAY, SEXCOD, EMLADD, FCMTOK, REGDAT, REGSTO, USRGRD) VALUES ('" + userid + "', '" + userpw + "', '" + username + "', '" + mobnum + "', " + birthday + ", '" + sexcod + "', '" + emladd + "', NULL, NOW(), " + stoseq + ", 1);";
                         connection.query(q, function (err, rows, fields) {
                             if (err) { console.error(err); }
                             var obj = new Object;
@@ -5134,12 +5136,12 @@ router.post('/mobile/pos/getOrder', function(req, res, next){
 router.post('/mobile/pos/getOrderList', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
 
-    let q = "select C.MOBNUM, C.USRGRD, C.USERID, B.ID, B.TBLNAM, date_format(A.REGDAT, '%H:%i') as REGDAT, A.CHKFLG, A.PAYFLG from RCNMST as A "
+    let q = "select C.MOBNUM, C.USRGRD, C.USERID, B.ID, B.TBLNAM, date_format(MAX(A.REGDAT), '%H:%i') as REGDAT, A.CHKFLG, A.PAYFLG from RCNMST as A "
           + "left join TBLSTO as B on B.ID=A.TBLSEQ "
           + "left join USRMST as C on C.USERID=A.USERID "
           + "where A.STOSEQ=? and A.FINISH='N' "
-          + "group by A.TBLSEQ "
-          + "order by A.REGDAT, A.TBLSEQ;";
+          + "group by B.ID "
+          + "order by REGDAT ";
 
     connection.query(q, [STOSEQ], function(err, rows, fields) {
         if(err) { 
