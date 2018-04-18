@@ -33,6 +33,7 @@ exports.USRMST = function() {
     + "  `USERID`  VARCHAR(20)     CHARACTER SET utf8   NULL, "
     + "  `USERPW`  VARCHAR(200)    NULL, "
     + "  `USRNAM`  VARCHAR(40)     CHARACTER SET utf8   NULL, "
+    + "  `USRGRD`  INT          NULL, " //등급
     + "  `MOBNUM`  CHAR(11)     NULL, "
     + "  `BIRDAY`  DATE            NULL, "
     + "  `SEXCOD`  VARCHAR(3)      NULL, "

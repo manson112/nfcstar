@@ -585,11 +585,10 @@ router.post('/imageUpload', function(req, res, next){
     let page = "";
     let image = "";
 
-    let form = new formidable.IncomingForm();
     form.encoding = "utf-8";
     form.uploadDir = "./public/images/";
     form.keepExtensions = true;
-    form.maxFieldsSize = 10 * 1024 * 1024;
+    form.maxFieldsSize = 5 * 1024 * 1024;
 
     form.parse(req, function (err, fields, files) {
         if (err) {
@@ -2935,8 +2934,11 @@ router.get('/temp', function (req, res, next) {
 
     // run_query("delete from RCNMST where ID=9");
     // run_query("update RCNMST set CHKFLG='N', PAYFLG='N', FINISH='N'");
-    
-});
+    run_query("alter table USRMST add USRGRD int null;", "완료");
+    run_query("update USRMST set USRGRD=1;", "완료");
+
+    res.redirect('/dbcheck');
+}); 
 
 
 
@@ -5126,6 +5128,68 @@ router.post('/mobile/pos/getOrder', function(req, res, next){
     //         res.json(result);
     //     }
     // });
+
+});
+
+router.post('/mobile/pos/getOrderList', function(req, res, next){
+    let STOSEQ = req.body.STOSEQ;
+
+    let q = "select C.MOBNUM, C.USRGRD, C.USERID, B.ID, B.TBLNAM, date_format(A.REGDAT, '%H:%i') as REGDAT, A.CHKFLG, A.PAYFLG from RCNMST as A "
+          + "left join TBLSTO as B on B.ID=A.TBLSEQ "
+          + "left join USRMST as C on C.USERID=A.USERID "
+          + "where A.STOSEQ=? and A.FINISH='N' "
+          + "group by A.TBLSEQ "
+          + "order by A.REGDAT, A.TBLSEQ;";
+
+    connection.query(q, [STOSEQ], function(err, rows, fields) {
+        if(err) { 
+            console.error(err); 
+            let result = new Object();
+            result.ResultCode = 200;
+            result.msg = "오류 발생";
+            res.json(result);
+        }
+        else {
+            let orders = [];
+            for(let i=0; i<rows.length; i++) {
+                let obj = new Object();
+                obj.MOBNUM = rows[i].MOBNUM.slice(7);
+                obj.USRGRD = rows[i].USRGRD;
+                obj.USERID = rows[i].USERID;
+                obj.TBLSEQ = rows[i].ID;
+                obj.TBLNAM = rows[i].TBLNAM;
+                obj.REGDAT = rows[i].REGDAT;
+                obj.CHKFLG = rows[i].CHKFLG;
+                obj.PAYFLG = rows[i].PAYFLG;
+                orders.push(obj);
+            }
+            let result = new Object();
+            result.ResultCode = 100;
+            result.array_name = "orders";
+            result.orders = orders;
+            res.json(result);
+        }
+    });
+})
+
+router.post('/mobile/pos/checkOrder', function(req, res, next){
+    let STOSEQ = req.body.STOSEQ;
+    let TBLSEQ = req.body.TBLSEQ;
+
+    let q = "update RCNMST set CHKFLG='Y' where STOSEQ=? and TBLSEQ=?;";
+    connection.query(q, [STOSEQ, TBLSEQ], function(err, rows, fields){
+        if(err) {
+            console.error(err);
+            let result = new Object();
+            result.ResultCode = 200;
+            result.msg = "오류 발생";
+            res.json(result);
+        } else {
+            let result = new Object();
+            result.ResultCode = 100;
+            res.json(result);
+        }
+    });
 
 });
 
