@@ -28,7 +28,7 @@ script.
 	function goCancel() {
 		$("#div_dialog").dialog('close').remove();
 		var data = new Object();
-		data.FLRSEQ = '1';
+		data.FLRSEQ = "#{FLRSEQ}";
 		getDataForm02( data );
 	}
 

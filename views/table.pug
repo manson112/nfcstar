@@ -108,7 +108,9 @@ block content
         }
         
         function getDataForm02Dailog(tblseq){
-            var dialog = $.defaultDialog("div_dialog", "/pos/setup/dialog/table02",{TBLSEQ:tblseq});
+            var selData = $("#dataList01").getSelRowData();
+            var flrseq = selData.FLRSEQ;
+            var dialog = $.defaultDialog("div_dialog", "/pos/setup/dialog/table02",{FLRSEQ:flrseq, TBLSEQ:tblseq});
             dialog.dialog( "option", { title:"테이블명 수정",height: 250,width: 400 } );
         }
         

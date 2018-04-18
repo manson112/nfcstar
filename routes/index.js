@@ -984,7 +984,7 @@ router.post('/pos/setup/table_proc', function(req, res, next){
     }
 });
 router.post('/pos/setup/dialog/table02', function(req, res, next){
-    res.render('dialog_tableUpdate', {TBLSEQ: req.body.TBLSEQ});
+    res.render('dialog_tableUpdate', {FLRSEQ: req.body.FLRSEQ, TBLSEQ: req.body.TBLSEQ});
 });
 
 //주변 기기
