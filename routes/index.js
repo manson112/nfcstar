@@ -4548,8 +4548,8 @@ router.post('/user_order_m', function(req, res, next){
         }
         console.log(optseq);
 
-        let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID, CHKFLG, PAYFLG, FINISH) values (?, ?, ?, ?, ?, 'N', 'N', 'N');";
-        connection.query(insertRCNMST, [stoseq, totamt, tblseq, regdat, userid], function(err, rows1, fields){
+        let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID, CHKFLG, PAYFLG, FINISH) values (?, ?, ?, now(), ?, 'N', 'N', 'N');";
+        connection.query(insertRCNMST, [stoseq, totamt, tblseq, userid], function(err, rows1, fields){
             if(err) {
                 console.error("RCNMST INSERTION ERROR", err);
                 let obj = new Object;
@@ -4589,8 +4589,8 @@ router.post('/user_order_m', function(req, res, next){
         });
 
     } else {
-        let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID, CHKFLG, PAYFLG, FINISH) values (?, ?, ?, ?, ?, 'N', 'N', 'N');";
-        connection.query(insertRCNMST, [stoseq, totamt, tblseq, regdat, userid], function(err, rows1, fields){
+        let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID, CHKFLG, PAYFLG, FINISH) values (?, ?, ?, now(), ?, 'N', 'N', 'N');";
+        connection.query(insertRCNMST, [stoseq, totamt, tblseq, userid], function(err, rows1, fields){
             if(err) {
                 console.error("RCNMST INSERTION ERROR", err);
                 let obj = new Object;
@@ -4681,9 +4681,9 @@ router.post('/user_cart_order_m', async function(req, res, next) {
 
     let result = new Object;
 
-    let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID, CHKFLG, PAYFLG, FINISH) values (?, ?, ?, ?, ?, 'N', 'N', 'N');";
+    let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID, CHKFLG, PAYFLG, FINISH) values (?, ?, ?, now(), ?, 'N', 'N', 'N');";
 
-    await connection.query(insertRCNMST, [stoseq, totamt, tblseq, regdat, userid], function(err, rows, fields){
+    await connection.query(insertRCNMST, [stoseq, totamt, tblseq, userid], function(err, rows, fields){
         if(err) {
             result.ResultCode = 200;
             res.json(result);
