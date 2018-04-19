@@ -5169,7 +5169,7 @@ router.post('/mobile/pos/getOrder', function(req, res, next){
 router.post('/mobile/pos/getOrderList', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
 
-    let q = "select C.MOBNUM, C.USRGRD, C.USERID, B.ID, B.TBLNAM, date_format(MAX(A.REGDAT), '%H:%i') as REGDAT, (UNIX_TIMESTAMP(MAX(A.REGDAT))*1000) as REGDAT_MIL, A.CHKFLG, A.PAYFLG, A.ORDCNT from RCNMST as A "
+    let q = "select C.MOBNUM, C.USRGRD, C.USERID, B.ID, B.TBLNAM, date_format(MAX(A.REGDAT), '%H:%i') as REGDAT, (UNIX_TIMESTAMP(MAX(A.REGDAT))*1000) as REGDAT_MIL, A.CHKFLG, A.PAYFLG, MAX(A.ORDCNT) as ORDCNT from RCNMST as A "
           + "left join TBLSTO as B on B.ID=A.TBLSEQ "
           + "left join USRMST as C on C.USERID=A.USERID "
           + "where A.STOSEQ=? and A.FINISH='N' "
