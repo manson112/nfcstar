@@ -5136,12 +5136,16 @@ router.post('/mobile/pos/getOrder', function(req, res, next){
 router.post('/mobile/pos/getOrderList', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
 
-    let q = "select C.MOBNUM, C.USRGRD, C.USERID, B.ID, B.TBLNAM, date_format(MAX(A.REGDAT), '%H:%i') as REGDAT, A.CHKFLG, A.PAYFLG from RCNMST as A "
+    let q = "select C.MOBNUM, C.USRGRD, C.USERID, B.ID, B.TBLNAM, date_format(MAX(A.REGDAT), '%H:%i') as REGDAT, (UNIX_TIMESTAMP(MAX(A.REGDAT))*1000) as REGDAT_MIL, A.CHKFLG, A.PAYFLG from RCNMST as A "
           + "left join TBLSTO as B on B.ID=A.TBLSEQ "
           + "left join USRMST as C on C.USERID=A.USERID "
           + "where A.STOSEQ=? and A.FINISH='N' "
           + "group by B.ID "
           + "order by REGDAT ";
+
+    let time = new Date();
+    let miltime = time.getTime();
+
 
     connection.query(q, [STOSEQ], function(err, rows, fields) {
         if(err) { 
@@ -5163,6 +5167,13 @@ router.post('/mobile/pos/getOrderList', function(req, res, next){
                 obj.REGDAT = rows[i].REGDAT;
                 obj.CHKFLG = rows[i].CHKFLG;
                 obj.PAYFLG = rows[i].PAYFLG;
+
+                let timegap = new Date(0,0,0,0,0,0,miltime - rows[i].REGDAT_MIL);
+                let diffHour = timegap.getHours();
+                let diffMin = timegap.getMinutes();
+                
+                obj.TIMELEFT = diffHour + ":" + diffMin;
+
                 orders.push(obj);
             }
             let result = new Object();
