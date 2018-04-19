@@ -4555,7 +4555,7 @@ router.post('/user_order_m', function(req, res, next){
         } else {
             let ORDCNT = 1;
             if(rows.length != 0) {
-                ORDCNT = rows[0].ORDCNT*1;
+                ORDCNT = rows[0].ORDCNT*1 + 1;
             }
 
             let option_exist = req.body.OPT_EXIST;
@@ -4712,7 +4712,7 @@ router.post('/user_cart_order_m', async function(req, res, next) {
         } else {
             let ORDCNT = 1;
             if(rows.length != 0) {
-                ORDCNT = rows[0].ORDCNT*1;
+                ORDCNT = rows[0].ORDCNT*1 + 1;
             }
             let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID, CHKFLG, PAYFLG, FINISH, ORDCNT) values (?, ?, ?, now(), ?, 'N', 'N', 'N', ?);";
 
