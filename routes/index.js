@@ -5169,12 +5169,18 @@ router.post('/mobile/pos/getOrder', function(req, res, next){
 router.post('/mobile/pos/getOrderList', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
 
-    let q = "select C.MOBNUM, C.USRGRD, C.USERID, B.ID, B.TBLNAM, date_format(MAX(A.REGDAT), '%H:%i') as REGDAT, (UNIX_TIMESTAMP(MAX(A.REGDAT))*1000) as REGDAT_MIL, A.CHKFLG, A.PAYFLG, MAX(A.ORDCNT) as ORDCNT from RCNMST as A "
-          + "left join TBLSTO as B on B.ID=A.TBLSEQ "
-          + "left join USRMST as C on C.USERID=A.USERID "
-          + "where A.STOSEQ=? and A.FINISH='N' "
-          + "group by B.ID "
-          + "order by REGDAT ";
+    let q = "select * from (select C.MOBNUM, C.USRGRD, C.USERID, B.ID, B.TBLNAM, A.REGDAT as FULLREGDAT, date_format(A.REGDAT, '%H:%i') as REGDAT, (UNIX_TIMESTAMP(A.REGDAT)*1000) as REGDAT_MIL, A.CHKFLG, A.PAYFLG, A.ORDCNT as ORDCNT from RCNMST as A "
+            + "left join TBLSTO as B on B.ID=A.TBLSEQ "
+            + "left join USRMST as C on C.USERID=A.USERID "
+            + "where A.STOSEQ=? and A.FINISH='N' order by A.REGDAT) as K,"
+            + "(select MAX(REGDAT) as L from RCNMST group by TBLSEQ) as P "
+            + "where K.FULLREGDAT=P.L"
+    // let q = "select C.MOBNUM, C.USRGRD, C.USERID, B.ID, B.TBLNAM, date_format(MAX(A.REGDAT), '%H:%i') as REGDAT, (UNIX_TIMESTAMP(MAX(A.REGDAT))*1000) as REGDAT_MIL, A.CHKFLG, A.PAYFLG, MAX(A.ORDCNT) as ORDCNT from RCNMST as A "
+    //       + "left join TBLSTO as B on B.ID=A.TBLSEQ "
+    //       + "left join USRMST as C on C.USERID=A.USERID "
+    //       + "where A.STOSEQ=? and A.FINISH='N' "
+    //       + "group by B.ID "
+    //       + "order by REGDAT ";
 
     let time = new Date();
     let miltime = time.getTime();
