@@ -2935,10 +2935,14 @@ router.get('/temp', function (req, res, next) {
     // run_query("delete from RCNMST where ID=9");
     // run_query("update RCNMST set CHKFLG='N', PAYFLG='N', FINISH='N'");
     // run_query("alter table USRMST add USRGRD int null;", "완료");
-    run_query("update USRMST set USRGRD=1;", "완료");
+    // run_query("update USRMST set USRGRD=1;", "완료");
 
-    run_query("update RCNMST set REGDAT=now()", "완료");
+    // run_query("update RCNMST set REGDAT=now()", "완료");
 
+    // run_query("alter table RCNMST add column ORDCNT int NULL;", "완료");
+    run_query("delete from OPTSET;");
+    run_query("delete from RCNDET;");
+    run_query("delete from RCNMST;");
     res.redirect('/dbcheck');
 }); 
 
@@ -4541,93 +4545,108 @@ router.post('/user_order_m', function(req, res, next){
     let prdqty = req.body.PRDQTY;
     let detcst = req.body.DETCST;
 
-    let option_exist = req.body.OPT_EXIST;
-    if(option_exist === "T") {
-        let optnum = req.body.OPTNUM;
-        let optseq = [];
-        for(let i=1; i<=optnum; i++){
-            optseq.push(req.body["OPTSEQ"+i]);
+    let findFirst = "select ORDCNT from RCNMST where STOSEQ=? and TBLSEQ=? and FINISH='N' order by REGDAT desc limit 1;";
+    connection.query(findFirst, [stoseq, tblseq], function(err, rows, fields){
+        if(err) {
+            console.error("RCNMST FIND ORDCNT ERROR", err);
+            let obj = new Object;
+            obj.ResultCode = 200;
+            res.json(obj);
+        } else {
+            let ORDCNT = 1;
+            if(rows.length != 0) {
+                ORDCNT = rows[0].ORDCNT*1;
+            }
+
+            let option_exist = req.body.OPT_EXIST;
+            if(option_exist === "T") {
+                let optnum = req.body.OPTNUM;
+                let optseq = [];
+                for(let i=1; i<=optnum; i++){
+                    optseq.push(req.body["OPTSEQ"+i]);
+                }
+                console.log(optseq);
+
+                let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID, CHKFLG, PAYFLG, FINISH, ORDCNT) values (?, ?, ?, now(), ?, 'N', 'N', 'N', ?);";
+                connection.query(insertRCNMST, [stoseq, totamt, tblseq, userid, ORDCNT], function(err, rows1, fields){
+                    if(err) {
+                        console.error("RCNMST INSERTION ERROR", err);
+                        let obj = new Object;
+                        obj.ResultCode = 200;
+                        res.json(obj);
+                    } else {
+                        let rcnseq = rows1.insertId;
+
+                        let insertRCNDET = "insert into RCNDET (STOSEQ, RCNSEQ, PRDSEQ, PRDQTY, DETCST) values ("+stoseq+", " + rcnseq + ", " + prdseq + ", " + prdqty + ", " + detcst + ");";
+            
+                        connection.query(insertRCNDET, function(err, rows2, fields){
+                            if(err) {
+                                console.error("RCNDET INSERTION ERROR", err);
+                                let obj = new Object;
+                                obj.ResultCode = 200;
+                                res.json(obj);
+                            } else {
+                                let rcndetseq = rows2.insertId;
+                                for(let j=0; j<optnum; j++) {
+                                    run_query("insert into OPTSET (STOSEQ, RCNDETSEQ, OPTSEQ) values ("+stoseq+", " + rcndetseq + ", " + optseq[j] +");", "");
+                                }
+                                let q2 = "INSERT INTO CALMST (STOSEQ, CALTYP, CALNAM, USERID, TBLSEQ, RCNSEQ, POSNAM, CHKFLG, REGDAT) VALUES (?, 'C', '신규 주문이 있습니다', ?, ?, ?, '', 'N', now());";
+                                connection.query(q2, [stoseq, userid, tblseq, rcnseq], function(err, rows, fields){
+                                    if(err){
+                                        console.error(err);
+                                    } else {
+                                        socketApi.sendPosCall(stoseq);
+                                        socketApi.sendAlarmCall(stoseq);
+                                        let result = new Object;
+                                        result.ResultCode = 100;
+                                        res.json(result);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+
+            } else {
+                let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID, CHKFLG, PAYFLG, FINISH, ORDCNT) values (?, ?, ?, now(), ?, 'N', 'N', 'N', ?);";
+                connection.query(insertRCNMST, [stoseq, totamt, tblseq, userid, ORDCNT], function(err, rows1, fields){
+                    if(err) {
+                        console.error("RCNMST INSERTION ERROR", err);
+                        let obj = new Object;
+                        obj.ResultCode = 200;
+                        res.json(obj);
+                    } else {
+                        let rcnseq = rows1.insertId;
+
+                        let insertRCNDET = "insert into RCNDET (STOSEQ, RCNSEQ, PRDSEQ, PRDQTY, DETCST) values ("+stoseq+", " + rcnseq + ", " + prdseq + ", " + prdqty + ", " + detcst + ");";
+            
+                        connection.query(insertRCNDET, function(err, rows2, fields){
+                            if(err) {
+                                console.error("RCNDET INSERTION ERROR", err);
+                                let obj = new Object;
+                                obj.ResultCode = 200;
+                                res.json(obj);
+                            } else {
+                                let q2 = "INSERT INTO CALMST (STOSEQ, CALTYP, CALNAM, USERID, TBLSEQ, RCNSEQ, POSNAM, CHKFLG, REGDAT) VALUES (?, 'C', '신규 주문이 있습니다', ?, ?, ?, '', 'N', now());";
+                                connection.query(q2, [stoseq, userid, tblseq, rcnseq], function(err, rows, fields){
+                                    if(err){
+                                        console.error(err);
+                                    } else {
+                                        socketApi.sendPosCall(stoseq);
+                                        socketApi.sendAlarmCall(stoseq);
+
+                                        let result = new Object;
+                                        result.ResultCode = 100;
+                                        res.json(result);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
         }
-        console.log(optseq);
-
-        let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID, CHKFLG, PAYFLG, FINISH) values (?, ?, ?, now(), ?, 'N', 'N', 'N');";
-        connection.query(insertRCNMST, [stoseq, totamt, tblseq, userid], function(err, rows1, fields){
-            if(err) {
-                console.error("RCNMST INSERTION ERROR", err);
-                let obj = new Object;
-                obj.ResultCode = 200;
-                res.json(obj);
-            } else {
-                let rcnseq = rows1.insertId;
-
-                let insertRCNDET = "insert into RCNDET (STOSEQ, RCNSEQ, PRDSEQ, PRDQTY, DETCST) values ("+stoseq+", " + rcnseq + ", " + prdseq + ", " + prdqty + ", " + detcst + ");";
-    
-                connection.query(insertRCNDET, function(err, rows2, fields){
-                    if(err) {
-                        console.error("RCNDET INSERTION ERROR", err);
-                        let obj = new Object;
-                        obj.ResultCode = 200;
-                        res.json(obj);
-                    } else {
-                        let rcndetseq = rows2.insertId;
-                        for(let j=0; j<optnum; j++) {
-                            run_query("insert into OPTSET (STOSEQ, RCNDETSEQ, OPTSEQ) values ("+stoseq+", " + rcndetseq + ", " + optseq[j] +");", "");
-                        }
-                        let q2 = "INSERT INTO CALMST (STOSEQ, CALTYP, CALNAM, USERID, TBLSEQ, RCNSEQ, POSNAM, CHKFLG, REGDAT) VALUES (?, 'C', '신규 주문이 있습니다', ?, ?, ?, '', 'N', now());";
-                        connection.query(q2, [stoseq, userid, tblseq, rcnseq], function(err, rows, fields){
-                            if(err){
-                                console.error(err);
-                            } else {
-                                socketApi.sendPosCall(stoseq);
-                                socketApi.sendAlarmCall(stoseq);
-                                let result = new Object;
-                                result.ResultCode = 100;
-                                res.json(result);
-                            }
-                        });
-                    }
-                });
-            }
-        });
-
-    } else {
-        let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID, CHKFLG, PAYFLG, FINISH) values (?, ?, ?, now(), ?, 'N', 'N', 'N');";
-        connection.query(insertRCNMST, [stoseq, totamt, tblseq, userid], function(err, rows1, fields){
-            if(err) {
-                console.error("RCNMST INSERTION ERROR", err);
-                let obj = new Object;
-                obj.ResultCode = 200;
-                res.json(obj);
-            } else {
-                let rcnseq = rows1.insertId;
-
-                let insertRCNDET = "insert into RCNDET (STOSEQ, RCNSEQ, PRDSEQ, PRDQTY, DETCST) values ("+stoseq+", " + rcnseq + ", " + prdseq + ", " + prdqty + ", " + detcst + ");";
-    
-                connection.query(insertRCNDET, function(err, rows2, fields){
-                    if(err) {
-                        console.error("RCNDET INSERTION ERROR", err);
-                        let obj = new Object;
-                        obj.ResultCode = 200;
-                        res.json(obj);
-                    } else {
-                        let q2 = "INSERT INTO CALMST (STOSEQ, CALTYP, CALNAM, USERID, TBLSEQ, RCNSEQ, POSNAM, CHKFLG, REGDAT) VALUES (?, 'C', '신규 주문이 있습니다', ?, ?, ?, '', 'N', now());";
-                        connection.query(q2, [stoseq, userid, tblseq, rcnseq], function(err, rows, fields){
-                            if(err){
-                                console.error(err);
-                            } else {
-                                socketApi.sendPosCall(stoseq);
-                                socketApi.sendAlarmCall(stoseq);
-
-                                let result = new Object;
-                                result.ResultCode = 100;
-                                res.json(result);
-                            }
-                        });
-                    }
-                });
-            }
-        });
-    }
+    });
 });
 
 // function sendOrderToPos(req, res) {
@@ -4683,48 +4702,62 @@ router.post('/user_cart_order_m', async function(req, res, next) {
 
     let result = new Object;
 
-    let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID, CHKFLG, PAYFLG, FINISH) values (?, ?, ?, now(), ?, 'N', 'N', 'N');";
-
-    await connection.query(insertRCNMST, [stoseq, totamt, tblseq, userid], function(err, rows, fields){
+    let findFirst = "select ORDCNT from RCNMST where STOSEQ=? and TBLSEQ=? and FINISH='N' order by REGDAT desc limit 1;";
+    connection.query(findFirst, [stoseq, tblseq], function(err, rows, fields){
         if(err) {
-            result.ResultCode = 200;
-            res.json(result);
+            console.error("RCNMST FIND ORDCNT ERROR", err);
+            let obj = new Object;
+            obj.ResultCode = 200;
+            res.json(obj);
         } else {
-            let rcnseq = rows.insertId;
-            for(let i=0; i<prdnum; i++) {
-                let insertRCNDET = "insert into RCNDET (STOSEQ, RCNSEQ, PRDSEQ, PRDQTY, DETCST) values ("+stoseq+", " + rcnseq + ", " + prdseq[i] + ", " + prdqty[i] + ", " + detcst[i] + ");";
-                connection.query(insertRCNDET, function(err, rows2, fields){
-                    if(err) {
-                        result.ResultCode = 200;
-                        res.json(result);
-                    } else {
-                        let rcndetseq = rows2.insertId;
-                        let options = optseq[i].split(",");
-        
-                        for(let j=0; j<options.length; j++) {
-                            if(options[j] != "") { 
-                                let insertOPTSET = "insert into OPTSET (STOSEQ, RCNDETSEQ, OPTSEQ) values ("+stoseq+", " + rcndetseq + ", " + options[j] +");";
-                                run_query(insertOPTSET, "");
-                            }
-                        }
-
-                        
-                    }
-                });
+            let ORDCNT = 1;
+            if(rows.length != 0) {
+                ORDCNT = rows[0].ORDCNT*1;
             }
-            let q2 = "INSERT INTO CALMST (STOSEQ, CALTYP, CALNAM, USERID, TBLSEQ, RCNSEQ, POSNAM, CHKFLG, REGDAT) VALUES (?, 'C', '신규 주문이 있습니다', ?, ?, ?, '', 'N', now());";
-            connection.query(q2, [stoseq, userid, tblseq, rcnseq], function(err, rows, fields){
-                if(err){
-                    console.error(err);
+            let insertRCNMST = "insert into RCNMST (STOSEQ, TOTAMT, TBLSEQ, REGDAT, USERID, CHKFLG, PAYFLG, FINISH, ORDCNT) values (?, ?, ?, now(), ?, 'N', 'N', 'N', ?);";
+
+            connection.query(insertRCNMST, [stoseq, totamt, tblseq, userid, ORDCNT], function(err, rows, fields){
+                if(err) {
+                    result.ResultCode = 200;
+                    res.json(result);
                 } else {
-                    socketApi.sendPosCall(stoseq);
-                    socketApi.sendAlarmCall(stoseq);
+                    let rcnseq = rows.insertId;
+                    for(let i=0; i<prdnum; i++) {
+                        let insertRCNDET = "insert into RCNDET (STOSEQ, RCNSEQ, PRDSEQ, PRDQTY, DETCST) values ("+stoseq+", " + rcnseq + ", " + prdseq[i] + ", " + prdqty[i] + ", " + detcst[i] + ");";
+                        connection.query(insertRCNDET, function(err, rows2, fields){
+                            if(err) {
+                                result.ResultCode = 200;
+                                res.json(result);
+                            } else {
+                                let rcndetseq = rows2.insertId;
+                                let options = optseq[i].split(",");
+                
+                                for(let j=0; j<options.length; j++) {
+                                    if(options[j] != "") { 
+                                        let insertOPTSET = "insert into OPTSET (STOSEQ, RCNDETSEQ, OPTSEQ) values ("+stoseq+", " + rcndetseq + ", " + options[j] +");";
+                                        run_query(insertOPTSET, "");
+                                    }
+                                }
+        
+                                
+                            }
+                        });
+                    }
+                    let q2 = "INSERT INTO CALMST (STOSEQ, CALTYP, CALNAM, USERID, TBLSEQ, RCNSEQ, POSNAM, CHKFLG, REGDAT) VALUES (?, 'C', '신규 주문이 있습니다', ?, ?, ?, '', 'N', now());";
+                    connection.query(q2, [stoseq, userid, tblseq, rcnseq], function(err, rows, fields){
+                        if(err){
+                            console.error(err);
+                        } else {
+                            socketApi.sendPosCall(stoseq);
+                            socketApi.sendAlarmCall(stoseq);
+                        }
+                    });
                 }
             });
+            result.ResultCode = 100;
+            res.json(result);
         }
     });
-    result.ResultCode = 100;
-    await res.json(result);
 });
 
 //주문 내역
