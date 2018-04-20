@@ -5166,6 +5166,63 @@ router.post('/mobile/pos/getOrder', function(req, res, next){
 
 });
 
+//테이블 개별 주문 목록
+router.post('/mobile/pos/getTableOrder', function(req, res, next){
+    let STOSEQ = req.body.STOSEQ;
+    let TBLSEQ = req.body.TBLSEQ;
+
+    let q = "select A.ID as RCNSEQ, C.ID as RCNDETSEQ, A.ORDCNT, B.TBLNAM, G.MOBNUM, C.PRDQTY, C.DETCST, GROUP_CONCAT(E.OPTNAM) as OPTNAM, F.PRDNAM from RCNMST as A "
+          + "left join TBLSTO as B on A.TBLSEQ=B.ID "
+          + "left join RCNDET as C on C.RCNSEQ=A.ID "
+          + "left join OPTSET as D on D.RCNDETSEQ=C.ID "
+          + "left join OPTMST as E on D.OPTSEQ=E.ID "
+          + "left join PRDMST as F on F.ID=C.PRDSEQ "
+          + "left join USRMST as G on G.USERID=A.USERID "
+          + "where A.STOSEQ=? and A.TBLSEQ=? and A.FINISH='N' "
+          + "group by C.ID order by A.REGDAT;";
+
+    connection.query(q, [STOSEQ, TBLSEQ], function(err, rows, fields){
+        if(err) {
+            console.error(err);
+            let obj = new Object();
+            obj.ResultCode = 200;
+            res.json(obj);
+        } else {
+            let result = new Object();
+            let order = [];
+            let array_name = "order";
+            if(rows.length == 0) {
+                result.ResultCode = 300;
+                res.json(result);
+            } else {
+                let TOTAMT = 0;
+
+                for(let i=0; i<rows.length; i++) {
+                    TOTAMT += rows[i].DETCST;
+
+                    let obj = new Object();
+                    obj.ORDCNT = rows[i].ORDCNT;
+                    obj.PRDNAM = rows[i].PRDNAM;
+                    obj.PRDOPT = rows[i].OPTNAM;
+                    if(_.isNull(rows[i].OPTNAM)) {
+                        obj.PRDOPT = "옵션 없음";
+                    }
+                    obj.DETCST = rows[i].DETCST;
+                    obj.PRDQTY = rows[i].PRDQTY;
+                    order.push(obj);
+                }
+                result.MOBNUM = rows[0].MOBNUM.slice(7);
+                result.TBLNAM = rows[0].TBLNAM;
+                result.TOTAMT = TOTAMT;
+                result.ResultCode = 100;
+                result.array_name = array_name;
+                result[array_name] = order;
+                res.json(result);
+            }
+        }
+    });
+})
+
 router.post('/mobile/pos/getOrderList', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
 
