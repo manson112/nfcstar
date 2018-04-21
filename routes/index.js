@@ -5171,7 +5171,7 @@ router.post('/mobile/pos/getTableOrder', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
     let TBLSEQ = req.body.TBLSEQ;
 
-    let q = "select A.ID as RCNSEQ, C.ID as RCNDETSEQ, A.ORDCNT, B.TBLNAM, G.MOBNUM, C.PRDQTY, C.DETCST, GROUP_CONCAT(E.OPTNAM) as OPTNAM, F.PRDNAM from RCNMST as A "
+    let q = "select A.ID as RCNSEQ, C.ID as RCNDETSEQ, A.ORDCNT, B.TBLNAM, G.MOBNUM, C.PRDQTY, C.DETCST, GROUP_CONCAT(E.OPTNAM) as OPTNAM, F.PRDNAM, A.CHKFLG from RCNMST as A "
           + "left join TBLSTO as B on A.TBLSEQ=B.ID "
           + "left join RCNDET as C on C.RCNSEQ=A.ID "
           + "left join OPTSET as D on D.RCNDETSEQ=C.ID "
@@ -5209,6 +5209,7 @@ router.post('/mobile/pos/getTableOrder', function(req, res, next){
                     }
                     obj.DETCST = rows[i].DETCST;
                     obj.PRDQTY = rows[i].PRDQTY;
+                    obj.CHKFLG = rows[i].CHKFLG;
                     order.push(obj);
                 }
                 result.MOBNUM = rows[0].MOBNUM.slice(7);
