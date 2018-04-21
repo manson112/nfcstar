@@ -4290,6 +4290,7 @@ router.post('/calluser_m', function (req, res, next) {
                 admin.messaging().sendToDevice(fcm_array, payload)
                     .then(function (response) {
                         console.log("메세지 전송 완료 :", response);
+                        console.log(response.results[0].error);
                         var obj = new Object;
                         obj.ResultCode = 100;
                         res.json(obj);
