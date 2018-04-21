@@ -4290,7 +4290,6 @@ router.post('/calluser_m', function (req, res, next) {
                 admin.messaging().sendToDevice(fcm_array, payload)
                     .then(function (response) {
                         console.log("메세지 전송 완료 :", response);
-                        console.log(response.results[0].error);
                         var obj = new Object;
                         obj.ResultCode = 100;
                         res.json(obj);
@@ -4487,6 +4486,43 @@ router.post('/callpos_image_m', function (req, res, next) {
 router.post('/sendusers_m', function (req, res, next) {
     //고객 여러명에게 보내기
 });
+router.post('/mobile/pos/getCallList', function(req, res, next){
+    let STOSEQ = req.body.STOSEQ;
+
+    let q = "select CALTYP, CALNAM, USERID, TBLSEQ, RCNSEQ, CHKFLG, (UNIX_TIMESTAMP(REGDAT)*1000) as TIME from CALMST where CALTYP='C' and STOSEQ=? order by REGDAT desc limit 1;";
+
+    connection.query(q, [STOSEQ], function(err, rows, fields){
+        if(err) {
+            console.error(err);
+            let obj = new Object();
+            obj.ResultCode = 200;
+            obj.msg = "불러오기 실패";
+            res.json(obj);
+        } else {
+            let calls = [];
+            for(let i=0; i<rows.length; i++) {
+                let obj = new Object();
+                obj.TIME = rows[i].TIME;
+                obj.TYPE = rows[i].CALTYP;
+                obj.CALNAM = rows[i].CALNAM;
+                obj.USERID = rows[i].USERID;
+                obj.TBLSEQ = rows[i].TBLSEQ;
+                obj.RCNSEQ = rows[i].RCNSEQ;
+                if(_.isNull(rows[i].RCNSEQ)) {
+                    obj.RCNSEQ = "";
+                }
+                obj.CHKFLG = rows[i].CHKFLG;
+                calls.push(obj);
+            }
+            let result = new Object();
+            result.ResultCode = 100;
+            result.calls = calls;
+            res.json(result);
+        }
+    })
+
+});
+
 // 채팅
 router.post('/usercalllist_m', function (req, res, next) {
     let stoseq = req.body.STOSEQ;
