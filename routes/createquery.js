@@ -582,7 +582,7 @@ exports.CALMST = function() {
     + "     `ID`      INT            NOT NULL    AUTO_INCREMENT, "
     + "     `STOSEQ`  INT            NULL        COMMENT '가게 번호', "
     + "     `CALTYP`  VARCHAR(3)     CHARACTER SET utf8 NULL        COMMENT '호출 타입(방향)', "
-    + "     `CALNAM`  VARCHAR(60)    CHARACTER SET utf8 NULL        COMMENT '호출 내용', "
+    + "     `CALNAM`  VARCHAR(100)    CHARACTER SET utf8 NULL        COMMENT '호출 내용', "
     + "     `USERID`  VARCHAR(20)    CHARACTER SET utf8 NULL        COMMENT '호출자', "
     + "     `TBLSEQ`  INT            NULL        COMMENT '테이블번호', "
     + "     `RCNSEQ`  INT            NULL        COMMENT '주문 번호', "

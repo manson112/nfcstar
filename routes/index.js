@@ -2940,9 +2940,12 @@ router.get('/temp', function (req, res, next) {
     // run_query("update RCNMST set REGDAT=now()", "완료");
 
     // run_query("alter table RCNMST add column ORDCNT int NULL;", "완료");
-    run_query("delete from OPTSET;");
-    run_query("delete from RCNDET;");
-    run_query("delete from RCNMST;");
+    // run_query("delete from OPTSET;");
+    // run_query("delete from RCNDET;");
+    // run_query("delete from RCNMST;");
+
+    run_query("alter table CALMST change `CALNAM` `CALNAM` varchar(100) character set utf8 null;", "완료");
+
     res.redirect('/dbcheck');
 }); 
 
@@ -4402,6 +4405,7 @@ router.post('/callpos_image_m', function (req, res, next) {
     let msg_to;
     let msg_from;
     let msg_body = "사진";
+    let TBLSEQ;
 
     let form = new formidable.IncomingForm();
     form.encoding = "utf-8";
@@ -4428,6 +4432,7 @@ router.post('/callpos_image_m', function (req, res, next) {
     }).on('field', function (field, value) {
         if (field === 'MSG_TO') msg_to = value;
         else if (field === 'MSG_FROM') msg_from = value;
+        else if (field === 'TBLSEQ') TBLSEQ = value;
     }).on('fileBegin', function (name, file) {
         file.path = form.uploadDir + msg_to + "_" + new Date().valueOf() + file.name;
         file_recieved = file.path;
@@ -4438,49 +4443,25 @@ router.post('/callpos_image_m', function (req, res, next) {
 
     }).on('end', function (req, ress) {
         console.log('form end:\n\n');
+        
+        let q = "insert into CALMST (STOSEQ, CALTYP, CALNAM, USERID, TBLSEQ, CHKFLG, REGDAT) values (?, 'CP', ?, ?, ?, 'N', now());";
 
-        let q = "select FCMTOK from POSMST where STOSEQ=" + msg_to + ";";
+        connection.query(q, [msg_to, file_recieved, msg_from, TBLSEQ], function(err, rows, fields){
+            if(err) {
+                console.error(err);
+                let obj = new Object();
+                obj.ResultCode = 200;
+                res.json(obj);
+            } else {
 
-        let fcm_array = [];
 
-        connection.query(q, function (err, rows, fields) {
-            if (err) { console.error(err); }
-            else {
-                for (let i = 0; i < rows.length; i++) {
-                    fcm_array.push(rows[i].FCMTOK);
-                    console.log(rows[i].FCMTOK);
-                }
-    
-                var payload = {
-                    notification: {
-                        title: msg_from,
-                        body: msg_body
-                    },
-                    data: {
-                        TYPE: 'MESSAGE',
-                        msg_from: msg_from,
-                        msg_to: msg_to,
-                        msg: msg_body,
-                        IMAGE: file_recieved
-                    }
-                };
-    
-                admin.messaging().sendToDevice(fcm_array, payload)
-                    .then(function (response) {
-                        console.log("메세지 전송 완료 :", response);
-                        var obj = new Object;
-                        obj.ResultCode = 100;
-                        obj.image_url = file_recieved;
-                        res.json(obj);
-                    })
-                    .catch(function (err) {
-                        console.log("메세지 전송 에러 :", err);
-                        var obj = new Object;
-                        obj.ResultCode = 200;
-                        res.json(obj);
-                    });
+
+                let obj = new Object();
+                obj.ResultCode = 100;
+                res.json(obj);
             }
         });
+
     });
 });
 router.post('/sendusers_m', function (req, res, next) {
@@ -4519,8 +4500,42 @@ router.post('/mobile/pos/getCallList', function(req, res, next){
             result.calls = calls;
             res.json(result);
         }
-    })
+    });
 
+});
+router.post('mobile/pos/getPictureList', function(req, res, next){
+    let STOSEQ = req.body.STOSEQ;
+
+    let q = "select CALTYP, CALNAM, USERID, TBLSEQ, CHKFLG, (UNIX_TIMESTAMP(REGDAT)*1000) as TIME from CALMST where CALTYP='CP' and STOSEQ=? order by REGDAT desc limit 1;";
+
+    connection.query(q, [STOSEQ], function(err, rows, fields){
+        if(err) {
+            console.error(err);
+            let obj = new Object();
+            obj.ResultCode = 200;
+            obj.msg = "불러오기 실패";
+            res.json(obj);
+        } else {
+            let pictures = [];
+            for(let i=0; i<rows.length; i++) {
+                let obj = new Object();
+                obj.TIME = rows[i].TIME;
+                obj.TYPE = rows[i].CALTYP;
+                obj.CALNAM = rows[i].CALNAM;
+                obj.USERID = rows[i].USERID;
+                obj.TBLSEQ = rows[i].TBLSEQ;
+                if(_.isNull(rows[i].RCNSEQ)) {
+                    obj.RCNSEQ = "";
+                }
+                obj.CHKFLG = rows[i].CHKFLG;
+                pictures.push(obj);
+            }
+            let result = new Object();
+            result.ResultCode = 100;
+            result.pictures = pictures;
+            res.json(result);
+        }
+    });
 });
 
 // 채팅
