@@ -4454,9 +4454,8 @@ router.post('/callpos_image_m', function (req, res, next) {
                 res.json(obj);
             } else {
 
-
-
                 let obj = new Object();
+                obj.image_url = file_recieved;
                 obj.ResultCode = 100;
                 res.json(obj);
             }
