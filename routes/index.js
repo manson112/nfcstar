@@ -4502,7 +4502,7 @@ router.post('/mobile/pos/getCallList', function(req, res, next){
     });
 
 });
-router.post('mobile/pos/getPictureList', function(req, res, next){
+router.post('/mobile/pos/getPictureList', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
 
     let q = "select CALTYP, CALNAM, USERID, TBLSEQ, CHKFLG, (UNIX_TIMESTAMP(REGDAT)*1000) as TIME from CALMST where CALTYP='CP' and STOSEQ=? order by REGDAT desc limit 1;";
