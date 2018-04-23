@@ -4407,7 +4407,7 @@ router.post('/calluser_image_m', function (req, res, next) {
                         title: msg_title,
                         body: msg_body,
                         FROM: msg_from,
-                        TO: userid,
+                        TO: msg_to,
                         IMAGE: file_recieved
                     }
                 };
