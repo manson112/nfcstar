@@ -20,7 +20,7 @@ var router = express.Router();
 
 //fcm
 var admin = require("firebase-admin");
-var serviceAccount = require("../key/nfcstar-e7670-firebase-adminsdk-v3vfz-d1a035e0c5.json");
+var serviceAccount = require("../key/nfcstar-e7670-firebase-adminsdk-v3vfz-2baefe1916.json");
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -4279,7 +4279,6 @@ router.post('/calluser_m', function (req, res, next) {
         else {
             for (let i = 0; i < rows.length; i++) {
                 fcm_array.push(rows[i].FCMTOK);
-                console.log(rows[i].FCMTOK);
             }
     
             var payload = {
