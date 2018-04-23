@@ -4357,7 +4357,7 @@ router.post('/calluser_image_m', function (req, res, next) {
     form.encoding = "utf-8";
     form.uploadDir = "./public/images/";
     form.keepExtensions = true;
-    form.maxFieldsSize = 1 * 1024 * 1024;
+    form.maxFieldsSize = 5 * 1024 * 1024;
 
     form.parse(req, function (err, fields, files) {
         if (err) {
@@ -4378,7 +4378,10 @@ router.post('/calluser_image_m', function (req, res, next) {
     }).on('field', function (field, value) {
         if (field === 'MSG_TO') msg_to = value;
         else if (field === 'MSG_FROM') msg_from = value;
-        else if (field === 'STONAM') msg_title = value;
+        else if (field === 'STONAM') {
+            console.log(value);
+            msg_title = value;
+        }
     }).on('fileBegin', function (name, file) {
         file.path = form.uploadDir + msg_to + "_" + new Date().valueOf() + file.name;
         file_recieved = file.path;
@@ -4446,7 +4449,7 @@ router.post('/callpos_image_m', function (req, res, next) {
     form.encoding = "utf-8";
     form.uploadDir = "./public/images/";
     form.keepExtensions = true;
-    form.maxFieldsSize = 1 * 1024 * 1024;
+    form.maxFieldsSize = 5 * 1024 * 1024;
 
     form.parse(req, function (err, fields, files) {
         if (err) {
