@@ -2944,8 +2944,8 @@ router.get('/temp', function (req, res, next) {
     // run_query("delete from RCNDET;");
     // run_query("delete from RCNMST;");
 
-    run_query("alter table CALMST change `CALNAM` `CALNAM` varchar(100) character set utf8 null;", "완료");
-
+    // run_query("alter table CALMST change `CALNAM` `CALNAM` varchar(100) character set utf8 null;", "완료");
+    run_query("insert into NCALL2INFO (STOSEQ, TYPE, SHOWTIME) values (1, '', 2);", "완료");
     res.redirect('/dbcheck');
 }); 
 
@@ -4379,7 +4379,6 @@ router.post('/calluser_image_m', function (req, res, next) {
         if (field === 'MSG_TO') msg_to = value;
         else if (field === 'MSG_FROM') msg_from = value;
         else if (field === 'STONAM') {
-            console.log(value);
             msg_title = value;
         }
     }).on('fileBegin', function (name, file) {
@@ -5770,7 +5769,7 @@ router.post('/mobile/android/ncall/version', function(req, res, next){
 });
 router.post('/mobile/android/ncall2/version', function(req, res, next){
     let result = new Object();
-    result.versionCode = 1;
+    result.versionCode = 2;
     result.ResultCode = 100;
     res.json(result);
 });
