@@ -4289,7 +4289,7 @@ router.post('/calluser_m', function (req, res, next) {
                 data: {
                     FROM: msg_from,
                     TO: userid,
-                    IMAGE: ''
+                    IMAGE: "empty"
                 }
             };
             if (fcm_array.length == 0) {
