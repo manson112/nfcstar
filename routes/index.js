@@ -4282,11 +4282,9 @@ router.post('/calluser_m', function (req, res, next) {
             }
     
             var payload = {
-                notification: {
-                    title: msg_title,
-                    body: msg_body
-                },
                 data: {
+                    title: msg_title,
+                    body: msg_body,
                     FROM: msg_from,
                     TO: userid,
                     IMAGE: "empty"
@@ -4311,6 +4309,40 @@ router.post('/calluser_m', function (req, res, next) {
             }
         }
     });
+});
+
+router.post('/user_calltest', function(req, res, next){
+    let userid = req.body.userid;
+    let msg_title = req.body.title;
+    let msg_body = req.body.body;
+    let msg_from = req.body.from;
+
+    let fcm_array = "emDboeVbp7A:APA91bGT20N0RBu3cAuvhjiKCBtQgfRcuU9Yq2_IuZ1efDZdptJA7tYBdOGmybxlRKghj_k1OkkGj1TKpeh-XpLpTvbZ7nzxrpkNBT33iXnK_sXSL6nshSqMPIGpwzB-KU8jMei6RyaB";
+
+    var payload = {
+        data: {
+            title: msg_title,
+            body: msg_body,
+            FROM: msg_from,
+            TO: userid,
+            IMAGE: "empty"
+        }
+    };
+
+    admin.messaging().sendToDevice(fcm_array, payload)
+        .then(function (response) {
+            console.log("메세지 전송 완료 :", response);
+            var obj = new Object;
+            obj.ResultCode = 100;
+            res.json(obj);
+        })
+        .catch(function (err) {
+            console.log("메세지 전송 에러 :", err);
+            var obj = new Object;
+            obj.ResultCode = 200;
+            res.json(obj);
+        });
+
 });
 
 router.post('/calluser_image_m', function (req, res, next) {
@@ -4371,17 +4403,15 @@ router.post('/calluser_image_m', function (req, res, next) {
                 }
     
                 var payload = {
-                    notification: {
-                        title: msg_title,
-                        body: msg_body
-                    },
                     data: {
+                        title: msg_title,
+                        body: msg_body,
                         FROM: msg_from,
-                        TO: msg_to,
+                        TO: userid,
                         IMAGE: file_recieved
                     }
                 };
-                console.log(msg_title);
+                
                 if (fcm_array.length == 0) {
                     res.send("보낼 대상이 없습니다");
                 } else {
