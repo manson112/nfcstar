@@ -5746,6 +5746,31 @@ router.post('/mobile/checkSale', function(req, res, next){
     });
 });
 
+//버전 체크
+router.post('/mobile/android/nstar/version', function(req, res, next){
+    let result = new Object();
+    result.versionCode = 1;
+    result.ResultCode = 100;
+    res.json(result);
+});
+router.post('/mobile/android/npos/version', function(req, res, next){
+    let result = new Object();
+    result.versionCode = 1;
+    result.ResultCode = 100;
+    res.json(result);
+});
+router.post('/mobile/android/ncall/version', function(req, res, next){
+    let result = new Object();
+    result.versionCode = 1;
+    result.ResultCode = 100;
+    res.json(result);
+});
+router.post('/mobile/android/ncall2/version', function(req, res, next){
+    let result = new Object();
+    result.versionCode = 1;
+    result.ResultCode = 100;
+    res.json(result);
+});
 
 // INIT
 router.get('/init', function (req, res, next) {
