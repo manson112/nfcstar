@@ -585,6 +585,7 @@ router.post('/imageUpload', function(req, res, next){
     let page = "";
     let image = "";
 
+    let form = new formidable.IncomingForm();
     form.encoding = "utf-8";
     form.uploadDir = "./public/images/";
     form.keepExtensions = true;
@@ -2945,15 +2946,27 @@ router.get('/temp', function (req, res, next) {
     // run_query("delete from RCNMST;");
 
     // run_query("alter table CALMST change `CALNAM` `CALNAM` varchar(100) character set utf8 null;", "완료");
-    run_query("insert into NCALL2INFO (STOSEQ, TYPE, SHOWTIME) values (1, '', 2);", "완료");
+    // run_query("insert into NCALL2INFO (STOSEQ, TYPE, SHOWTIME) values (1, '', 2);", "완료");
+    
+
+
     res.redirect('/dbcheck');
 }); 
 
+// router.post('/temp2', function(req, res, next){
+//     let CHFNAM = req.body.CHFNAM;
+//     let STONAM = req.body.STONAM;
 
-
+//     connection.query("update STOMST set CHFNAM=?, STONAM=? where ID=1;", [CHFNAM, STONAM], function(err, rows, fields){
+//         if(err) {
+//             console.error(err);
+//         } else {
+//             res.send("완료");
+//         }
+//     });
+// });
 
 //POST pages
-
 router.post('/addstore_p', function (req, res, next) {
     //가게등록
     var body = req.body;
