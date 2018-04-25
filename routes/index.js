@@ -5584,7 +5584,7 @@ router.post('/mobile/alarm/adv_select', function(req, res, next){
 
 });
 //NCALL 포스 호출
-router.post('mobile/alarm/call_from_pos', function(req, res, next){
+router.post('/mobile/alarm/call_from_pos', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
 
     let q = "select * from CALMST where STOSEQ=? order by REGDAT desc limit 1;";
