@@ -2941,14 +2941,20 @@ router.get('/temp', function (req, res, next) {
     // run_query("update RCNMST set REGDAT=now()", "완료");
 
     // run_query("alter table RCNMST add column ORDCNT int NULL;", "완료");
-    run_query("delete from OPTSET;");
-    run_query("delete from RCNDET;");
-    run_query("delete from RCNMST;");
+    // run_query("delete from OPTSET;");
+    // run_query("delete from RCNDET;");
+    // run_query("delete from RCNMST;");
 
     // run_query("alter table CALMST change `CALNAM` `CALNAM` varchar(100) character set utf8 null;", "완료");
     // run_query("insert into NCALL2INFO (STOSEQ, TYPE, SHOWTIME) values (1, '', 2);", "완료");
     
-
+    // run_query("update USRMST set MOBNUM='01098008504' where ID=3;", "완료");
+    // run_query(create.APPVERSION(), "완료");
+    // run_query("insert into APPVERSION (APPNAM, VERSION, MODDAT) values ('NSTAR2.0', 1, now());", "완료");
+    // run_query("insert into APPVERSION (APPNAM, VERSION, MODDAT) values ('NPOS2.0', 1, now());", "완료");
+    // run_query("insert into APPVERSION (APPNAM, VERSION, MODDAT) values ('NCALL2.0', 1, now());", "완료");
+    // run_query("insert into APPVERSION (APPNAM, VERSION, MODDAT) values ('NCALL3.0', 1, now());", "완료");
+    
 
     res.redirect('/dbcheck');
 }); 
@@ -5717,28 +5723,88 @@ router.post('/mobile/checkSale', function(req, res, next){
 
 //버전 체크
 router.post('/mobile/android/nstar/version', function(req, res, next){
-    let result = new Object();
-    result.versionCode = 1;
-    result.ResultCode = 100;
-    res.json(result);
+
+    let q = "select VERSION from APPVERSION where APPNAM='NSTAR2.0';";
+    connection.query(q, function(err, rows, fields){
+        if (err) {
+            console.error(err);
+            let result = new Object();
+            result.ResultCode = 100;
+            res.json(result);
+        } else {
+            let result = new Object();
+            result.versionCode = rows[0].VERSION;
+            result.ResultCode = 100;
+            res.json(result);
+        }
+    });
 });
 router.post('/mobile/android/npos/version', function(req, res, next){
-    let result = new Object();
-    result.versionCode = 1;
-    result.ResultCode = 100;
-    res.json(result);
+    let q = "select VERSION from APPVERSION where APPNAM='NPOS2.0';";
+    connection.query(q, function(err, rows, fields){
+        if (err) {
+            console.error(err);
+            let result = new Object();
+            result.ResultCode = 100;
+            res.json(result);
+        } else {
+            let result = new Object();
+            result.versionCode = rows[0].VERSION;
+            result.ResultCode = 100;
+            res.json(result);
+        }
+    });
 });
 router.post('/mobile/android/ncall/version', function(req, res, next){
-    let result = new Object();
-    result.versionCode = 1;
-    result.ResultCode = 100;
-    res.json(result);
+    let q = "select VERSION from APPVERSION where APPNAM='NCALL2.0';";
+    connection.query(q, function(err, rows, fields){
+        if (err) {
+            console.error(err);
+            let result = new Object();
+            result.ResultCode = 100;
+            res.json(result);
+        } else {
+            let result = new Object();
+            result.versionCode = rows[0].VERSION;
+            result.ResultCode = 100;
+            res.json(result);
+        }
+    });
 });
 router.post('/mobile/android/ncall2/version', function(req, res, next){
-    let result = new Object();
-    result.versionCode = 2;
-    result.ResultCode = 100;
-    res.json(result);
+    let q = "select VERSION from APPVERSION where APPNAM='NCALL3.0';";
+    connection.query(q, function(err, rows, fields){
+        if (err) {
+            console.error(err);
+            let result = new Object();
+            result.ResultCode = 100;
+            res.json(result);
+        } else {
+            let result = new Object();
+            result.versionCode = rows[0].VERSION;
+            result.ResultCode = 100;
+            res.json(result);
+        }
+    });
+});
+
+router.post('/versionUpdate', function(req, res, next){
+    let APPNAM = req.body.APPNAM;
+    let VERSION = req.body.VERSION;
+
+    let q = "update APPVERSION set VERSION=? where APPNAM=?;";
+    connection.query(q, [VERSION, APPNAM], function(err, rows, fields){
+        if(err) {
+            console.error(err);
+            let obj = new Object();
+            obj.resultCode = 200;
+            res.json(obj);
+        } else {
+            let obj = new Object();
+            obj.resultCode = 100;
+            res.json(obj);
+        }
+    });
 });
 
 // INIT

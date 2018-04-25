@@ -615,3 +615,14 @@ exports.NCALLADV = function() {
     + "     PRIMARY KEY (ID)"
     + " ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
 }
+
+exports.APPVERSION = function() {
+    return "CREATE TABLE APPVERSION "
+    + " ("
+    + " `ID`       INT            NOT NULL    AUTO_INCREMENT, "
+    + " `APPNAM`   VARCHAR(20)    CHARACTER SET utf8 NULL        COMMENT '앱 이름', " 
+    + " `VERSION`  INT            NULL        COMMENT '앱 버전', "
+    + " `MODDAT`   DATETIME       NULL        COMMENT '수정 날짜', " 
+    + " PRIMARY KEY (ID)"
+    + " )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;"
+}
