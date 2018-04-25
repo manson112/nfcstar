@@ -5588,7 +5588,7 @@ router.post('/mobile/alarm/call_from_pos', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
 
     let q = "select * from CALMST where STOSEQ=? order by REGDAT desc limit 1;";
-    connection.query(q, [], function(err, rows, fields){
+    connection.query(q, [STOSEQ], function(err, rows, fields){
         if(err) {
             console.error(err);
             let obj = new Object();
