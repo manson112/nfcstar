@@ -21,6 +21,11 @@ html
 						reloadDelivery();
 					}
 				});
+				socket.on("#{STOSEQ}_ALARM", function(jsonMsg) {
+					if(jsonMsg.MSGTYP == "CALL") {
+						reloadCall();
+					}
+				});
 			});
 
 			function reloadCall() {
