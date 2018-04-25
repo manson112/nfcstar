@@ -2941,9 +2941,9 @@ router.get('/temp', function (req, res, next) {
     // run_query("update RCNMST set REGDAT=now()", "완료");
 
     // run_query("alter table RCNMST add column ORDCNT int NULL;", "완료");
-    // run_query("delete from OPTSET;");
-    // run_query("delete from RCNDET;");
-    // run_query("delete from RCNMST;");
+    run_query("delete from OPTSET;");
+    run_query("delete from RCNDET;");
+    run_query("delete from RCNMST;");
 
     // run_query("alter table CALMST change `CALNAM` `CALNAM` varchar(100) character set utf8 null;", "완료");
     // run_query("insert into NCALL2INFO (STOSEQ, TYPE, SHOWTIME) values (1, '', 2);", "완료");
@@ -2964,6 +2964,10 @@ router.get('/temp', function (req, res, next) {
 //             res.send("완료");
 //         }
 //     });
+//     run_query("delete from OPTSET;");
+//     run_query("delete from RCNDET;");
+//     run_query("delete from RCNMST;");
+    
 // });
 
 //POST pages
@@ -4249,7 +4253,6 @@ router.post('/callpos_m', function (req, res, next) {
                 if(err) {
                     console.error(err);
                 } else {
-                    socketApi.sendPosCall(stoseq);
                     socketApi.sendAlarmCall(stoseq);
                     var obj = new Object;
                     obj.ResultCode = 100;
