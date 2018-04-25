@@ -24,9 +24,7 @@ socketApi.sendPosImageCall = function(stoseq) {
 };
 
 socketApi.sendAlarmCall = function(stoseq) {
-    console.log("sendAlarmCall");
     let obj = new Object();
-
     obj.MSGTYP = "CALL";
     io.sockets.emit(stoseq+"_ALARM", obj);
 }
