@@ -4213,68 +4213,19 @@ router.post('/callpos_m', function (req, res, next) {
     let tblseq = req.body.TBLSEQ;
     let tblnam = req.body.TBLNAM;
 
-    let q = "select FCMTOK, FCMTOK2 from POSMST where STOSEQ=?;";
+    let q2 = "INSERT INTO CALMST (STOSEQ, CALTYP, CALNAM, USERID, TBLSEQ, POSNAM, CHKFLG, REGDAT) VALUES (?, 'C', ?, ?, ?, '', 'N', now());";
 
-    let fcm_array = [];
-
-    connection.query(q, [stoseq], function (err, rows, fields) {
-        if (err) { console.error(err); }
-        else {
-            for (let i = 0; i < rows.length; i++) {
-                fcm_array.push(rows[i].FCMTOK);
-                fcm_array.push(rows[i].FCMTOK2);
-            }
-            console.log(fcm_array);
-    
-            // var payload = {
-            //     notification: {
-            //         title: msg_from,
-            //         body: msg_body
-            //         // ,sound: 'default',
-            //         // badge: '1',
-            //         // priority: "high", 
-            //         // show_in_foreground: true,
-            //         // content_available: true
-            //     },
-            //     data: {
-            //         TYPE: 'MESSAGE',
-            //         msg_from: msg_from,
-            //         msg_to: stoseq,
-            //         msg: msg_body,
-            //         tblseq: tblseq,
-            //         tblnam: tblnam,
-            //         IMAGE: ''
-            //     }
-            // };
-            
-            let q2 = "INSERT INTO CALMST (STOSEQ, CALTYP, CALNAM, USERID, TBLSEQ, POSNAM, CHKFLG, REGDAT) VALUES (?, 'C', ?, ?, ?, '', 'N', now());";
-
-            connection.query(q2, [stoseq, msg_body, msg_from, tblseq], function(err, rows, fields){
-                if(err) {
-                    console.error(err);
-                } else {
-                    socketApi.sendAlarmCall(stoseq);
-                    var obj = new Object;
-                    obj.ResultCode = 100;
-                    res.json(obj);
-
-                    // admin.messaging().sendToDevice(fcm_array, payload)
-                    // .then(function (response) {
-                    //     console.log("메세지 전송 완료 :", response);
-                    //     socketApi.sendPosCall(stoseq);
-                    //     socketApi.sendAlarmCall(stoseq);
-                    //     var obj = new Object;
-                    //     obj.ResultCode = 100;
-                    //     res.json(obj);
-                    // })
-                    // .catch(function (err) {
-                    //     console.log("메세지 전송 에러 :", err);
-                    //     var obj = new Object;
-                    //     obj.ResultCode = 200;
-                    //     res.json(obj);
-                    // });
-                }
-            });
+    connection.query(q2, [stoseq, msg_body, msg_from, tblseq], function(err, rows, fields){
+        if(err) {
+            console.error(err);
+            var obj = new Object;
+            obj.ResultCode = 200;
+            res.json(obj);
+        } else {
+            socketApi.sendAlarmCall(stoseq);
+            var obj = new Object;
+            obj.ResultCode = 100;
+            res.json(obj);
         }
     });
 });

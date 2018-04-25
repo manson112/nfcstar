@@ -10,18 +10,21 @@ io.on('connection', function(socket) {
 });
 
 socketApi.sendPosCall = function(stoseq) {
+    console.log("sendPosCall");
     let obj = new Object();
     obj.MSGTYP = "CALL";
     io.sockets.emit(stoseq+"_POS", obj);
 };
 
 socketApi.sendPosImageCall = function(stoseq) {
+    console.log("sendImageCall");
     let obj = new Object();
     obj.MSGTYP = "CALL";
     io.sockets.emit(stoseq+"_PICTURE_ALARM", obj);
 };
 
 socketApi.sendAlarmCall = function(stoseq) {
+    console.log("sendAlarmCall");
     let obj = new Object();
 
     obj.MSGTYP = "CALL";
