@@ -4238,48 +4238,66 @@ router.post('/callpos_m', function (req, res, next) {
 
 router.post('/calluser_m', function (req, res, next) {
     //고객 1명한테 보내기
+    let posid = req.body.POSID;
     let userid = req.body.MSG_TO;
     let msg_title = req.body.MSG_TITLE;
     let msg_body = req.body.MSG_BODY;
     let msg_from = req.body.MSG_FROM;
 
-    let q = "select FCMTOK from USRMST where USERID=?;";
+    let q2 = "insert into CALMST (STOSEQ, CALTYP, CALNAM, USERID, POSNAM, CHKFLG, REGDAT) values (?, 'S', ?, ?, ?, 'N', now());";
 
-    let fcm_array = [];
+    connection.query(q2, [msg_from, msg_body, posid, posid], function(err, rows, fields){
+        if(err) {
+            console.error(err);
+            let obj = new Object();
+            obj.ResultCode = 200;
+            res.json(obj);
+        } else {
+            let q = "select FCMTOK from USRMST where USERID=?;";
 
-    connection.query(q, [userid], function (err, rows, fields) {
-        if (err) { console.error(err); }
-        else {
-            for (let i = 0; i < rows.length; i++) {
-                fcm_array.push(rows[i].FCMTOK);
-            }
-    
-            var payload = {
-                data: {
-                    title: msg_title,
-                    body: msg_body,
-                    FROM: msg_from,
-                    TO: userid,
-                    IMAGE: "empty"
+            let fcm_array = [];
+        
+            connection.query(q, [userid], function (err, rows, fields) {
+                if (err) { 
+                    console.error(err); 
+                    let obj = new Object();
+                    obj.ResultCode = 200;
+                    res.json(obj);
                 }
-            };
-            if (fcm_array.length == 0) {
-                res.send("보낼 대상이 없습니다");
-            } else {
-                admin.messaging().sendToDevice(fcm_array, payload)
-                    .then(function (response) {
-                        console.log("메세지 전송 완료 :", response);
-                        var obj = new Object;
-                        obj.ResultCode = 100;
-                        res.json(obj);
-                    })
-                    .catch(function (err) {
-                        console.log("메세지 전송 에러 :", err);
-                        var obj = new Object;
-                        obj.ResultCode = 200;
-                        res.json(obj);
-                    });
-            }
+                else {
+                    for (let i = 0; i < rows.length; i++) {
+                        fcm_array.push(rows[i].FCMTOK);
+                    }
+            
+                    var payload = {
+                        data: {
+                            title: msg_title,
+                            body: msg_body,
+                            FROM: msg_from,
+                            TO: userid,
+                            IMAGE: "empty"
+                        }
+                    };
+                    if (fcm_array.length == 0) {
+                        res.send("보낼 대상이 없습니다");
+                    } else {
+                        admin.messaging().sendToDevice(fcm_array, payload)
+                            .then(function (response) {
+                                console.log("메세지 전송 완료 :", response);
+                                socketApi.sendUserCall(msg_from);
+                                var obj = new Object;
+                                obj.ResultCode = 100;
+                                res.json(obj);
+                            })
+                            .catch(function (err) {
+                                console.log("메세지 전송 에러 :", err);
+                                var obj = new Object;
+                                obj.ResultCode = 200;
+                                res.json(obj);
+                            });
+                    }
+                }
+            });
         }
     });
 });
@@ -4710,41 +4728,6 @@ router.post('/user_order_m', function(req, res, next){
     });
 });
 
-// function sendOrderToPos(req, res) {
-//     let stoseq = req.body.STOSEQ;
-//     let userid = req.body.USERID;
-//     let totamt = req.body.TOTAMT;
-//     let tblseq = req.body.TBLSEQ;
-//     let regdat = "now()";
-
-//     let prdnum = req.body.PRDNUM;
-//     let prdseq = req.body.PRDSEQ;
-//     let prdqty = req.body.PRDQTY;
-//     let detcst = req.body.DETCST;
-
-//     let posIds = [];
-
-//     let payload = {
-//         data: {
-//             TYPE: 'ORDER',
-//             TBLSEQ: tblseq,
-//             TOTAMT: totamt,
-//             USERID: userid
-//         }
-//     };
-
-//     let q = "select FCMTOK, FCMTOK2 from POSMST where STOSEQ="+ stoseq +";";
-
-//     connection.query(q, function(err, rows, fields){
-//         if(err) { console.error(err); }
-//         else {
-//             for(let i=0; i<rows.length; i++) {
-//                 posIds.push(rows[i].FCMTOK);
-//                 posIds.push(rows[i].FCMTOK2);
-//             }
-//         }
-//     });
-// }
 
 router.post('/user_cart_order_m', async function(req, res, next) {
     let stoseq = req.body.STOSEQ;
@@ -5139,92 +5122,6 @@ router.post('/mobile/pos/getOrder', function(req, res, next){
             res.json(result);
         }
     });
-
-
-
-    //         let order_id = rows[0].RCNSEQ;
-    //         let order_product_id = rows[0].RCNDETSEQ;
-    
-    //         let orders = [];
-    //         let products = [];
-    
-    //         let order = new Object();
-    //         let product = new Object();
-    
-    //         order.TBLSEQ = rows[0].TBLSEQ;
-    //         order.TBLNAM = rows[0].TBLNAM;
-    //         order.FLRSEQ = rows[0].FLRSEQ;
-    //         order.MOBNUM = rows[0].MOBNUM.slice(7);
-    //         order.REGDAT = rows[0].REGDAT;
-    //         order.USERID = rows[0].USERID;
-    //         order.TOTAMT = rows[0].TOTAMT;
-    
-    //         product.PRDQTY = rows[0].PRDQTY;
-    //         product.PRDNAM = rows[0].PRDNAM;
-    
-    //         let option = rows[0].OPTNAM;
-    
-    //         for(let i=1; i<rows.length; i++) {
-    //             if(order_id == rows[i].RCNSEQ) {
-    //                 if(order_product_id == rows[i].RCNDETSEQ) {
-    //                     option += ", " + rows[i].OPTNAM;
-    //                 } else {
-    //                     //기존 물품 저장
-    //                     product.OPTION = option;
-    //                     products.push(product);
-    
-    //                     //새로 등록
-    //                     product = new Object;
-    //                     product.PRDQTY = rows[i].PRDQTY;
-    //                     product.PRDNAM = rows[i].PRDNAM;
-    //                     option = rows[i].OPTNAM;
-    
-    //                     order_product_id = rows[i].RCNDETSEQ;
-    //                 }
-    //             } else {
-    
-    //                 product.OPTION = option;
-    //                 products.push(product);
-    
-    //                 product = new Object;
-    //                 product.PRDQTY = rows[i].PRDQTY;
-    //                 product.PRDNAM = rows[i].PRDNAM;
-    //                 option = rows[i].OPTNAM;
-    
-    //                 order.products = products;
-    //                 orders.push(order);
-                    
-    //                 order = new Object;
-    //                 products = [];
-    
-    //                 order.FLRSEQ = rows[i].FLRSEQ;
-    //                 order.TBLSEQ = rows[i].TBLSEQ;
-    //                 order.TBLNAM = rows[i].TBLNAM;
-    //                 order.MOBNUM = rows[i].MOBNUM.slice(7);
-    //                 order.REGDAT = rows[i].REGDAT;
-    //                 order.USERID = rows[i].USERID;
-    //                 order.TOTAMT = rows[i].TOTAMT;
-
-    //                 order_product_id = rows[i].RCNDETSEQ;
-    //                 order_id = rows[i].RCNSEQ;
-    //             }
-    
-    //             if(i == rows.length - 1) {
-    //                 product.OPTION = option;
-    //                 products.push(product);
-    //                 order.products = products;
-    //                 orders.push(order);
-    //             }
-    //         }
-    //         let result = new Object;
-    //         array_name = "orders";
-    //         result.array_name = array_name;
-    //         result[array_name] = orders;
-    //         result.ResultCode = 100;
-    //         res.json(result);
-    //     }
-    // });
-
 });
 
 //테이블 개별 주문 목록
@@ -5294,13 +5191,6 @@ router.post('/mobile/pos/getOrderList', function(req, res, next){
             + "where A.STOSEQ=? and A.FINISH='N' order by A.REGDAT) as K,"
             + "(select MAX(REGDAT) as L from RCNMST group by TBLSEQ) as P "
             + "where K.FULLREGDAT=P.L order by K.FULLREGDAT;"
-    // let q = "select C.MOBNUM, C.USRGRD, C.USERID, B.ID, B.TBLNAM, date_format(MAX(A.REGDAT), '%H:%i') as REGDAT, (UNIX_TIMESTAMP(MAX(A.REGDAT))*1000) as REGDAT_MIL, A.CHKFLG, A.PAYFLG, MAX(A.ORDCNT) as ORDCNT from RCNMST as A "
-    //       + "left join TBLSTO as B on B.ID=A.TBLSEQ "
-    //       + "left join USRMST as C on C.USERID=A.USERID "
-    //       + "where A.STOSEQ=? and A.FINISH='N' "
-    //       + "group by B.ID "
-    //       + "order by REGDAT ";
-
     let time = new Date();
     let miltime = time.getTime();
 
@@ -5692,6 +5582,25 @@ router.post('/mobile/alarm/adv_select', function(req, res, next){
         }
     });
 
+});
+//NCALL 포스 호출
+router.post('mobile/alarm/call_from_pos', function(req, res, next){
+    let STOSEQ = req.body.STOSEQ;
+
+    let q = "select * from CALMST where STOSEQ=? order by REGDAT desc limit 1;";
+    connection.query(q, [], function(err, rows, fields){
+        if(err) {
+            console.error(err);
+            let obj = new Object();
+            obj.ResultCode = 200;
+            res.json(obj);
+        } else {
+            let obj = new Object();
+            obj.CALNAM = rows[0].CALNAM;
+            obj.ResultCode = 100;
+            res.json(obj);
+        }
+    });
 });
 
 //모바일 영업 확인
