@@ -5025,7 +5025,7 @@ router.post('/mobile/pos/getOrder', function(req, res, next){
             let tblseq   = rows[0].TBLSEQ;
             let rcnseq   = rows[0].RCNSEQ;
             let tblnam   = rows[0].TBLNAM;
-            let mobnum   = rows[0].MOBNUM.slice(7);
+            let mobnum   = rows[0].MOBNUM.slice(-4);
             let totamt   = rows[0].TOTAMT * 1;
 
             let result = new Object();
@@ -5064,7 +5064,7 @@ router.post('/mobile/pos/getOrder', function(req, res, next){
                         tblseq   = rows[i].TBLSEQ;
                         tblnam   = rows[i].TBLNAM;
                         rcnseq   = rows[i].RCNSEQ;
-                        mobnum   = rows[i].MOBNUM.slice(7);
+                        mobnum   = rows[i].MOBNUM.slice(-4);
 
                         prd = new Object();
                         prd.PRDNAM = rows[i].PRDNAM;
@@ -5097,7 +5097,7 @@ router.post('/mobile/pos/getOrder', function(req, res, next){
                     flrseq = rows[i].FLRSEQ;
                     tblseq = rows[i].TBLSEQ;
                     tblnam = rows[i].TBLNAM;
-                    mobnum = rows[i].MOBNUM.slice(7);
+                    mobnum = rows[i].MOBNUM.slice(-4);
                     totamt = rows[i].TOTAMT;
                     product = [];
                     prd = new Object();
@@ -5129,7 +5129,7 @@ router.post('/mobile/pos/getTableOrder', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
     let TBLSEQ = req.body.TBLSEQ;
 
-    let q = "select A.ID as RCNSEQ, C.ID as RCNDETSEQ, A.ORDCNT, B.TBLNAM, G.MOBNUM, C.PRDQTY, C.DETCST, GROUP_CONCAT(E.OPTNAM) as OPTNAM, F.PRDNAM, A.CHKFLG from RCNMST as A "
+    let q = "select A.ID as RCNSEQ, C.ID as RCNDETSEQ, A.ORDCNT, B.TBLNAM, G.MOBNUM, C.PRDQTY, C.DETCST, GROUP_CONCAT(E.OPTNAM) as OPTNAM, F.PRDNAM, A.CHKFLG, date_format(A.REGDAT, '%Y/%m/%d %H:%i') as REGDAT from RCNMST as A "
           + "left join TBLSTO as B on A.TBLSEQ=B.ID "
           + "left join RCNDET as C on C.RCNSEQ=A.ID "
           + "left join OPTSET as D on D.RCNDETSEQ=C.ID "
@@ -5168,9 +5168,12 @@ router.post('/mobile/pos/getTableOrder', function(req, res, next){
                     obj.DETCST = rows[i].DETCST;
                     obj.PRDQTY = rows[i].PRDQTY;
                     obj.CHKFLG = rows[i].CHKFLG;
+                    obj.MOBNUM = rows[i].MOBNUM.slice(-4);
+                    obj.ORDTIM = rows[i].REGDAT;
+                
                     order.push(obj);
                 }
-                result.MOBNUM = rows[0].MOBNUM.slice(7);
+                result.MOBNUM = rows[0].MOBNUM.slice(-4);
                 result.TBLNAM = rows[0].TBLNAM;
                 result.TOTAMT = TOTAMT;
                 result.ResultCode = 100;
@@ -5207,7 +5210,7 @@ router.post('/mobile/pos/getOrderList', function(req, res, next){
             let orders = [];
             for(let i=0; i<rows.length; i++) {
                 let obj = new Object();
-                obj.MOBNUM = rows[i].MOBNUM.slice(7);
+                obj.MOBNUM = rows[i].MOBNUM.slice(-4);
                 obj.USRGRD = rows[i].USRGRD;
                 obj.USERID = rows[i].USERID;
                 obj.TBLSEQ = rows[i].ID;
