@@ -1756,6 +1756,7 @@ router.post('/pos/setup/dialog/product02', function(req, res, next){
                                                                         SALFLG: SALFLG, KITFLG: KITFLG, 
                                                                         CTRCOD: CTRCOD, ORDNUM: ORDNUM, 
                                                                         PRMIMG: PRMIMG, DTLIMG: DTLIMG, 
+                                                                        DTLIMGNUM: DTLIMG.length,
                                                                         optioncategories: optcat, selectedOptions: selectedOptions,
                                                                         selectedOptionNumber: rows3.length});
                                 }
@@ -1794,12 +1795,14 @@ router.post('/pos/setup/product_insert_proc', function(req, res, next){
             res.send(obj);
         } else {
             PRDSEQ = rows.insertId;
+            let DTLIMGORD = req.body.DTLIMGORD;
+            
             let q = "insert into PRDFIL_M(STOSEQ, PRDSEQ, FILURL) values ("+STOSEQ+", " + PRDSEQ + ", '"+ PRMIMG +"');";
             run_query(q, "");
             if(_.isArray(DTLIMG)) {
                 if(DTLIMG.length != 0) {
                     for(let i=0; i<DTLIMG.length; i++) {
-                        let q = "insert into PRDFIL_D(STOSEQ, PRDSEQ, FILTYP, FILURL, ORDNUM) values ("+STOSEQ+", " + PRDSEQ + ", 'P', '"+ DTLIMG[i] +"', 1);";
+                        let q = "insert into PRDFIL_D(STOSEQ, PRDSEQ, FILTYP, FILURL, ORDNUM) values ("+STOSEQ+", " + PRDSEQ + ", 'P', '"+ DTLIMG[i] +"', "+ DTLIMGORD[i] +");";
                         run_query(q, "");
                     }
                 }
@@ -1873,9 +1876,10 @@ router.post('/pos/setup/product_update_proc', function(req, res, next){
     run_query(qq, "");
 
     if(_.isArray(DTLIMG)) {
+        let DTLIMGORD = req.body.DTLIMGORD;
         run_query("delete from PRDFIL_D where PRDSEQ=" + PRDSEQ + ";", "delete");     
         for(let i=0; i<DTLIMG.length; i++) {
-            let q = "insert into PRDFIL_D(STOSEQ, PRDSEQ, FILTYP, FILURL, ORDNUM) values ("+STOSEQ+", " + PRDSEQ + ", 'P', '"+ DTLIMG[i] +"', 1);";
+            let q = "insert into PRDFIL_D(STOSEQ, PRDSEQ, FILTYP, FILURL, ORDNUM) values ("+STOSEQ+", " + PRDSEQ + ", 'P', '"+ DTLIMG[i] +"', "+ DTLIMGORD[i] +");";
             run_query(q, "");
         }
     }

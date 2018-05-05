@@ -63,12 +63,14 @@ script.
 		var td = "#opt"+(optnum++);
 		$(td).append(select);
 	});
+	var dtlimgnum = 2;
 	$("#addImage").click(function() {
 		var row = "<tr>";
 		row += "<th> 상세이미지 <br /> (정사각형) </th>";
 		row += "<td colspan='3'>";
 		row += "<img src='/images/empty.png' width='50px' />";
 		row += "<input type='hidden' name='PRDIMGNAME'/>";
+		row += "<input type='hidden' name='DTLIMGORD' value='"+ (dtlimgnum++) +"'/>" ;
 		row += "<input type='file' onchange='imgUpload(this)'/>";
 		row += "<input type='button' onclick='deleterow(this)' value='삭제'/>";
 		row += "</td></tr>";
@@ -169,6 +171,7 @@ form(name="form_dialog")
 					img(src="/images/empty.png" width="50px")
 					| 
 					input(type="hidden" name="PRDIMGNAME")
+					input(type="hidden" name="DTLIMGORD" value="1")
 					input(type="file" onchange="imgUpload(this)")
 					input(type="button" id="addImage" value="추가")
 					| 
