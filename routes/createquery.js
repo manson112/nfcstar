@@ -626,3 +626,8 @@ exports.APPVERSION = function() {
     + " PRIMARY KEY (ID)"
     + " )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;"
 }
+
+exports.ADDADMIN = function() {
+    return "INSERT INTO ADMMST (ADMID, ADMPW, ADMNAM) "
+    + "VALUES ('admin', '999999999', 'administarator');";
+}

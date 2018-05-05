@@ -2950,11 +2950,16 @@ router.get('/temp', function (req, res, next) {
     
     // run_query("update USRMST set MOBNUM='01098008504' where ID=3;", "완료");
     // run_query(create.APPVERSION(), "완료");
+
+    // run_query("insert into NCALL (STOSEQ, ALMGBN, ALMTIM, ALMADV) values (1, 0, 15, 'N');", "완료");
+    // run_query("insert into NCALL2INFO (STOSEQ, TYPE, SHOWTIME) values (1, '', 2);", "완료");
+    
     // run_query("insert into APPVERSION (APPNAM, VERSION, MODDAT) values ('NSTAR2.0', 1, now());", "완료");
     // run_query("insert into APPVERSION (APPNAM, VERSION, MODDAT) values ('NPOS2.0', 1, now());", "완료");
     // run_query("insert into APPVERSION (APPNAM, VERSION, MODDAT) values ('NCALL2.0', 1, now());", "완료");
     // run_query("insert into APPVERSION (APPNAM, VERSION, MODDAT) values ('NCALL3.0', 1, now());", "완료");
     
+    run_query("update USRMST set MOBNUM='01026861104' where ID=4;", "완료");
 
     res.redirect('/dbcheck');
 }); 
@@ -4243,6 +4248,7 @@ router.post('/calluser_m', function (req, res, next) {
     let msg_title = req.body.MSG_TITLE;
     let msg_body = req.body.MSG_BODY;
     let msg_from = req.body.MSG_FROM;
+    let sendcall = req.body.SENDCALL;
 
     let q2 = "insert into CALMST (STOSEQ, CALTYP, CALNAM, USERID, POSNAM, CHKFLG, REGDAT) values (?, 'S', ?, ?, ?, 'N', now());";
 
@@ -4284,7 +4290,9 @@ router.post('/calluser_m', function (req, res, next) {
                         admin.messaging().sendToDevice(fcm_array, payload)
                             .then(function (response) {
                                 console.log("메세지 전송 완료 :", response);
-                                socketApi.sendUserCall(msg_from);
+                                if(sendcall == 1) {
+                                    socketApi.sendUserCall(msg_from);
+                                }
                                 var obj = new Object;
                                 obj.ResultCode = 100;
                                 res.json(obj);
@@ -5721,18 +5729,48 @@ router.post('/versionUpdate', function(req, res, next){
 
 // INIT
 router.get('/init', function (req, res, next) {
-    run_query(create.STOMST(), "STOMST CREATED");
-    run_query(create.USRMST(), "USRMST CREATED");
-    run_query(create.STOVAN(), "STOVAN CREATED");
-    run_query(create.POSMST(), "POSMST CREATED");
-    run_query(create.CPNMST(), "CPNMST CREATED");
-    run_query(create.USRSTO(), "USRSTO CREATED");
-    run_query(create.POSTIM(), "POSTIM CREATED");
     run_query(create.ADMMST(), "ADMMST CREATED");
-    run_query(create.STOMST(), "STOMST CREATED");
-    //
-    run_query(create.NCALL2(), "NCALL2 CREATED");
-    run_query(create.NCALL2INFO(), "NCALL2INFO CREATED");
+    run_query(create.APPVERSION(), "");
+    run_query(create.CALMST(), "");
+    run_query(create.CATMST(), "");
+    run_query(create.EVTFIL_D(), "");
+    run_query(create.EVTFIL_M(), "");
+    run_query(create.EVTMST(), "");
+    run_query(create.NCALL(), "");
+    run_query(create.NCALL2(), "");
+    run_query(create.NCALL2INFO(), "");
+    run_query(create.NCALLADV(), "");
+    run_query(create.OPTCAT(), "");
+    run_query(create.OPTMST(), "");
+    run_query(create.OPTSET(), "");
+    run_query(create.POSMST(), "");
+    run_query(create.PRDFIL_D(), "");
+    run_query(create.PRDFIL_M(), "");
+    run_query(create.PRDMST(), "");
+    run_query(create.PRDOPT(), "");
+    run_query(create.PRDSET(), "");
+    run_query(create.RCNDET(), "");
+    run_query(create.RCNMST(), "");
+    run_query(create.RCNRCT(), "");
+    run_query(create.SALMST(), "");
+    run_query(create.SALSIO(), "");
+    run_query(create.SETMST(), "");
+    run_query(create.STOCAL(), "");
+    run_query(create.STODVC(), "");
+    run_query(create.STOFLR(), "");
+    run_query(create.STOMST(), "");
+    run_query(create.TBLSTO(), "");
+    run_query(create.USRMST(), "");
+    
+    run_query(create.ADDADMIN(), "");
+    run_query("insert into NCALL (STOSEQ, ALMGBN, ALMTIM, ALMADV) values (1, 0, 15, 'N');", "완료");
+    run_query("insert into NCALL2INFO (STOSEQ, TYPE, SHOWTIME) values (1, '', 2);", "완료");
+    
+    run_query("insert into APPVERSION (APPNAM, VERSION, MODDAT) values ('NSTAR2.0', 1, now());", "완료");
+    run_query("insert into APPVERSION (APPNAM, VERSION, MODDAT) values ('NPOS2.0', 1, now());", "완료");
+    run_query("insert into APPVERSION (APPNAM, VERSION, MODDAT) values ('NCALL2.0', 1, now());", "완료");
+    run_query("insert into APPVERSION (APPNAM, VERSION, MODDAT) values ('NCALL3.0', 1, now());", "완료");
+    
 
     res.send("<p> SETTING 완료 </p>");
 });

@@ -65,7 +65,7 @@ script.
 	});
 	$("#addImage").click(function() {
 		var row = "<tr>";
-		row += "<th> 상세이미지 </th>";
+		row += "<th> 상세이미지 <br /> (정사각형) </th>";
 		row += "<td colspan='3'>";
 		row += "<img src='/images/empty.png' width='50px' />";
 		row += "<input type='hidden' name='PRDIMGNAME'/>";
@@ -150,7 +150,10 @@ form(name="form_dialog")
 				td
 					button#insertOption(type="button") 옵션 등록
 			tr#prdimgrow
-				th 메인 이미지
+				th 
+					|메인 이미지
+					br
+					|(정사각형)
 				td(colspan="3")
 					img(src="/images/empty.png" width="50px")
 					| 
@@ -158,7 +161,10 @@ form(name="form_dialog")
 					input(type="file" onchange="imgUpload(this)")
 					input(type="button" id="btn_myFile1" value="삭제")
 			tr
-				th 상세이미지
+				th 
+					|상세이미지
+					br
+					|(정사각형)
 				td(colspan="3")
 					img(src="/images/empty.png" width="50px")
 					| 
