@@ -8,7 +8,7 @@ module.exports = (function () {
         database: 'nfcstar'
       },
       real: { // real server db info
-        host: 'nfcdbinstance.c81uecsarmxy.ap-northeast-2.rds.amazonaws.com',
+        host: 'nfcstardbinstance.c6aqsotoxgvc.ap-northeast-2.rds.amazonaws.com',
         port: '5306',
         user: 'root',
         password: 'rootroot',
