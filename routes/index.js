@@ -2591,6 +2591,8 @@ router.post('/pos/setup/dialog/event', function(req, res, next){
         });
     } else {
         //수정
+        console.log(EVTSEQ);
+        console.log(STOSEQ);
         let q = "select A.EVTNAM, date_format(A.EVTSTR, '%Y-%m-%d') as EVTSTR, date_format(A.EVTEND, '%Y-%m-%d') as EVTEND, A.ORDNUM as EVTORD, "
               + "B.FILURL as EVMFIL, C.FILTYP, C.FILURL as EVDFIL, C.PRDSEQ, C.ORDNUM as FILORD from EVTMST as A "
               + "left join EVTFIL_M as B on B.EVTSEQ=A.ID "
