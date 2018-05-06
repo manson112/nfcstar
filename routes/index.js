@@ -2600,6 +2600,7 @@ router.post('/pos/setup/dialog/event', function(req, res, next){
             if(err) {
                 console.error(err);
             } else {
+                console.log(rows);
                 let EVTNAM = rows[0].EVTNAM;
                 let EVTSTR = rows[0].EVTSTR;
                 let EVTEND = rows[0].EVTEND;
