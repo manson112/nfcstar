@@ -2691,7 +2691,7 @@ router.post('/pos/setup/event_proc', function(req, res, next){
                         if(err) {
                             console.error(err);
                         } else {
-                            run_query("insert into EVTFIL_D(STOSEQ, EVTSEQ, FILTYP, FILURL, PRDSEQ, ORDNUM) values ("+STOSEQ+", "+EVTSEQ+", 'P', '"+EVDIMG[i]+"', "+DTLPRD+", "+IMGORD+");", "");
+                            run_query("insert into EVTFIL_D(STOSEQ, EVTSEQ, FILTYP, FILURL, PRDSEQ, ORDNUM) values ("+STOSEQ+", "+EVTSEQ+", 'P', '"+EVDIMG+"', "+DTLPRD+", "+IMGORD+");", "");
                             
                             let obj = new Object();
                             obj.result = "success";
@@ -2966,7 +2966,10 @@ router.get('/temp', function (req, res, next) {
     // run_query("insert into APPVERSION (APPNAM, VERSION, MODDAT) values ('NCALL2.0', 1, now());", "완료");
     // run_query("insert into APPVERSION (APPNAM, VERSION, MODDAT) values ('NCALL3.0', 1, now());", "완료");
     
-    run_query("update USRMST set MOBNUM='01026861104' where ID=4;", "완료");
+    // run_query("update USRMST set MOBNUM='01026861104' where ID=4;", "완료");
+
+    run_query("delete from EVTMST where ID=11;");
+    run_query("delete from EVTFIL_M where ID=11;");
 
     res.redirect('/dbcheck');
 }); 
