@@ -5650,7 +5650,7 @@ router.post('/mobile/pos/payComplete', function(req, res, next){
                 total_cost += rows[i].TOTAMT;
             }
             
-            let q2 = "update RCNMST set PAYFLG='Y' where STOSEQ=? and TBLSEQ=?;";
+            let q2 = "update RCNMST set PAYFLG='Y', PAYDAT=now() where STOSEQ=? and TBLSEQ=?;";
             connection.query(q2, [STOSEQ, TBLSEQ], function(err, rows, fields){
                 if(err) {
                     console.error(err);
@@ -5658,7 +5658,7 @@ router.post('/mobile/pos/payComplete', function(req, res, next){
                     obj.ResultCode = 200;
                     res.json(obj); 
                 } else {
-                    let q3 = "update SALMST set TBLAMT=TBLAMT+"+total_cost+", TBLCNT=TBLCNT+1, CSHAMT=CSHAMT+"+total_cost+", PAYDAT=now() "
+                    let q3 = "update SALMST set TBLAMT=TBLAMT+"+total_cost+", TBLCNT=TBLCNT+1, CSHAMT=CSHAMT+"+total_cost+" "
                             + "where STOSEQ=? and ENDFLG='N';"
                     connection.query(q3, [STOSEQ], function(err, rows, fields){
                         if(err) {
@@ -5696,7 +5696,7 @@ router.post('/mobile/pos/saleComplete', function(req, res, next){
                 total_cost += rows[i].TOTAMT;
                 PAYFLG = rows[i].PAYFLG;
             }
-            let q2 = "update RCNMST set PAYFLG='Y', FINISH='Y' where STOSEQ=? and TBLSEQ=?;";
+            let q2 = "update RCNMST set PAYFLG='Y', FINISH='Y', PAYDAT=now(), SALDAT=now() where STOSEQ=? and TBLSEQ=?;";
             connection.query(q2, [STOSEQ, TBLSEQ], function(err, rows, fields){
                 if(err) {
                     console.error(err);
@@ -5706,7 +5706,7 @@ router.post('/mobile/pos/saleComplete', function(req, res, next){
                 } else {
                     if(PAYFLG == 'N') {
                         //결제 안한 경우
-                        let q3 = "update SALMST set TBLAMT=TBLAMT+"+total_cost+", TBLCNT=TBLCNT+1, CSHAMT=CSHAMT+"+total_cost+", PAYDAT=now(), SALDAT=now() "
+                        let q3 = "update SALMST set TBLAMT=TBLAMT+"+total_cost+", TBLCNT=TBLCNT+1, CSHAMT=CSHAMT+"+total_cost+" "
                         + "where STOSEQ=? and ENDFLG='N';"
                         connection.query(q3, [STOSEQ], function(err, rows, fields){
                             if(err) {
