@@ -5636,6 +5636,7 @@ router.post('/mobile/alarm/call_from_pos', function(req, res, next){
 router.post('/mobile/pos/payComplete', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
     let TBLSEQ = req.body.TBLSEQ;
+    let USERID = req.body.USERID;
 
     let q1 = "select TOTAMT from RCNMST where STOSEQ=? and TBLSEQ=?;";
     connection.query(q1, [STOSEQ, TBLSEQ], function(err, rows, fields){
@@ -5680,7 +5681,7 @@ router.post('/mobile/pos/payComplete', function(req, res, next){
 router.post('/mobile/pos/saleComplete', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
     let TBLSEQ = req.body.TBLSEQ;
-    let USREID = req.body.USERID;
+    let USERID = req.body.USERID;
 
     let q1 = "select TOTAMT, PAYFLG from RCNMST where STOSEQ=? and TBLSEQ=?;";
     connection.query(q1, [STOSEQ, TBLSEQ], function(err, rows, fields){
