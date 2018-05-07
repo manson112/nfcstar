@@ -5628,7 +5628,7 @@ router.post('/mobile/alarm/call_from_pos', function(req, res, next){
     });
 });
 //결제 완료
-rouger.post('/mobile/pos/payComplete', function(req, res, next){
+router.post('/mobile/pos/payComplete', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
     let TBLSEQ = req.body.TBLSEQ;
 
@@ -5672,7 +5672,7 @@ rouger.post('/mobile/pos/payComplete', function(req, res, next){
     });
 });
 //판매 완료
-rouger.post('/mobile/pos/saleComplete', function(req, res, next){
+router.post('/mobile/pos/saleComplete', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
     let TBLSEQ = req.body.TBLSEQ;
 
