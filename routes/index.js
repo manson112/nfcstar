@@ -5644,7 +5644,7 @@ router.post('/mobile/pos/payComplete', function(req, res, next){
             for(let i=0; i<rows.length; i++) {
                 total_cost += rows[i].TOTAMT;
             }
-            let q2 = "update RCNMET set PAYFLG='Y' where STOSEQ=? and TBLSEQ=?;";
+            let q2 = "update RCNMST set PAYFLG='Y' where STOSEQ=? and TBLSEQ=?;";
             connection.query(q2, [STOSEQ, TBLSEQ], function(err, rows, fields){
                 if(err) {
                     console.error(err);
@@ -5688,7 +5688,7 @@ router.post('/mobile/pos/saleComplete', function(req, res, next){
             for(let i=0; i<rows.length; i++) {
                 total_cost += rows[i].TOTAMT;
             }
-            let q2 = "update RCNMET set PAYFLG='Y', FINISH='Y' where STOSEQ=? and TBLSEQ=?;";
+            let q2 = "update RCNMST set PAYFLG='Y', FINISH='Y' where STOSEQ=? and TBLSEQ=?;";
             connection.query(q2, [STOSEQ, TBLSEQ], function(err, rows, fields){
                 if(err) {
                     console.error(err);
