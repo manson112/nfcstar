@@ -5696,33 +5696,18 @@ router.post('/mobile/pos/saleComplete', function(req, res, next){
                 total_cost += rows[i].TOTAMT;
                 PAYFLG = rows[i].PAYFLG;
             }
-            let q2 = "update RCNMST set PAYFLG='Y', FINISH='Y', PAYDAT=now(), SALDAT=now() where STOSEQ=? and TBLSEQ=?;";
-            connection.query(q2, [STOSEQ, TBLSEQ], function(err, rows, fields){
-                if(err) {
-                    console.error(err);
-                    let obj = new Object();
-                    obj.ResultCode = 200;
-                    res.json(obj); 
-                } else {
-                    if(PAYFLG == 'N') {
-                        //결제 안한 경우
-                        let q3 = "update SALMST set TBLAMT=TBLAMT+"+total_cost+", TBLCNT=TBLCNT+1, CSHAMT=CSHAMT+"+total_cost+" "
-                        + "where STOSEQ=? and ENDFLG='N';"
-                        connection.query(q3, [STOSEQ], function(err, rows, fields){
-                            if(err) {
-                                console.error(err);
-                                let obj = new Object();
-                                obj.ResultCode = 200;
-                                res.json(obj);
-                            } else {
-                                let obj = new Object();
-                                obj.ResultCode = 100;
-                                res.json(obj);
-                            }
-                        });
+            if(PAYFLG == 'N') {
+                //결제 안한 경우
+                let q2 = "update RCNMST set PAYFLG='Y', FINISH='Y', PAYDAT=now(), SALDAT=now() where STOSEQ=? and TBLSEQ=?;";
+                connection.query(q2, [STOSEQ, TBLSEQ], function(err, rows, fields){
+                    if(err) {
+                        console.error(err);
+                        let obj = new Object();
+                        obj.ResultCode = 200;
+                        res.json(obj); 
                     } else {
-                        //결제 한 경우
-                        let q3 = "update SALMST set SALDAT=now() where STOSEQ=? and ENDFLG='N';"
+                        let q3 = "update SALMST set TBLAMT=TBLAMT+"+total_cost+", TBLCNT=TBLCNT+1, CSHAMT=CSHAMT+"+total_cost+" "
+                        + "where STOSEQ=? and FINISH='N';"
                         connection.query(q3, [STOSEQ], function(err, rows, fields){
                             if(err) {
                                 console.error(err);
@@ -5736,8 +5721,23 @@ router.post('/mobile/pos/saleComplete', function(req, res, next){
                             }
                         });
                     }
-                }
-            });
+                });
+            } else {
+                //결제 한 경우
+                let q2 = "update RCNMST set FINISH='Y', SALDAT=now() where STOSEQ=? and TBLSEQ=?;";
+                connection.query(q2, [STOSEQ, TBLSEQ], function(err, rows, fields){
+                    if(err) {
+                        console.error(err);
+                        let obj = new Object();
+                        obj.ResultCode = 200;
+                        res.json(obj); 
+                    } else {
+                        let obj = new Object();
+                        obj.ResultCode = 100;
+                        res.json(obj);
+                    }
+                });
+            }
         }
     });
 });
