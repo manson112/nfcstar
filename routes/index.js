@@ -5644,6 +5644,7 @@ router.post('/mobile/pos/payComplete', function(req, res, next){
             for(let i=0; i<rows.length; i++) {
                 total_cost += rows[i].TOTAMT;
             }
+            
             let q2 = "update RCNMST set PAYFLG='Y' where STOSEQ=? and TBLSEQ=?;";
             connection.query(q2, [STOSEQ, TBLSEQ], function(err, rows, fields){
                 if(err) {
@@ -5676,7 +5677,7 @@ router.post('/mobile/pos/saleComplete', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
     let TBLSEQ = req.body.TBLSEQ;
 
-    let q1 = "select TOTAMT from RCNMST where STOSEQ=? and TBLSEQ=?;";
+    let q1 = "select TOTAMT, PAYFLG from RCNMST where STOSEQ=? and TBLSEQ=?;";
     connection.query(q1, [STOSEQ, TBLSEQ], function(err, rows, fields){
         if(err) {
             console.error(err);
@@ -5685,8 +5686,10 @@ router.post('/mobile/pos/saleComplete', function(req, res, next){
             res.json(obj); 
         } else {
             let total_cost = 0;
+            let PAYFLG = 'N';
             for(let i=0; i<rows.length; i++) {
                 total_cost += rows[i].TOTAMT;
+                PAYFLG = rows[i].PAYFLG;
             }
             let q2 = "update RCNMST set PAYFLG='Y', FINISH='Y' where STOSEQ=? and TBLSEQ=?;";
             connection.query(q2, [STOSEQ, TBLSEQ], function(err, rows, fields){
@@ -5696,20 +5699,28 @@ router.post('/mobile/pos/saleComplete', function(req, res, next){
                     obj.ResultCode = 200;
                     res.json(obj); 
                 } else {
-                    let q3 = "update SALMST set TBLAMT=TBLAMT+"+total_cost+", TBLCNT=TBLCNT+1, CSHAMT=CSHAMT+"+total_cost+" "
-                            + "where STOSEQ=? and ENDFLG='N';"
-                    connection.query(q3, [STOSEQ], function(err, rows, fields){
-                        if(err) {
-                            console.error(err);
-                            let obj = new Object();
-                            obj.ResultCode = 200;
-                            res.json(obj);
-                        } else {
-                            let obj = new Object();
-                            obj.ResultCode = 100;
-                            res.json(obj);
-                        }
-                    });
+                    if(PAYFLG == 'N') {
+                        //결제 안한 경우
+                        let q3 = "update SALMST set TBLAMT=TBLAMT+"+total_cost+", TBLCNT=TBLCNT+1, CSHAMT=CSHAMT+"+total_cost+" "
+                        + "where STOSEQ=? and ENDFLG='N';"
+                        connection.query(q3, [STOSEQ], function(err, rows, fields){
+                            if(err) {
+                                console.error(err);
+                                let obj = new Object();
+                                obj.ResultCode = 200;
+                                res.json(obj);
+                            } else {
+                                let obj = new Object();
+                                obj.ResultCode = 100;
+                                res.json(obj);
+                            }
+                        });
+                    } else {
+                        //결제 한 경우
+                        let obj = new Object();
+                        obj.ResultCode = 100;
+                        res.json(obj);
+                    }
                 }
             });
         }
