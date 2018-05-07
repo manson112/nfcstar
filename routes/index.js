@@ -1927,6 +1927,10 @@ router.post('/pos/setup/product_update_proc', function(req, res, next){
                             res.send(obj);
                         }
                     });
+                } else {
+                    let obj = new Object();
+                    obj.result = "success";
+                    res.send(obj);
                 }
             }
         }
@@ -2968,8 +2972,8 @@ router.get('/temp', function (req, res, next) {
     
     // run_query("update USRMST set MOBNUM='01026861104' where ID=4;", "완료");
 
-    run_query("delete from EVTMST where ID=11;");
-    run_query("delete from EVTFIL_M where ID=11;");
+    run_query("delete from EVTMST where ID=12;");
+    run_query("delete from EVTFIL_M where ID=12;");
 
     res.redirect('/dbcheck');
 }); 
@@ -5620,6 +5624,94 @@ router.post('/mobile/alarm/call_from_pos', function(req, res, next){
             obj.CALNAM = rows[0].CALNAM;
             obj.ResultCode = 100;
             res.json(obj);
+        }
+    });
+});
+//결제 완료
+rouger.post('/mobile/pos/payComplete', function(req, res, next){
+    let STOSEQ = req.body.STOSEQ;
+    let TBLSEQ = req.body.TBLSEQ;
+
+    let q1 = "select TOTAMT from RCNMST where STOSEQ=? and TBLSEQ=?;";
+    connection.query(q1, [STOSEQ, TBLSEQ], function(err, rows, fields){
+        if(err) {
+            console.error(err);
+            let obj = new Object();
+            obj.ResultCode = 200;
+            res.json(obj); 
+        } else {
+            let total_cost = 0;
+            for(let i=0; i<rows.length; i++) {
+                total_cost += rows[i].TOTAMT;
+            }
+            let q2 = "update RCNMET set PAYFLG='Y' where STOSEQ=? and TBLSEQ=?;";
+            connection.query(q2, [STOSEQ, TBLSEQ], function(err, rows, fields){
+                if(err) {
+                    console.error(err);
+                    let obj = new Object();
+                    obj.ResultCode = 200;
+                    res.json(obj); 
+                } else {
+                    let q3 = "update SALMST set TBLAMT=TBLAMT+"+total_cost+", TBLCNT=TBLCNT+1, CSHAMT=CSHAMT+"+total_cost+" "
+                            + "where STOSEQ=? and ENDFLG='N';"
+                    connection.query(q3, [STOSEQ], function(err, rows, fields){
+                        if(err) {
+                            console.error(err);
+                            let obj = new Object();
+                            obj.ResultCode = 200;
+                            res.json(obj);
+                        } else {
+                            let obj = new Object();
+                            obj.ResultCode = 100;
+                            res.json(obj);
+                        }
+                    });
+                }
+            });
+        }
+    });
+});
+//판매 완료
+rouger.post('/mobile/pos/saleComplete', function(req, res, next){
+    let STOSEQ = req.body.STOSEQ;
+    let TBLSEQ = req.body.TBLSEQ;
+
+    let q1 = "select TOTAMT from RCNMST where STOSEQ=? and TBLSEQ=?;";
+    connection.query(q1, [STOSEQ, TBLSEQ], function(err, rows, fields){
+        if(err) {
+            console.error(err);
+            let obj = new Object();
+            obj.ResultCode = 200;
+            res.json(obj); 
+        } else {
+            let total_cost = 0;
+            for(let i=0; i<rows.length; i++) {
+                total_cost += rows[i].TOTAMT;
+            }
+            let q2 = "update RCNMET set PAYFLG='Y', FINISH='Y' where STOSEQ=? and TBLSEQ=?;";
+            connection.query(q2, [STOSEQ, TBLSEQ], function(err, rows, fields){
+                if(err) {
+                    console.error(err);
+                    let obj = new Object();
+                    obj.ResultCode = 200;
+                    res.json(obj); 
+                } else {
+                    let q3 = "update SALMST set TBLAMT=TBLAMT+"+total_cost+", TBLCNT=TBLCNT+1, CSHAMT=CSHAMT+"+total_cost+" "
+                            + "where STOSEQ=? and ENDFLG='N';"
+                    connection.query(q3, [STOSEQ], function(err, rows, fields){
+                        if(err) {
+                            console.error(err);
+                            let obj = new Object();
+                            obj.ResultCode = 200;
+                            res.json(obj);
+                        } else {
+                            let obj = new Object();
+                            obj.ResultCode = 100;
+                            res.json(obj);
+                        }
+                    });
+                }
+            });
         }
     });
 });

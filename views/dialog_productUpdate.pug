@@ -125,21 +125,33 @@ form(name="form_dialog")
 				th 매입가
 				td
 					input(type="text" id="buyamt" name="BUYAMT" value=BUTAMT class="view_textfiled2" maxlength ="10")
-			each selectedOption, index in selectedOptions
+			if selectedOptions.length == 0
 				tr
 					th 옵션
-					td(id="opt"+(index+1))
+					td(id="opt1")
 						select#optcatselect(name="OPTCAT")
 							each optioncategory in optioncategories
-								option(value=optioncategory.OPTCATSEQ selected=selectedOption.SEQ==optioncategory.OPTCATSEQ) #{optioncategory.CATNAM}
-					if index==0
-						td
-							button#addOption(type="button") 추가
-						td  
-							button#insertOption(type="button") 옵션 등록
-					else
-						td(colspan="2")
-							button#deleteOption(onclick="deleterow(this)") 삭제
+								option(value=optioncategory.OPTCATSEQ) #{optioncategory.CATNAM}
+					td
+						button#addOption(type="button") 추가
+					td
+						button#insertOption(type="button") 옵션 등록
+			else	
+				each selectedOption, index in selectedOptions
+					tr
+						th 옵션
+						td(id="opt"+(index+1))
+							select#optcatselect(name="OPTCAT")
+								each optioncategory in optioncategories
+									option(value=optioncategory.OPTCATSEQ selected=selectedOption.SEQ==optioncategory.OPTCATSEQ) #{optioncategory.CATNAM}
+						if index==0
+							td
+								button#addOption(type="button") 추가
+							td  
+								button#insertOption(type="button") 옵션 등록
+						else
+							td(colspan="2")
+								button#deleteOption(onclick="deleterow(this)") 삭제
 			tr#prdimgrow
 				th 
 					|메인 이미지
