@@ -5649,9 +5649,8 @@ router.post('/mobile/pos/payComplete', function(req, res, next){
             for(let i=0; i<rows.length; i++) {
                 total_cost += rows[i].TOTAMT;
             }
-            
-            let q2 = "update RCNMST set PAYFLG='Y', PAYDAT=now() where STOSEQ=? and TBLSEQ=?;";
-            connection.query(q2, [STOSEQ, TBLSEQ], function(err, rows, fields){
+            let q2 = "update RCNMST set PAYFLG='Y', PAYDAT=now() where STOSEQ=? and TBLSEQ=? and USERID=? and PAYDAT is NULL;";
+            connection.query(q2, [STOSEQ, TBLSEQ, USERID], function(err, rows, fields){
                 if(err) {
                     console.error(err);
                     let obj = new Object();
@@ -5681,6 +5680,7 @@ router.post('/mobile/pos/payComplete', function(req, res, next){
 router.post('/mobile/pos/saleComplete', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
     let TBLSEQ = req.body.TBLSEQ;
+    let USREID = req.body.USERID;
 
     let q1 = "select TOTAMT, PAYFLG from RCNMST where STOSEQ=? and TBLSEQ=?;";
     connection.query(q1, [STOSEQ, TBLSEQ], function(err, rows, fields){
@@ -5698,8 +5698,8 @@ router.post('/mobile/pos/saleComplete', function(req, res, next){
             }
             if(PAYFLG == 'N') {
                 //결제 안한 경우
-                let q2 = "update RCNMST set PAYFLG='Y', FINISH='Y', PAYDAT=now(), SALDAT=now() where STOSEQ=? and TBLSEQ=?;";
-                connection.query(q2, [STOSEQ, TBLSEQ], function(err, rows, fields){
+                let q2 = "update RCNMST set PAYFLG='Y', FINISH='Y', PAYDAT=now(), SALDAT=now() where STOSEQ=? and TBLSEQ=? and USERID=? and PAYDAT is NULL and SALDAT is NULL;";
+                connection.query(q2, [STOSEQ, TBLSEQ, USERID], function(err, rows, fields){
                     if(err) {
                         console.error(err);
                         let obj = new Object();
@@ -5724,8 +5724,8 @@ router.post('/mobile/pos/saleComplete', function(req, res, next){
                 });
             } else {
                 //결제 한 경우
-                let q2 = "update RCNMST set FINISH='Y', SALDAT=now() where STOSEQ=? and TBLSEQ=?;";
-                connection.query(q2, [STOSEQ, TBLSEQ], function(err, rows, fields){
+                let q2 = "update RCNMST set FINISH='Y', SALDAT=now() where STOSEQ=? and TBLSEQ=? and USERID=? and SALDAT is NULL;";
+                connection.query(q2, [STOSEQ, TBLSEQ, USERID], function(err, rows, fields){
                     if(err) {
                         console.error(err);
                         let obj = new Object();
