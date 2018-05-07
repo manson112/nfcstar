@@ -5708,7 +5708,7 @@ router.post('/mobile/pos/saleComplete', function(req, res, next){
                         res.json(obj); 
                     } else {
                         let q3 = "update SALMST set TBLAMT=TBLAMT+"+total_cost+", TBLCNT=TBLCNT+1, CSHAMT=CSHAMT+"+total_cost+" "
-                        + "where STOSEQ=? and FINISH='N';"
+                        + "where STOSEQ=? and ENDFLG='N';"
                         connection.query(q3, [STOSEQ], function(err, rows, fields){
                             if(err) {
                                 console.error(err);
