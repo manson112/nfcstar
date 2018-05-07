@@ -5151,7 +5151,7 @@ router.post('/mobile/pos/getTableOrder', function(req, res, next){
     let STOSEQ = req.body.STOSEQ;
     let TBLSEQ = req.body.TBLSEQ;
 
-    let q = "select A.ID as RCNSEQ, C.ID as RCNDETSEQ, A.ORDCNT, B.TBLNAM, G.MOBNUM, C.PRDQTY, C.DETCST, GROUP_CONCAT(E.OPTNAM) as OPTNAM, F.PRDNAM, A.CHKFLG, A.PAYFLG date_format(A.REGDAT, '%Y/%m/%d %H:%i') as REGDAT from RCNMST as A "
+    let q = "select A.ID as RCNSEQ, C.ID as RCNDETSEQ, A.ORDCNT, B.TBLNAM, G.MOBNUM, C.PRDQTY, C.DETCST, GROUP_CONCAT(E.OPTNAM) as OPTNAM, F.PRDNAM, A.CHKFLG, A.PAYFLG, date_format(A.REGDAT, '%Y/%m/%d %H:%i') as REGDAT from RCNMST as A "
           + "left join TBLSTO as B on A.TBLSEQ=B.ID "
           + "left join RCNDET as C on C.RCNSEQ=A.ID "
           + "left join OPTSET as D on D.RCNDETSEQ=C.ID "
