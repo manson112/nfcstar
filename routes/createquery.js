@@ -531,6 +531,8 @@ exports.RCNMST = function() {
         + " `CHKFLG`  VARCHAR(3)     CHARACTER SET utf8 NULL        COMMENT '확인 여부', "
         + " `PAYFLG`  VARCHAR(3)     CHARACTER SET utf8 NULL        COMMENT '결제 여부', "
         + " `FINISH`  VARCHAR(3)     CHARACTER SET utf8 NULL        COMMENT '판매 완료 여부', "
+        + " `PAYDAT`  DATETIME       NULL        COMMENT '결제 날짜', "
+        + " `SALDAT`  DATETIME       NULL        COMMENT '판매 날짜', "
         + " `ORDCNT`  INT            NULL        COMMENT '주문 횟수', "
         + " PRIMARY KEY (ID)"
         + " ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
