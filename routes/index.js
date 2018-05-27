@@ -1694,8 +1694,9 @@ router.post('/pos/setup/dialog/product02', function(req, res, next){
     } else {
         //수정
         let SAVGBN = "U";
-        let q = "select A.PRDNAM, A.PRDCST, A.PRDEXP, A.SALFLG, A.KITFLG, A.CTRCOD, A.ORDNUM, B.FILURL as PRMIMG, C.FILURL as DTLIMG from PRDMST as A left join PRDFIL_M as B on A.ID=B.PRDSEQ "
-        + "left join PRDFIL_D as C on A.ID=C.PRDSEQ where A.ID=" + PRDSEQ + " and A.STOSEQ="+STOSEQ+" and B.STOSEQ="+STOSEQ+" and C.STOSEQ="+STOSEQ+" order by C.ORDNUM;";
+        let q = "select A.PRDNAM, A.PRDCST, A.PRDEXP, A.SALFLG, A.KITFLG, A.CTRCOD, A.ORDNUM, B.FILURL as PRMIMG, C.FILURL as DTLIMG from PRDMST as A "
+              + "left join PRDFIL_M as B on A.ID=B.PRDSEQ "
+              + "left join PRDFIL_D as C on A.ID=C.PRDSEQ where A.ID=" + PRDSEQ + " and A.STOSEQ="+STOSEQ+" and B.STOSEQ="+STOSEQ+" and C.STOSEQ="+STOSEQ+" order by C.ORDNUM;";
         
         connection.query(q, function(err, rows, fields){
             if(err) {
@@ -1800,17 +1801,13 @@ router.post('/pos/setup/product_insert_proc', function(req, res, next){
             let q = "insert into PRDFIL_M(STOSEQ, PRDSEQ, FILURL) values ("+STOSEQ+", " + PRDSEQ + ", '"+ PRMIMG +"');";
             run_query(q, "");
             if(_.isArray(DTLIMG)) {
-                if(DTLIMG.length != 0) {
-                    for(let i=0; i<DTLIMG.length; i++) {
-                        let q = "insert into PRDFIL_D(STOSEQ, PRDSEQ, FILTYP, FILURL, ORDNUM) values ("+STOSEQ+", " + PRDSEQ + ", 'P', '"+ DTLIMG[i] +"', "+ DTLIMGORD[i] +");";
-                        run_query(q, "");
-                    }
-                }
-            } else {
-                if(DTLIMG.length != 0) {
-                    let q = "insert into PRDFIL_D(STOSEQ, PRDSEQ, FILTYP, FILURL, ORDNUM) values ("+STOSEQ+", " + PRDSEQ + ", 'P', '"+ DTLIMG +"', 1);";
+                for(let i=0; i<DTLIMG.length; i++) {
+                    let q = "insert into PRDFIL_D(STOSEQ, PRDSEQ, FILTYP, FILURL, ORDNUM) values ("+STOSEQ+", " + PRDSEQ + ", 'P', '"+ DTLIMG[i] +"', "+ DTLIMGORD[i] +");";
                     run_query(q, "");
                 }
+            } else {
+                let q = "insert into PRDFIL_D(STOSEQ, PRDSEQ, FILTYP, FILURL, ORDNUM) values ("+STOSEQ+", " + PRDSEQ + ", 'P', '"+ DTLIMG +"', 1);";
+                run_query(q, "");
             }
             
             if(_.isArray(OPTCAT)) {
@@ -2978,7 +2975,7 @@ router.get('/temp', function (req, res, next) {
     // run_query("alter table RCNMST add column PAYDAT DATETIME NULL;");
     // run_query("alter table RCNMST add column SALDAT DATETIME NULL;");
     // run_query("update RCNMST set PAYDAT=now(), SALDAT=now() where PAYFLG='Y' and FINISH='Y';");
-
+    run_query("update POSMST set POSPW='1234' where ID=2;");
     res.redirect('/dbcheck');
 }); 
 
