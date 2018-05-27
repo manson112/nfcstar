@@ -3927,7 +3927,7 @@ router.post('/category_m', function (req, res, next) {
 
     var array_name = "CATS";
     var obj = new Object;
-    var query = "select ID, CATNAM, CATFIL from CATMST where STOSEQ=?;";
+    var query = "select ID, CATNAM, CATFIL from CATMST where STOSEQ=? order by ORDNUM;";
 
     connection.query(query, [stoseq], function (err, rows2, fields) {
         if (err) {
