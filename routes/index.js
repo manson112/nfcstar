@@ -2397,11 +2397,19 @@ router.post('/pos/setup/saleEnd_proc', function(req, res, next){
             if(err){
                 console.error(err);
                 res.send("<script> alert('에러 발생'); parent.location.href='/pos/setup/saleEnd';</script>");
-            } else {
-                let obj = new Object();
-                obj.result = "success";
-                obj.msg = "영업이 종료되었습니다";
-                res.send(obj);
+            } else { 
+                let q2 = "update RCNMST set FINISH='Y' where STOSEQ=? and FINISH='N';";
+                connection.query(q2, [STOSEQ], function(err, rows, fields){
+                    if(err) {
+                        console.error(err);
+                        res.send("<script> alert('에러 발생'); parent.location.href='/pos/setup/saleEnd';</script>");
+                    } else {
+                        let obj = new Object();
+                        obj.result = "success";
+                        obj.msg = "영업이 종료되었습니다";
+                        res.send(obj);
+                    }
+                });
             }
         });
     } else {
@@ -2975,7 +2983,8 @@ router.get('/temp', function (req, res, next) {
     // run_query("alter table RCNMST add column PAYDAT DATETIME NULL;");
     // run_query("alter table RCNMST add column SALDAT DATETIME NULL;");
     // run_query("update RCNMST set PAYDAT=now(), SALDAT=now() where PAYFLG='Y' and FINISH='Y';");
-    run_query("update POSMST set POSPW='1234' where ID=2;");
+    // run_query("update POSMST set POSPW='1234' where ID=2;");
+    run_query("INSERT INTO NCALL (STOSEQ, ALMGBN, ALMTIM, ALMADV) values (2, 0, 10, 'Y');");
     res.redirect('/dbcheck');
 }); 
 
@@ -3024,7 +3033,15 @@ router.post('/addstore_p', function (req, res, next) {
         if(err){
             console.error(err);
         } else {
-            res.send("완료");
+            let insertId = rows.insertId;
+            let q = "INSERT INTO NCALL (STOSEQ, ALMGBN, ALMTIM, ALMADV) values (?, 0, 10, 'N');";
+            connection.query(q, [insertId], function(err, rows, fields){
+                if(err) {
+                    console.error(err);
+                } else {
+                    res.send("완료");
+                }
+            });
         }
     });
 
