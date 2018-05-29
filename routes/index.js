@@ -5535,11 +5535,13 @@ router.post('/mobile/alarm/call_select', function(req, res, next){
                             calls.push(obj);
 
                             if(i == rows.length-1){
-                                console.log(calls);
-                                result.ResultCode = 100;
-                                result[array_name] = calls;
-                                
-                                res.json(result);
+                                setTimeout(function() {
+                                    console.log(calls);
+                                    result.ResultCode = 100;
+                                    result[array_name] = calls;
+                                    
+                                    res.json(result);
+                                }, 1000);
                             }
                         }
                     });
@@ -5551,11 +5553,13 @@ router.post('/mobile/alarm/call_select', function(req, res, next){
                     calls.push(obj);
 
                     if(i == rows.length-1){
-                        console.log(calls);
-                        result.ResultCode = 100;
-                        result[array_name] = calls;
-                        
-                        res.json(result);
+                        setTimeout(function() {
+                            console.log(calls);
+                            result.ResultCode = 100;
+                            result[array_name] = calls;
+                            
+                            res.json(result);
+                        }, 1000);
                     }
                 }
             }
