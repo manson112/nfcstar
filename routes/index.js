@@ -5534,7 +5534,7 @@ router.post('/mobile/alarm/call_select', function(req, res, next){
                             obj.CALL = full.slice(0,-1);
                             calls.push(obj);
 
-                            if(i == rows.length-1){
+                            if(i == rows.length-1 && calls.length == 3){
                                 console.log(calls);
                                 result.ResultCode = 100;
                                 result[array_name] = calls;
@@ -5550,7 +5550,7 @@ router.post('/mobile/alarm/call_select', function(req, res, next){
                     obj.CALL = rows[i].CALNAM;
                     calls.push(obj);
 
-                    if(i == rows.length-1){
+                    if(i == rows.length-1 && calls.length == 3){
                         console.log(calls);
                         result.ResultCode = 100;
                         result[array_name] = calls;
