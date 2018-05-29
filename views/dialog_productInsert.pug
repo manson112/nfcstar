@@ -37,9 +37,9 @@ script.
 			success: function(data) {
 				if(data.result){
 					goCancel();
-					var data = new Object();
-					data.CTGSEQ = '1';
-					getDataList02( data );
+					var data2 = new Object();
+					data2.CTGSEQ = "#{CTGSEQ}";
+					getDataList02( data2 );
 				}else{
 					alert(data.msg);
 				}

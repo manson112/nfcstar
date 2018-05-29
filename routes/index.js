@@ -1638,6 +1638,7 @@ router.post('/pos/setup/product_select', function(req, res, next){
     connection.query(q, function(err, rows, fields){
         if(err) {
             console.error(err);
+            console.error(q);
         } else {
             let product = [];
             for(let i=0; i<rows.length; i++) {
@@ -1844,10 +1845,11 @@ router.post('/pos/setup/product_insert_proc', function(req, res, next){
                             res.send(obj);
                         }
                     });
+                } else {
+                    let obj = new Object();
+                    obj.result = "success";
+                    res.send(obj);
                 }
-                let obj = new Object();
-                obj.result = "success";
-                res.send(obj);
             }
         }
     });
@@ -1944,9 +1946,11 @@ router.post('/pos/setup/product_delete_proc', function(req, res, next){
     connection.query(q, function(err, rows, fields){
         if(err) {
             console.error(err);
+            console.error(q);
         } else {
             let obj = new Object();
             obj.result = "success";
+            console.log(obj);
             res.send(obj);
         }
     });
@@ -5936,6 +5940,7 @@ var run_query = function (query, message) {
     connection.query(query, function (err, rows, fields) {
         if (err) {
             console.error(err);
+            console.error(query);
         } else {
             if (message) console.log(message);
         }

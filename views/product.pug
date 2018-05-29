@@ -95,7 +95,6 @@ block content
 			clearDataList02();
 			var CTGSEQ 		= data.CTGSEQ;
 			var SALFLG		= $("[name=SALFLG]:checked").val();
-			
 			$.ajax({
 				url: "/pos/setup/product_select",
 				data:{CTGSEQ:CTGSEQ, SALFLG:SALFLG},
@@ -117,17 +116,17 @@ block content
 		function setDataForm02( savgbn ){
 			var PRDSEQ = "";
 			var CTGSEQ = "";
-			if( savgbn!='I' ){
-				var selData = $("#dataList02").getSelRowData();
-				if(selData==null){ alert("상품을 선택하여 주세요."); return; }
-				PRDSEQ = selData.PRDSEQ;
+			if( savgbn != 'I' ){
+				var selData2 = $("#dataList02").getSelRowData();
+				if(selData2==null){ alert("상품을 선택하여 주세요."); return; }
+				var selData = $("#dataList01").getSelRowData();
+				PRDSEQ = selData2.PRDSEQ;
 				CTGSEQ = selData.CTGSEQ;
 			} else {
 				var selData = $("#dataList01").getSelRowData();
 				if(selData==null){ alert("카테고리을 선택하여 주세요."); return; }
 				CTGSEQ = selData.CTGSEQ;
 			}
-			
 			if( savgbn=='U' ){
 				getDataForm02Dailog(CTGSEQ, PRDSEQ);
 			} else if( savgbn=='I' ){

@@ -20,7 +20,7 @@ script.
 				if(data.result){
 					goCancel();
 					var data = new Object();
-					data.CTGSEQ = '1';
+					data.CTGSEQ = "#{CTGSEQ}";
 					getDataList02( data );
 				}else{
 					alert(data.msg);
