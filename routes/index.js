@@ -5538,7 +5538,7 @@ router.post('/mobile/alarm/call_select', function(req, res, next){
                             if(i == rows.length-1){
                                 setTimeout(function() {
                                     calls.sort(function(a, b) {
-                                        return a.ID < b.ID ? -1 : a.ID > b.ID ? 1 : 0;  
+                                        return a.ID > b.ID ? -1 : a.ID < b.ID ? 1 : 0;  
                                     });
                                     console.log(calls);
                                     result.ResultCode = 100;
@@ -5560,7 +5560,7 @@ router.post('/mobile/alarm/call_select', function(req, res, next){
                     if(i == rows.length-1){
                         setTimeout(function() {
                             calls.sort(function(a, b) {
-                                return a.ID < b.ID ? -1 : a.ID > b.ID ? 1 : 0;  
+                                return a.ID > b.ID ? -1 : a.ID < b.ID ? 1 : 0;  
                             });
                             console.log(calls);
                             
