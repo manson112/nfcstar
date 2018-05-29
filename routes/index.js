@@ -5532,10 +5532,14 @@ router.post('/mobile/alarm/call_select', function(req, res, next){
                             let obj = new Object();
                             obj.TBLNAM = rows[i].TBLNAM;
                             obj.CALL = full.slice(0,-1);
+                            obj.ID = rows[i].ID;
                             calls.push(obj);
 
                             if(i == rows.length-1){
                                 setTimeout(function() {
+                                    calls.sort(function(a, b) {
+                                        return a.ID < b.ID ? -1 : a.ID > b.ID ? 1 : 0;  
+                                    });
                                     console.log(calls);
                                     result.ResultCode = 100;
                                     result[array_name] = calls;
@@ -5550,11 +5554,16 @@ router.post('/mobile/alarm/call_select', function(req, res, next){
                     let obj = new Object();
                     obj.TBLNAM = rows[i].TBLNAM;
                     obj.CALL = rows[i].CALNAM;
+                    obj.ID = rows[i].ID;
                     calls.push(obj);
 
                     if(i == rows.length-1){
                         setTimeout(function() {
+                            calls.sort(function(a, b) {
+                                return a.ID < b.ID ? -1 : a.ID > b.ID ? 1 : 0;  
+                            });
                             console.log(calls);
+                            
                             result.ResultCode = 100;
                             result[array_name] = calls;
                             
