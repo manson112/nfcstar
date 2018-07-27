@@ -1,0 +1,253 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta title="NFCSTAR">
+		<meta http-equiv="Content-Script-Type" content="text/javascript">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/nfcstar-web-styles.css"/>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/nfcstar-web-menu-style.css"/>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/nfcstar-web-popup.css"/>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/jquery-ui.css"/>
+		<script type="text/javascript" src="/jquery/jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="/jquery/jquery-ui.js"></script>
+		<script type="text/javascript" src="/jquery/menu.js"></script>
+		<script type="text/javascript" src="/javascripts/js/modernizr-2.5.3.js"></script>
+		<script type="text/javascript" src="/javascripts/js/web-popup.js"></script>
+		script.
+			$(document).ready(function() {
+				var sessionMenu = 'm2';
+				var crMenu = $("#menu ul").find("li." + sessionMenu);
+				crMenu.addClass("current");
+			});
+
+			//setCurr(crMenu);
+			function setSelectMenu(menuId) {
+				var dt = new Date();
+				var href = "/account/SetSessionSelect?menuId=" + menuId + "&dt=" + dt.getTime();
+				$.ajax({
+					type : 'POST',
+					url : href,
+					data : null,
+					success : function(response) {
+					}
+				});
+			}
+
+			function Login() {
+				window.open("/login","","fullscreen,scrollbars");
+			}
+
+			function noData() {
+				cusAlert("", "No Links ! - No data !");
+			}
+	</head>
+	<body>
+		<center>
+			<div id="headerDiv">
+				<div class="Clearfix"></div>
+				<div class="mainct">
+					<div class="Clearfix">
+						<div class="divlogo">
+							<a href="/"><img src="/views/web/layout/topLogo.png" /></a>
+						</div>
+						<div class="divmenu">
+							<div id="menu">
+								<ul class="menu">
+									<li class="m1"><a href="/home/info" onclick="setSelectMenu('m1')"><span>회사소개</span></a></li>
+									<li class="m2"><a href="/download/nstar" onclick="setSelectMenu('m2')"><span>엔스타</span></a></li>
+									<li class="m3"><a href="/download/npos" onclick="setSelectMenu('m3')"><span>엔포스</span></a></li>
+									<li class="m4"><a href="/download/nfc" onclick="setSelectMenu('m4')"><span>다운로드</span></a></li>
+									<li class="m5"><a href="/account/service" onclick="setSelectMenu('m5')"><span>고객센터</span></a></li>
+									<li class="m6"><a href="#" onclick="setSelectMenu('m6'),Login()"><span>로그인</span></a></li>
+								</ul>
+							</div>
+						</div>
+						<div class="divsearch"></div>
+					</div>
+				</div>
+			</div>
+		</center>
+		<!-- content -->
+		<div id="bodyDiv">
+			<center>
+				<div id="divBanner" class="Clearfix">
+					<div class="banner_content Clearfix">
+						<div style="margin: 20px 0;">
+							<div style="margin: 40px 0;">
+								<div class="bn_title01">
+									NFC 모바일 결제 플랫폼 <span style="color: Red">엔스타 </span>
+								</div>
+								<div class="bn_title02">엔스타는 NFC를 이용해 손쉽게 결제를 통해, 간편하게 온오프라인 커머스를 가능하게 하는 플랫폼입니다</div>
+							</div>
+							<img src="/views/web/banner/banner_login.png" alt="spellpay" />
+							<div>
+								<a class="btn_res_red" style="width: 300px" onclick="noData()">엔스타 다운로드</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="Clearfix mainct" style="margin-bottom: 50px;">
+					<div class="div_bn01" style="margin: 30px 0;">
+						<img src="/views/web/layout/NStart_logo.png" alt="spellpay" />
+						<div style="font-size: 12pt; margin: 20px 0;">
+							<span style="font-weight: bold;">엔스타로 획기적으로 간소화된 결제 및 주문을</span> 시작하세요 <br /> 곧 수많은 가맹점들을 경험하실 수 있습니다
+						</div>
+					</div>
+					<div class="div_bn01">
+						<div class="dl_item">
+							<img src="/views/web/item/cell-phone-01.png" alt="spellpay" />
+							<div>
+								<span>가맹점 NFC를 태그하고</span>
+							</div>
+						</div>
+						<div class="dl_item">
+							<img src="/views/web/item/cell-phone-02.png" alt="spellpay" />
+							<div>
+								<span>메뉴를 선택하고</span>
+							</div>
+						</div>
+						<div class="dl_item">
+							<img src="/views/web/item/cell-phone-03.png" alt="spellpay" />
+							<div>
+								<span>상품의 옵션을 선택하고,</span>
+							</div>
+						</div>
+						<div class="dl_item">
+							<img src="/views/web/item/cell-phone-04.png" alt="spellpay" />
+							<div>
+								<span>결제를 진행하시면,</span>
+							</div>
+						</div>
+					</div>
+					<div class="dl_item">
+						<img src="/views/web/item/cup.png" alt="spellpay" />
+						<div>
+							<span>앉아서 간편하게 상품을 얻으실 수 있습니다.</span>
+						</div>
+					</div>
+
+				</div>
+
+
+				<div class="cl_lineWhite"></div>
+
+
+				<div class="Clearfix mainct">
+					<div class="Clearfix">
+
+						<div class="icon_btom">
+							<div>
+								<img src="/views/web/icon/icon-1.png" alt="spellpay" />
+							</div>
+							<div>음식점</div>
+						</div>
+						<div class="icon_btom">
+							<div>
+								<img src="/views/web/icon/icon-2.png" alt="spellpay" />
+							</div>
+							<div>주유소</div>
+						</div>
+						<div class="icon_btom">
+							<div>
+								<img src="/views/web/icon/icon-3.png" alt="spellpay" />
+							</div>
+							<div>쇼핑몰</div>
+						</div>
+						<div class="icon_btom">
+							<div>
+								<img src="/views/web/icon/icon-4.png" alt="spellpay" />
+							</div>
+							<div>커피숍</div>
+						</div>
+						<div class="icon_btom">
+							<div>
+								<img src="/views/web/icon/icon-5.png" alt="spellpay" />
+							</div>
+							<div>패스트푸드점</div>
+						</div>
+					</div>
+
+					<div class="Clearfix">
+
+						<div class="icon_btom">
+							<div>
+								<img src="/views/web/icon/icon-6.png" alt="spellpay" />
+							</div>
+							<div>휴게소</div>
+						</div>
+						<div class="icon_btom">
+							<div>
+								<img src="/views/web/icon/icon-7.png" alt="spellpay" />
+							</div>
+							<div>배달음식</div>
+						</div>
+						<div class="icon_btom">
+							<div>
+								<img src="/views/web/icon/icon-8.png" alt="spellpay" />
+							</div>
+							<div>택시</div>
+						</div>
+						<div class="icon_btom">
+							<div>
+								<img src="/views/web/icon/icon-9.png" alt="spellpay" />
+							</div>
+							<div>e쇼핑몰</div>
+						</div>
+						<div class="icon_btom">
+							<div>
+								<img src="/views/web/icon/icon-10.png" alt="spellpay" />
+							</div>
+							<div>그 외</div>
+						</div>
+					</div>
+
+				</div>
+			</center>
+		</div>
+		<!-- footer -->
+		<div id="footerDiv">
+			<center>
+				<div class="Clearfix">
+					<ul class="menubottom">
+						<li><a href="/home/notice">공지사항</a></li>
+						<li><a href="/home/agreement">이용약관</a></li>
+						<li><a href="/home/privacyPolicy">개인정보취급방침</a></li>
+						<li><a href="/home/managementPolicy">운영정책</a></li>
+					</ul>
+				</div>
+				<div class="Clearfix">
+					<table cellpadding="0" cellspacing="0" class="tb_layout_bottom">
+						<tr>
+							<td rowspan="2"><img src="/views/web/layout/logo_bottom.png" /></td>
+							<td>대표이사   안창일  |  주소   경기도 성남시 분당구 판교역로 235 에이치스퀘어 N동 6층</td>
+						</tr>
+						<tr>
+							<td>Copyright EZen NFC Corp. All rights reserved.</td>
+						</tr>
+					</table>
+				</div>
+			</center>
+		</div>
+		<center>
+			<div id="popup_box" class="login-popup">
+				<div id="popup_content">
+				</div>            
+			</div>
+			<div id="alert-box" class="login-popup">
+				<div class="popup_title">
+				</div>
+				<div id="alert_content">
+				</div>
+			</div>
+			<div id="cus_alert" class="cus_alert">
+				<div class="cus_alert_title">
+				</div>
+				<div id="cus_alert_content">
+				</div>
+			</div>
+		</center>   
+		<div id="copyright" style="display: none;">
+			<a href="http://apycom.com/"></a>
+		</div>
+	</body>
+</html>

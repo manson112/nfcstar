@@ -1,0 +1,356 @@
+<html>
+	<head>
+		<title>NFC STAR</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/nfcstar-admin-styles.css"/>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/jquery-ui.css"/>
+		<link rel="stylesheet" type="text/css" href="/jqGrid-4.6.0/css/ui.jqgrid.css" />
+		<script type="text/javascript" src="/jquery/jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="/jquery/jquery-ui.js"></script>
+		<script type="text/javascript" src="/jquery/json2.js"></script>
+		<script type="text/javascript" src="/jquery/jquery.alphanum.js"></script>
+		<script type="text/javascript" src="/jquery/jquery.cookie.js"></script>
+		<script type="text/javascript" src="/jquery/ajaxupload.js"></script>
+		<script type="text/javascript" src="/jquery/jquery.form.js"></script>
+		<script type="text/javascript" src="/jquery/jquery.fileupload.js"></script>
+		<script type="text/javascript" src="/jquery/jquery.mask.js"></script>
+		<script type="text/javascript" src="/jqGrid-4.6.0/js/i18n/grid.locale-kr.js"></script>
+		<script type="text/javascript" src="/jqGrid-4.6.0/js/jquery.jqGrid.src.js"></script>
+		<script type="text/javascript" src="/jqGrid-4.6.0/js/my.jqGrid.js"></script>
+		<script type="text/javascript" src="/jquery/my.jquery.js"></script>
+		<script type="text/javascript" src="/jquery/my.ajaxupload.js"></script>
+		<script type="text/javascript" src="/javascripts/js/common-script.js"></script>
+		<script type="text/javascript" src="/javascripts/js/html5shiv.js"></script>
+		<script type="text/javascript" src="/javascripts/js/IE9.js"></script>
+		<script type="text/javascript" src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>
+	</head>
+	<body>
+		script.
+			function logout() {
+				var conf = confirm("종료하시겠습니까?");
+				if(conf){
+					location.href = "/logout";
+				}
+			}
+		<div id="tnav_wrap">
+			<div class="in_1000"> 
+				<a href="#" id="logo"> <img src="/views/admin/logo.png" /></a>
+				<!-- 로고사이즈 200px;-->
+				<nav id="tnav">
+					<ul>
+						<li><a href="/admin/code/code01">기본코드</a></li>
+						<li><a href="/admin/store/store01">상점관리</a></li>
+						<li><a href="/admin/sale/sale01">매출관리</a></li>
+						<li><a href="/admin/pay/pay01">결제관리</a></li>
+						<li><a href="/admin/customer/customer01">고객관리</a></li>
+					</ul>
+				</nav>
+				<div id="admin_info">
+					<ul>
+						<li class="top_space"><span class="bold_w">관리자</span>님 반갑습니다.</li>
+						<li><img src="/views/admin/btn_admin_edit.png" onclick="javascript:location.href='/admin/user/edit';" style="cursor:pointer;"></li>
+						<li><img src="/views/admin/btn_admin_logout.png" onclick="logout();" style="cursor:pointer;"></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div id="top_line"></div>
+				<div id="con_wrap">
+					
+
+		<div id="left_wrap">
+			<div id="left_titel"> <span class="left_menu_title">상점관리</span> </div>
+			<nav id="left_menu">
+				<ul>
+				<li><a href='/admin/store/store01'><span>업체관리</span></a></li>
+				<li><a href='/admin/store/store05'><span>업체관리자</span></a></li>
+				<li><a href='/admin/store/store02'><span>상점관리</span></a></li>
+				<li><a href='/admin/store/store03'><span>상점관리자</span></a></li>
+				<li><a href='/admin/store/store04'><span>상점벤사</span></a></li>
+			</ul>
+			</nav>
+		</div>
+					
+
+		script.
+			var nowdat = '';
+
+			var colName01 = ['업체번호', '업체명'];
+			var colModel01 = [
+				{name: 'CPNSEQ', 	index: '업체번호', 	width: 10, 	editable: false,		template:numberTemplate,		hidden:true			},
+				{name: 'CPNNAM', 	index: '업체명', 		width: 10, 	editable: false,		template:textTemplate			}
+			];
+			
+			var colName02 = ['사용자명', '아이디', '포스번호', '전화번호', '핸드폰번호', '시작일', '종료일'];
+			var colModel02 = [
+				{name: 'USRNAM',	index: '사용자명', 	width:  8, 	editable: false,		template:textTemplate			},
+				{name: 'USERID', 	index: '아이디', 		width:  8, 	editable: false,		template:textTemplate			},
+				{name: 'POSNUM', 	index: '포스번호',	width:  5, 	editable: false,		template:numberTemplate,		hidden:true			},
+				{name: 'TELNUM', 	index: '전화번호', 	width: 15, 	editable: false,		template:textTemplate			},
+				{name: 'MOBNUM', index: '핸드폰번호', 	width: 15, 	editable: false,		template:textTemplate			},
+				{name: 'STRDAT', 	index: '시작일', 		width: 10, 	editable: false,		template:textTemplate			},
+				{name: 'ENDDAT', 	index: '종료일', 		width: 10, 	editable: false,		template:textTemplate			}
+			];
+			
+			$(document).ready(function(){
+				$("#dataList01").datagrid(null, colName01, colModel01, 450, false);
+				$('#dataList01').setGridParam({
+					onCellSelect: function(rowid, iCol, cellcontent, e) {  			
+						getDataList02( $(this).getRowData( rowid ) );
+					}
+				});
+				$("#dataList02").datagrid(null, colName02, colModel02, 200, false);
+				$('#dataList02').setGridParam({
+					onCellSelect: function(rowid, iCol, cellcontent, e) {  			
+						getDataForm02( $(this).getRowData( rowid ) );
+					}
+				});
+				$("#userid").alphanum();
+				$('#userid').css("ime-mode", "disabled");
+				$("#telnum, #mobnum").numeric();
+				$("#strdat, #enddat").datepicker({
+					changeYear: true
+				});
+			});
+			
+			function getDataList01(){
+				clearDataList02();
+				$.ajax({
+					url: "/admin/store/store01_select",
+					data:$("[name=form_search01]").serialize(),
+					success: function(data) {
+						$("#dataList01").setDatagrid(data);
+					}
+				});
+			}
+			
+			function getDataList02( data ){
+				clearDataList02();
+				var CPNSEQ 		= data.CPNSEQ;
+				$.ajax({
+					url: "/admin/store/store05_select",
+					data:{CPNSEQ:CPNSEQ},
+					success: function(data) {
+						$("#dataList02").setDatagrid(data);
+					}
+				});
+			}
+			
+			function getDataForm02( data ){
+				clearDataForm02();
+				var USERID 		= data.USERID;
+				$.ajax({
+					url: "/admin/store/store05_select",
+					data:{USERID:USERID},
+					success: function(data) {
+						$.setFormData("form_data02", data[0]);
+						$("#savgbn").val("U");
+					}
+				});
+			}
+			
+			function clearDataList02(){
+				$("#dataList02").clearGridData().trigger("reloadGrid");
+				clearDataForm02();
+			}
+			
+			function clearDataForm02(){
+				document.form_data02.reset();
+				$("#usrnam").attr("readonly", true).addClass("input_readonly");
+				$("#userid").attr("readonly", true).addClass("input_readonly");
+			}
+			
+			function resetDataForm02(){
+				var selRow = $("#dataList01").jqGrid('getGridParam','selrow');
+				if(selRow==null){ alert("상점을 선택 후 신규버튼을 눌러주세요."); return; }
+				var data = $("#dataList01").getRowData( selRow )
+				clearDataForm02();
+				$("#savgbn").val("I");
+				$("#cpnseq").val(data.CPNSEQ);
+				$("#strdat").val(nowdat);
+				//$("#enddat").val('2023-06-15');
+				$("#usrnam").attr("readonly", false).removeClass("input_readonly");
+				$("#userid").attr("readonly", false).removeClass("input_readonly");
+			}
+			
+			function chkForm(obj){
+				if(obj==document.getElementById("usrnam")){
+					if(obj.value==""){
+						alert("사용자명을 입력하여 주세요."); 
+						obj.focus();
+						return false;	
+					}
+					return true;
+				} else if(obj==document.getElementById("userid")){
+					if(obj.value==""){
+						alert("아이디를 입력하여 주세요."); 
+						obj.focus();
+						return false;	
+					}
+				} else if(obj==document.getElementById("userpw")){
+					if(obj.value==""){
+						alert("패스워드를 입력하여 주세요."); 
+						obj.focus();
+						return false;	
+					}
+				} else if(obj==document.getElementById("mobnum")){
+					if(obj.value==""){
+						alert("핸드폰번호을 입력하여 주세요."); 
+						obj.focus();
+						return false;	
+					}
+				} else if(obj==document.getElementById("emladd")){
+					if(obj.value==""){
+						alert("이메일을 입력하여 주세요."); 
+						obj.focus();
+						return false;	
+					}
+				} else if(obj==document.getElementById("strdat")){
+					if(obj.value==""){
+						alert("시작일을 입력하여 주세요."); 
+						obj.focus();
+						return false;	
+					}
+				} else if(obj==document.getElementById("enddat")){
+					if(obj.value==""){
+						alert("종료일을 입력하여 주세요."); 
+						obj.focus();
+						return false;	
+					}
+				}
+				return true;
+			}
+			
+			function setDataForm02(){
+				if(!chkForm($("#usrnam")[0])) return false;
+				if(!chkForm($("#userid")[0])) return false;
+				if(!chkForm($("#userpw")[0])) return false;
+				if(!chkForm($("#mobnum")[0])) return false;
+				if(!chkForm($("#emladd")[0])) return false;
+				if(!chkForm($("#strdat")[0])) return false;
+				if(!chkForm($("#enddat")[0])) return false;
+				$.ajax({
+					url: "/admin/store/store05_proc",
+					data:$("[name=form_data02]").serialize(),
+					success: function(data) {
+						if(data.result){
+							alert("저장되었습니다.");
+							var data = new Object();
+							data.STOSEQ = $("#stoseq").val();
+							getDataList02( data );
+						}else{
+							alert(data.msg);
+						}
+					}
+				});
+			} 
+		<div id="content_link"> <img src="/views/admin/con_title_bg.jpg" id="con_title_bg">
+			<div id="con_title"><img src="/views/admin/icon_link.png">&nbsp;상점관리&nbsp;&gt;&nbsp;<span class="bold">업체관리자</span></div>
+		</div>
+		<div id="content">
+			<div id="content_title">
+				<div class="view_title"><span class="view_title2">업체</span>관리자</div>
+				<div class="view_title_line"></div>
+			</div>
+			<div class="view">
+			<!-- Content Start -->
+				<table width="100%" border="0" cellspacing="1" cellpadding="1" bgcolor="dddddd">
+					<tr>
+						<td width="35%" height="45" align="center" bgcolor="e9e9e9">
+							<form name="form_search01">
+								<table border="0" cellspacing="0" cellpadding="0">
+									<tr>
+										<td><img src="/views/admin/icon_arrow_b.png" width="4" height="5"></td>
+										<td class="padding3"><span class="view_text">업체명</span></td>
+										<td class="padding3"><input  name="CPNNAM" type="text" class="view_textfiled2"></td>
+										<td class="padding3"><img src="/views/admin/btn_search.gif" onclick="getDataList01();"/></td>
+									</tr>
+								</table>
+							</form>
+						</td>
+						<td width="65%" align="right" bgcolor="e9e9e9">
+							<form name="form_search02">
+								<table border="0" cellspacing="0" cellpadding="0">
+									<tr>
+										<td><img src="/views/admin/btn_new_save.gif" onclick="resetDataForm02();"/></td>
+										<td class="padding3"><img src="/views/admin/btn_save.gif" onclick="setDataForm02();"/></td>
+										<td width="5"></td>
+									</tr>
+								</table>
+							</form>
+						</td>
+					</tr>
+					<tr>
+						<td valign="top" class="table_con">
+							<table id="dataList01"></table>
+							<form name="form_data01">
+							</form>
+						</td>
+						<td class="table_con">
+							<table id="dataList02"></table>
+							<form name="form_data02">
+								<table width="100%" class=table_default>
+									<colgroup>
+										<col width="23%"/><col width="27%"/><col width="23%"/><col width="27%"/>
+									</colgroup>
+									<tbody>
+										<tr style="display:none">
+											<th>저장구분</th>
+											<td colspan="3"><input type="text" id="savgbn" name="SAVGBN" readonly="readonly" class="input_text_10 input_readonly"/></td>
+										</tr>
+										<tr style="display:none">
+											<th>매장번호</th>
+											<td colspan="3"><input type="text" id="cpnseq" name="CPNSEQ" readonly="readonly" class="view_textfiled3 input_readonly"/></td>
+										</tr>
+										<tr>
+											<th>사용자명</th>
+											<td colspan="3"><input type="text" id="usrnam" name="USRNAM" readonly="readonly" class="view_textfiled3 input_readonly" maxlength="10"/></td>
+										</tr>
+										<tr>
+											<th>아이디</th>
+											<td colspan="3"><input type="text" id="userid" name="USERID" readonly="readonly" class="view_textfiled3 input_readonly" maxlength="20"/></td>
+										</tr>
+										<tr>
+											<th>패스워드</th>
+											<td colspan="3"><input type="text" id="userpw" name="USERPW" class="view_textfiled3" maxlength="20"/></td>
+										</tr>
+										<tr>
+											<th>전화번호</th>
+											<td><input type="text" id="telnum" name="TELNUM" class="view_textfiled2" maxlength="15"/></td>
+											<th>핸드폰번호</th>
+											<td><input type="text" id="mobnum" name="MOBNUM" class="view_textfiled2" maxlength="15"/></td>
+										</tr>
+										<tr>
+											<th>이메일</th>
+											<td colspan="3"><input type="text" id="emladd" name="EMLADD" class="view_textfiled3" maxlength="50"/></td>
+										</tr>
+										<tr>
+											<th>시작일</th>
+											<td><input type="text" id="strdat" name="STRDAT" class="view_textfiled1" maxlength="10" readonly="readonly"/></td>
+											<th>종료일</th>
+											<td><input type="text" id="enddat" name="ENDDAT" class="view_textfiled1" maxlength="10" readonly="readonly"/></td>
+										</tr>
+										<tr>
+											<th>등록일</th>
+											<td><input type="text" id="regdat" name="REGDAT" readonly="readonly" class="input_readonly view_textfiled1"/></td>
+											<th>등록자</th>
+											<td><input type="text" id="regusr" name="REGUSR" readonly="readonly" class="input_readonly view_textfiled1"/></td>
+										</tr>
+										<tr>
+											<th>수정일</th>
+											<td><input type="text" id="moddat" name="MODDAT" readonly="readonly" class="input_readonly view_textfiled1"/></td>
+											<th>수정자</th>
+											<td><input type="text" id="modusr" name="MODUSR" readonly="readonly" class="input_readonly view_textfiled1"/></td>
+										</tr>
+									</tbody>
+								</table>
+							</form>
+						</td>
+					</tr>
+				</table>
+			<!-- Content End -->
+			</div>
+		</div>
+		</div>
+	</body>
+</html>

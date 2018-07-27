@@ -1,0 +1,245 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta title="NFCSTAR">
+		<meta http-equiv="Content-Script-Type" content="text/javascript">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/nfcstar-web-styles.css"/>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/nfcstar-web-menu-style.css"/>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/nfcstar-web-popup.css"/>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/jquery-ui.css"/>
+		<script type="text/javascript" src="/jquery/jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="/jquery/jquery-ui.js"></script>
+		<script type="text/javascript" src="/jquery/menu.js"></script>
+		<script type="text/javascript" src="/javascripts/js/modernizr-2.5.3.js"></script>
+		<script type="text/javascript" src="/javascripts/js/web-popup.js"></script>
+		script.
+			$(document).ready(function() {
+				var sessionMenu = 'm5';
+				var crMenu = $("#menu ul").find("li." + sessionMenu);
+				crMenu.addClass("current");
+			});
+
+			//setCurr(crMenu);
+			function setSelectMenu(menuId) {
+				var dt = new Date();
+				var href = "/account/SetSessionSelect?menuId=" + menuId + "&dt=" + dt.getTime();
+				$.ajax({
+					type : 'POST',
+					url : href,
+					data : null,
+					success : function(response) {
+					}
+				});
+			}
+
+			function Login() {
+				window.open("/login","","fullscreen,scrollbars");
+			}
+
+			function noData() {
+				cusAlert("", "No Links ! - No data !");
+			}
+	</head>
+	<body>
+		<center>
+			<div id="headerDiv">
+				<div class="Clearfix"></div>
+				<div class="mainct">
+					<div class="Clearfix">
+						<div class="divlogo">
+							<a href="/"><img src="/views/web/layout/topLogo.png" /></a>
+						</div>
+						<div class="divmenu">
+
+							<div id="menu">
+								<ul class="menu">
+									<li class="m1"><a href="/home/info" onclick="setSelectMenu('m1')"><span>회사소개</span></a></li>
+									<li class="m2"><a href="/download/nstar" onclick="setSelectMenu('m2')"><span>엔스타</span></a></li>
+									<li class="m3"><a href="/download/npos" onclick="setSelectMenu('m3')"><span>엔포스</span></a></li>
+									<li class="m4"><a href="/download/nfc" onclick="setSelectMenu('m4')"><span>다운로드</span></a></li>
+									<li class="m5"><a href="/account/service" onclick="setSelectMenu('m5')"><span>고객센터</span></a></li>
+									<li class="m6"><a href="#" onclick="setSelectMenu('m6'),Login()"><span>로그인</span></a></li>
+								</ul>
+							</div>
+						</div>
+						<div class="divsearch"></div>
+					</div>
+				</div>
+			</div>
+		</center>
+		<div id="bodyDiv">
+			<center>
+				<div class="Clearfix"></div>
+				<div class="Clearfix mainct">
+					<div style="font-size: 25pt; font-weight: bold; margin: 30px 0;">자주 묻는 질문</div>
+					<div class="div_border">
+						<table cellpadding="0" cellspacing="0" class="tb_item">
+							<tr class="item_more">
+								<td>엔스타는 어떤 서비스인가요?</td>
+							</tr>
+							<tr class="item_more">
+								<td>엔스타 테마란 무엇인가요?</td>
+							</tr>
+							<tr class="item_more">
+								<td>모아보기'는 어떤 서비스인가요?</td>
+							</tr>
+							<tr class="item_more">
+								<td>배경화면을 변경하고 싶어요.</td>
+							</tr>
+							<tr class="item_more">
+								<td>홈화면에 위젯이나 앱 아이콘을 설치하고 싶어요.</td>
+							</tr>
+							<tr class="item_more">
+								<td>폴더는 어떻게 만들 수 있나요?</td>
+							</tr>
+							<tr class="item_more">
+								<td>홈화면을 순환해서 사용하고 싶어요.</td>
+							</tr>
+							<tr class="item_more">
+								<td>홈화면을 추가하거나 삭제하려면 어떻게 하나요?</td>
+							</tr>
+							<tr class="item_more">
+								<td>기존 홈화면에 있던 폴더, 바로가기를 쓰고싶어요</td>
+							</tr>
+							<tr class="item_more">
+								<td>기본 설정이란 무엇인가요?</td>
+							</tr>
+						</table>
+					</div>
+					<div class="Clearfix" style="margin: 10px 0;">
+						<span class="item_paging"> <a><</a><a>1</a><a>2</a><a>3</a><a>4</a><a>></a>
+						</span>
+						<div style="float: right; display: inline-flex;">
+							<select class="search_pa">
+								<option>제목</option>
+								<option>demo</option>
+							</select> <input id="text02" name="text02" class="search_pa" /> <a class="btn_res_red" style="width: 50px; display: inline-block;" onclick="noData()">검색</a>
+						</div>
+					</div>
+				</div>
+				<div style="background: url(/views/web/banner/cus_backgound.png) no-repeat scroll center center rgba(0, 0, 0, 0); height: 698px;">
+					<div class="Clearfix mainct">
+						<div class="Clearfix" style="font-size: 20pt; padding: 60px 0">
+							|가맹점ㆍ대리점 신청</div>
+						<div class="Clearfix">
+							<div style="float: left; width: 40%;">
+								<div>
+									<a class="iconlink"><img src="/views/web/icon/icon_18.png" /></a> <a class="iconlink"><img src="/views/web/icon/icon_17.png" /></a>
+								</div>
+								<div>
+									<a class="iconlink"><img src="/views/web/icon/icon_16.png" /></a> <a class="iconlink"><img src="/views/web/icon/icon_15.png" /></a>
+								</div>
+								<div>
+									<a class="iconlink"><img src="/views/web/icon/icon_12.png" /></a> <a class="iconlink"><img src="/views/web/icon/icon_13.png" /></a>
+								</div>
+								<div>
+									<a class="iconlink"><img src="/views/web/icon/icon_13.png" /></a> <a class="iconlink"><img src="/views/web/icon/icon_12.png" /></a>
+								</div>
+							</div>
+							<div style="float: left; width: 59%;">
+								<div>
+									<div style="font-size: 14pt; line-height: 1.6; margin: 50px 0 20px;">
+										|eZEN NFC의 가맹점으로 등록하세요. <b> 손쉽고 저렴하게 모바일 </b> <br /> <b> 커머스 플랫폼을 구축할 </b>수 있도록 최선을 다해 도와드립니다.
+									</div>
+									<a class="btn_res_black" style="width: 300px;" href="/Account/storeRegister">가맹점 등록</a>
+								</div>
+								<div style="margin-top: 130px;">
+									<div style="font-size: 14pt; line-height: 1.6; margin: 50px 0 20px;">
+										|eZEN NFC의 대리점으로 함께 해요. <b> 손쉽게 자사의 서비스를 </b><br /> <b> 공급하고 수익을 창출할 </b>수 있습니다.
+									</div>
+									<a class="btn_res_black" style="width: 300px;" href="/Account/cusRegister">대리점 신청</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="Clearfix mainct">
+					<div style="font-size: 25pt; font-weight: bold; margin: 20px 0;">문의하기</div>
+					<div class="Clearfix">
+						<input name="txt1" id="txt1" class="cusinput" /> <input name="txt2" id="txt2" class="cusinput" />
+					</div>
+					<div class="div_border" style="min-height: 300;">
+						|제목 
+						<br />
+						<br />
+						<br />
+						<br />
+						<br />
+						<br />
+						<br />
+						<br /> <br />
+						<br />
+						<br />
+						<br />
+						<br />
+						<br />
+						<br />
+						<br /> 내용 <br />
+						<br />
+						<br />
+						<br />
+						<br />
+						<br />
+						<br />
+						<br />
+					</div>
+
+					<div class="div_border">
+						|파일
+						<button class="bt_cus">첨부</button>
+					</div>
+					<a class="btn_res_red" onclick="noData()">문의 전송</a>
+				</div>
+				<br />
+				<br />
+				<br />
+				<br />
+			</center>
+		</div>
+		<div id="footerDiv">
+			<center>
+				<div class="Clearfix">
+					<ul class="menubottom">
+						<li><a href="/home/notice">공지사항</a></li>
+						<li><a href="/home/agreement">이용약관</a></li>
+						<li><a href="/home/privacyPolicy">개인정보취급방침</a></li>
+						<li><a href="/home/managementPolicy">운영정책</a></li>
+					</ul>
+				</div>
+				<div class="Clearfix">
+					<table cellpadding="0" cellspacing="0" class="tb_layout_bottom">
+						<tr>
+							<td rowspan="2"><img src="/views/web/layout/logo_bottom.png" /></td>
+							<td>대표이사   안창일  |  주소   경기도 성남시 분당구 판교역로 235 에이치스퀘어 N동 6층</td>
+						</tr>
+						<tr>
+							<td>Copyright EZen NFC Corp. All rights reserved.</td>
+						</tr>
+					</table>
+				</div>
+			</center>
+		</div>
+		<center>
+			<div id="popup_box" class="login-popup">
+				<div id="popup_content">
+				</div>            
+			</div>
+			<div id="alert-box" class="login-popup">
+				<div class="popup_title">
+				</div>
+				<div id="alert_content">
+				</div>
+			</div>
+			<div id="cus_alert" class="cus_alert">
+				<div class="cus_alert_title">
+				</div>
+				<div id="cus_alert_content">
+				</div>
+			</div>
+		</center>   
+		<div id="copyright" style="display: none;">
+			<a href="http://apycom.com/"></a>
+		</div>
+	</body>
+</html>

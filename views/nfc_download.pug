@@ -1,0 +1,169 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta title="NFCSTAR">
+		<meta http-equiv="Content-Script-Type" content="text/javascript">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/nfcstar-web-styles.css"/>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/nfcstar-web-menu-style.css"/>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/nfcstar-web-popup.css"/>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/jquery-ui.css"/>
+		<script type="text/javascript" src="/jquery/jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="/jquery/jquery-ui.js"></script>
+		<script type="text/javascript" src="/jquery/menu.js"></script>
+		<script type="text/javascript" src="/javascripts/js/modernizr-2.5.3.js"></script>
+		<script type="text/javascript" src="/javascripts/js/web-popup.js"></script>
+		script.
+			$(document).ready(function() {
+				var sessionMenu = 'm4';
+				var crMenu = $("#menu ul").find("li." + sessionMenu);
+				crMenu.addClass("current");
+			});
+
+			//setCurr(crMenu);
+			function setSelectMenu(menuId) {
+				var dt = new Date();
+				var href = "/account/SetSessionSelect?menuId=" + menuId + "&dt=" + dt.getTime();
+				$.ajax({
+					type : 'POST',
+					url : href,
+					data : null,
+					success : function(response) {
+					}
+				});
+			}
+
+			function Login() {
+				window.open("/login","","fullscreen,scrollbars");
+			}
+
+			function noData() {
+				cusAlert("", "No Links ! - No data !");
+			}
+	</head>
+	<body>
+		<center>
+			<div id="headerDiv">
+				<div class="Clearfix"></div>
+				<div class="mainct">
+					<div class="Clearfix">
+						<div class="divlogo">
+							<a href="/"><img src="/views/web/layout/topLogo.png" /></a>
+						</div>
+						<div class="divmenu">
+							<div id="menu">
+								<ul class="menu">
+									<li class="m1"><a href="/home/info" onclick="setSelectMenu('m1')"><span>회사소개</span></a></li>
+									<li class="m2"><a href="/download/nstar" onclick="setSelectMenu('m2')"><span>엔스타</span></a></li>
+									<li class="m3"><a href="/download/npos" onclick="setSelectMenu('m3')"><span>엔포스</span></a></li>
+									<li class="m4"><a href="/download/nfc" onclick="setSelectMenu('m4')"><span>다운로드</span></a></li>
+									<li class="m5"><a href="/account/service" onclick="setSelectMenu('m5')"><span>고객센터</span></a></li>
+									<li class="m6"><a href="#" onclick="setSelectMenu('m6'),Login()"><span>로그인</span></a></li>
+								</ul>
+							</div>
+						</div>
+						<div class="divsearch"></div>
+					</div>
+				</div>
+			</div>
+		</center>
+		<div id="bodyDiv">
+			<center>
+				<div class="Clearfix"></div>
+
+				<div class="Clearfix">
+					<div class="h_regis" style="color: #000;">다운로드</div>
+					<div class="h_ezen">다양한 eZEN NFC 플랫폼과 함께 새로운 ICT 세상을 경험하세요</div>
+				</div>
+
+				<div class="Clearfix mainct">
+					<div style="float: left; width: 49%; border-right: 1px solid #ccc;">
+						<img src="/views/web/nfcdownload/download_1.png" />
+
+						<div class="tt_001">모바일 결제 플랫폼 엔스타</div>
+						<div class="tt_002">
+							|엔스타는 NFC를 이용해 손쉽고 간편하게 <br /> 온오프라인 커머스를 가능하게 하는 플랫폼입니다.
+						</div>
+
+						<a class="btn_res_red" style="width: 350px" onclick="noData()">엔스타 다운로드</a>
+					</div>
+					<div style="float: left; width: 49%;">
+						<img src="/views/web/nfcdownload/download_2.png" />
+
+						<div class="tt_001">판매 관리 POS 플랫폼 엔포스 모바일</div>
+						<div class="tt_002">
+							|엔포스는 누구나 쉽고 편리하게 판매 관리를 <br /> 할 수 있게 도와주는 포스 플랫폼입니다
+						</div>
+
+						<a class="btn_res_blue" style="width: 350px" onclick="noData()">엔포스 모바일 다운로드</a>
+
+					</div>
+				</div>
+
+
+				<div class="cl_lineWhite"></div>
+
+
+				<div class="Clearfix mainct">
+					<div>
+						<img src="/views/web/nfcdownload/download_npost.png" />
+
+						<div class="tt_001">판매 관리 POS 플랫폼 엔포스 PC</div>
+						<div class="tt_002">
+							|엔포스는 누구나 쉽고 편리하게 판매 관리를 <br /> 할 수 있게 도와주는 포스 플랫폼입니다
+						</div>
+						<a class="btn_res_blue" style="width: 350px" onclick="noData()">엔포스 pc 다운로드</a>
+					</div>
+
+				</div>
+
+			</center>
+		</div>
+		<div id="footerDiv">
+			<center>
+				<div class="Clearfix">
+					<ul class="menubottom">
+						<li><a href="/home/notice">공지사항</a></li>
+						<li><a href="/home/agreement">이용약관</a></li>
+						<li><a href="/home/privacyPolicy">개인정보취급방침</a></li>
+						<li><a href="/home/managementPolicy">운영정책</a></li>
+					</ul>
+				</div>
+				<div class="Clearfix">
+					<table cellpadding="0" cellspacing="0" class="tb_layout_bottom">
+						<tr>
+							<td rowspan="2"><img src="/views/web/layout/logo_bottom.png" /></td>
+							<td>대표이사   안창일  |  주소   경기도 성남시 분당구 판교역로 235 에이치스퀘어 N동 6층</td>
+						</tr>
+						<tr>
+							<td>Copyright EZen NFC Corp. All rights reserved.</td>
+						</tr>
+					</table>
+				</div>
+			</center>
+		</div>
+		<center>
+			<div id="popup_box" class="login-popup">
+			<!-- <div class="popup_title">SpellPay</div>
+				<div class="toolbar_pop"><a href="#" class="close btn_close btn_boder">Close</a></div> -->
+				<div id="popup_content">
+				</div>            
+			</div>
+			<div id="alert-box" class="login-popup">
+				<div class="popup_title">
+				</div>
+				<div id="alert_content">
+				</div>
+			</div>
+			<div id="cus_alert" class="cus_alert">
+				<div class="cus_alert_title">
+				</div>
+				<div id="cus_alert_content">
+				</div>
+			</div>
+		</center>   
+		<div id="copyright" style="display: none;">
+			<a href="http://apycom.com/"></a>
+		</div>
+	</body>
+</html>

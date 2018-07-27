@@ -1,0 +1,201 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta title="NFCSTAR">
+		<meta http-equiv="Content-Script-Type" content="text/javascript">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/nfcstar-web-styles.css"/>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/nfcstar-web-menu-style.css"/>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/nfcstar-web-popup.css"/>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/jquery-ui.css"/>
+		<script type="text/javascript" src="/jquery/jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="/jquery/jquery-ui.js"></script>
+		<script type="text/javascript" src="/jquery/menu.js"></script>
+		<script type="text/javascript" src="/javascripts/js/modernizr-2.5.3.js"></script>
+		<script type="text/javascript" src="/javascripts/js/web-popup.js"></script>
+		script.
+			$(document).ready(function() {
+				var sessionMenu = 'm1';
+				var crMenu = $("#menu ul").find("li." + sessionMenu);
+				crMenu.addClass("current");
+			});
+
+			//setCurr(crMenu);
+			function setSelectMenu(menuId) {
+				var dt = new Date();
+				var href = "/account/SetSessionSelect?menuId=" + menuId + "&dt=" + dt.getTime();
+				$.ajax({
+					type : 'POST',
+					url : href,
+					data : null,
+					success : function(response) {
+					}
+				});
+			}
+
+			function Login() {
+				window.open("/login","","fullscreen,scrollbars");
+			}
+
+			function noData() {
+				cusAlert("", "No Links ! - No data !");
+			}
+	</head>
+	<body>
+		<center>
+			<div id="headerDiv">
+				<div class="Clearfix"></div>
+				<div class="mainct">
+					<div class="Clearfix">
+						<div class="divlogo">
+							<a href="/"><img src="/views/web/layout/topLogo.png" /></a>
+						</div>
+						<div class="divmenu">
+							<div id="menu">
+								<ul class="menu">
+									<li class="m1"><a href="/home/info" onclick="setSelectMenu('m1')"><span>회사소개</span></a></li>
+									<li class="m2"><a href="/download/nstar" onclick="setSelectMenu('m2')"><span>엔스타</span></a></li>
+									<li class="m3"><a href="/download/npos" onclick="setSelectMenu('m3')"><span>엔포스</span></a></li>
+									<li class="m4"><a href="/download/nfc" onclick="setSelectMenu('m4')"><span>다운로드</span></a></li>
+									<li class="m5"><a href="/account/service" onclick="setSelectMenu('m5')"><span>고객센터</span></a></li>
+									<li class="m6"><a href="#" onclick="setSelectMenu('m6'),Login()"><span>로그인</span></a></li>
+								</ul>
+							</div>
+						</div>
+						<div class="divsearch"></div>
+					</div>
+				</div>
+			</div>
+		</center>
+		<!-- content -->
+		<div id="bodyDiv">
+			<center>
+				<div class="Clearfix"></div>
+				<div class="about_us_banner Clearfix">
+					<div class="Clearfix mainct">
+						<div style="float: left; width: 39%; text-align: left; color: #000; margin-top: 80px;">
+							<span style="border-top: 4px solid #B79922; color: #666666; font-size: 20pt;">비전</span>
+							<br /> <span style="font-size: 40pt;"> pursuing <br /> <b>zen</b>
+								<br /> in the <br /> <b>e</b>-world
+							</span> <br /> <span style="background: none repeat scroll 0 0 #FAD70B; font-size: 25pt; padding: 5px;"> e-세상에서 <br /> 선을 추구합니다
+							</span>
+						</div>
+						<div style="float: left; width: 59%; text-align: left; color: #fff; margin-top: 80px;">
+							<span style="border-top: 4px solid #bf2e27; padding: 6px 0; font-size: 20pt;">
+								<img src="/views/web/layout/ezennfc_logo_white.png" alt="nPost" />
+							</span>
+							<p style="font-size: 10pt; margin: 20px 0;">
+								|eZEN NFC는 미래를 철저히 분석하고 이를 실천하여 전세계 모두가 자유롭고 편리한 
+								<br /> 라이프를 영위할 수
+								|있도록 새로운 문화를 창조하고 있습니다. 저희는 완벽함과 편리함
+								<br /> 그리고 선을 추구합니다. 현재 결제의 어려움과
+								|한계를 극복하고 본사 직영 및 대리점 사업을
+								<br /> 구축하여 진정한 글로벌 솔루션 기업으로 발전할 것입니다.<br />
+								<br /> eZEN NFC는 ICT산업의 리더이자 고객과 함께 하는 든든한 조력자로서 진정한 상생의 길을 
+								<br />
+								|모색하는 더 나은 우리들의 삶을 추구합니다.
+							</p>
+							<br /> <span style="border-top: 4px solid #bf2e27; font-size: 24pt;">엔스타</span>
+							<p style="font-size: 10pt; background: #f84a41; margin: 10px 0;"> 
+								|eZEN NFC의 대표 플랫폼 엔스타는 개인정보 유출을 해결한 모바일 결제 
+								<br /> 시스템입니다. 지금까지의 결제
+								|시스템을 혁신해 고객정보를 활용하여 결제하는대신, 
+								<br /> 가맹점의 정보를 활용하여 고객이 가맹점에 상품금액만
+								|결제하게 하여 고객정보를 
+								<br /> 보호하는 시스템입니다.
+							</p>
+						</div>
+					</div>
+				</div>
+
+
+
+				<div class="Clearfix mainct">
+					<div style="font-size: 20pt; font-weight: bold; margin: 30px 0;">코퍼레이션ㆍ브랜드 아이덴티티(CIㆍBI)</div>
+
+					<div class="Clearfix" style="margin-left: 50px;">
+						<div style="float: left; width: 30%; border: 1px solid #ccc; margin: 5px; padding: 90px 0;">
+							<img src="/views/web/layout/topLogo.png" alt="nPost" />
+						</div>
+						<div style="float: left; width: 30%; border: 1px solid #ccc; margin: 5px; padding: 34px 0;">
+							<img src="/views/web/layout/NStart_logo.png" alt="nPost" />
+						</div>
+						<div style="float: left; width: 30%; border: 1px solid #ccc; margin: 5px; padding: 39px 0;">
+							<img src="/views/web/nPost/nPost_logo.png" alt="nPost" />
+						</div>
+					</div>
+
+					<a class="btn_res_black" style="width: 300px; color: #000000;" onclick="noData()">CIㆍBI 다운로드</a>
+
+				</div>
+
+				<div class="cl_lineWhite"></div>
+
+				<div class="Clearfix mainct">
+					<div style="font-size: 25pt; font-weight: bold; margin: 30px 0;">연락 안내</div>
+					<div class="Clearfix">
+						<div style="float: left; width: 70%; font-size: 14pt; margin-top: 30px; text-align: left;">
+							<b> 주소</b> 부산광역시 구로구 구로동 170-5번지 우림EBIZ센터 1차 306호 <br /> <b> 전화
+							</b> 010-9800-8504 팩스 02-2108-2177
+						</div>
+						<div style="float: left; width: 19%;">
+							<img src="/views/web/icon/icon_info.png" />
+						</div>
+					</div>
+				</div>
+
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+			</center>
+		</div>
+		<!-- footer -->
+		<div id="footerDiv">
+			<center>
+				<div class="Clearfix">
+					<ul class="menubottom">
+						<li><a href="/home/notice">공지사항</a></li>
+						<li><a href="/home/agreement">이용약관</a></li>
+						<li><a href="/home/privacyPolicy">개인정보취급방침</a></li>
+						<li><a href="/home/managementPolicy">운영정책</a></li>
+					</ul>
+				</div>
+				<div class="Clearfix">
+					<table cellpadding="0" cellspacing="0" class="tb_layout_bottom">
+						<tr>
+							<td rowspan="2"><img src="/views/web/layout/logo_bottom.png" /></td>
+							<td>대표이사   안창일  |  주소   경기도 성남시 분당구 판교역로 235 에이치스퀘어 N동 6층</td>
+						</tr>
+						<tr>
+							<td>Copyright EZen NFC Corp. All rights reserved.</td>
+						</tr>
+					</table>
+				</div>
+			</center>
+		</div>
+		<center>
+			<div id="popup_box" class="login-popup">  
+				<div id="popup_content">
+				</div>            
+			</div>
+			<div id="alert-box" class="login-popup">
+				<div class="popup_title">
+				</div>
+				<div id="alert_content">
+				</div>
+			</div>
+			<div id="cus_alert" class="cus_alert">
+				<div class="cus_alert_title">
+				</div>
+				<div id="cus_alert_content">
+				</div>
+			</div>
+		</center>   
+		<div id="copyright" style="display: none;">
+			<a href="http://apycom.com/"></a>
+		</div>
+	</body>
+</html>

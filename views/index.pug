@@ -11,7 +11,7 @@ html
 			$(document).ready(function(){
 				setTimeout("realtimeClock()", 1000);
 				reloadCall();
-				var socket = io("http://13.124.122.190");
+				var socket = io("https://coffeeterror.com");
 				socket.on("#{STOSEQ}_POS", function(jsonMsg) {
 					if(jsonMsg.MSGTYP == "CALL") {
 						reloadCall();
@@ -27,7 +27,6 @@ html
 					}
 				});
 			});
-
 			function reloadCall() {
 				$.ajax({
 					url: "/pos/setup/reload_call",
@@ -75,10 +74,8 @@ html
 				var conf = confirm("종료하시겠습니까?");
 				if(conf){
 					location.href = "/logout";
-					self.close();
 				}
 			}
-			
 	body
 		audio#file_alarm(autoplay="false" src="/sound/alarm.wav" hidden="true")
 		header

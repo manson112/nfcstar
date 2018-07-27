@@ -1,0 +1,178 @@
+
+
+
+
+<html>
+	<head>
+		<title>NFC STAR</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/nfcstar-admin-styles.css"/>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/css/jquery-ui.css"/>
+		<link rel="stylesheet" type="text/css" href="/jqGrid-4.6.0/css/ui.jqgrid.css" />
+		<script type="text/javascript" src="/jquery/jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="/jquery/jquery-ui.js"></script>
+		<script type="text/javascript" src="/jquery/json2.js"></script>
+		<script type="text/javascript" src="/jquery/jquery.alphanum.js"></script>
+		<script type="text/javascript" src="/jquery/jquery.cookie.js"></script>
+		<script type="text/javascript" src="/jquery/ajaxupload.js"></script>
+		<script type="text/javascript" src="/jquery/jquery.form.js"></script>
+		<script type="text/javascript" src="/jquery/jquery.fileupload.js"></script>
+		<script type="text/javascript" src="/jquery/jquery.mask.js"></script>
+		<script type="text/javascript" src="/jqGrid-4.6.0/js/i18n/grid.locale-kr.js"></script>
+		<script type="text/javascript" src="/jqGrid-4.6.0/js/jquery.jqGrid.src.js"></script>
+		<script type="text/javascript" src="/jqGrid-4.6.0/js/my.jqGrid.js"></script>
+		<script type="text/javascript" src="/jquery/my.jquery.js"></script>
+		<script type="text/javascript" src="/jquery/my.ajaxupload.js"></script>
+		<script type="text/javascript" src="/javascripts/js/common-script.js"></script>
+		<script type="text/javascript" src="/javascripts/js/html5shiv.js"></script>
+		<script type="text/javascript" src="/javascripts/js/IE9.js"></script>
+		<script type="text/javascript" src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>
+	</head>
+	<body>
+		
+		script.
+			function logout() {
+			var conf = confirm("종료하시겠습니까?");
+			if(conf){
+				location.href = "/logout";
+			}
+			}
+		<div id="tnav_wrap">
+			<div class="in_1000"> 
+				<a href="#" id="logo"> <img src="/views/admin/logo.png" /></a>
+				<!-- 로고사이즈 200px;-->
+				<nav id="tnav">
+					<ul>
+						<li><a href="/admin/code/code01">기본코드</a></li>
+						<li><a href="/admin/store/store01">상점관리</a></li>
+						<li><a href="/admin/sale/sale01">매출관리</a></li>
+						<li><a href="/admin/pay/pay01">결제관리</a></li>
+						<li><a href="/admin/customer/customer01">고객관리</a></li>
+					</ul>
+				</nav>
+				<div id="admin_info">
+					<ul>
+						<li class="top_space"><span class="bold_w">관리자</span>님 반갑습니다.</li>
+						<li><img src="/views/admin/btn_admin_edit.png" onclick="javascript:location.href='/admin/user/edit';" style="cursor:pointer;"></li>
+						<li><img src="/views/admin/btn_admin_logout.png" onclick="logout();" style="cursor:pointer;"></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div id="top_line"></div>
+				<div id="con_wrap">
+					
+
+		<div id="left_wrap">
+			<div id="left_titel"> <span class="left_menu_title">회원정보</span> </div>
+			<nav id="left_menu">
+				<ul>
+				<li><a href='/admin/user/edit'><span>회원정보수정</span></a></li>
+			</ul>
+			</nav>
+		</div>
+					
+
+		script.
+			function chkForm(obj){
+				if(obj==document.getElementById("nowpwd")){
+					if(obj.value==""){
+						alert("패스워드를 입력하여 주세요."); 
+						obj.focus();
+						return false;	
+					}
+					return true;
+				} else if(obj==document.getElementById("chgpwd")){
+					if(obj.value!=""){
+						if( obj.value.length < 8 ) {
+							alert("변경할 패스워드는 8자리이상 입력하여 주세요."); 
+							obj.focus();
+							return false;
+						}
+						if( obj.value!=document.getElementById("chkpwd").value ){
+							alert("변경할 패스워드가 확인 패스워드와 일치하지 않습니다."); 
+							obj.focus();
+							return false;
+						}		
+					}
+					return true;
+				}
+			}
+			
+			function goEdit(){
+				if(!chkForm($("#nowpwd")[0])) return false;
+				if(!chkForm($("#chgpwd")[0])) return false;
+				$.ajax({
+					url: "/user/edit",
+					data: $("[name=form_admin]").serialize(),
+					success: function(data) {
+						if(data.result){
+							alert(data.msg);
+							goCancel();
+						}else{
+							alert(data.msg);
+						}
+					}
+				});
+			}
+			
+			function goCancel() {
+				window.location.reload();
+			}
+		<div id="content_link"> <img src="/views/admin/con_title_bg.jpg" id="con_title_bg">
+			<div id="con_title"><img src="/views/admin/icon_link.png">&nbsp;회원정보&nbsp;&gt;&nbsp;<span class="bold">회원정보수정</span></div>
+		</div>
+		<div id="content">
+			<div id="content_title">
+				<div class="view_title"><span class="view_title2">회원정보</span>수정</div>
+				<div class="view_title_line"></div>
+			</div>
+			<div class="view">
+				<form name="form_admin" method="post" action="/admin/user/edit">
+					<table class="table_default">
+						<colgroup>
+							<col width="30%"/><col width="70%"/>
+						</colgroup>
+						<tbody>
+							<tr>
+								<th>아이디</th>
+								<td><input type="text" name="USERID" value="adminadmin" readonly="readonly" class="input_readonly"/></td>
+							</tr>
+							<tr>
+								<th>패스워드</th>
+								<td><input type="password" id="nowpwd" name="NOWPWD" maxlength="20" class="view_textfiled3"/></td>
+							</tr>
+							<tr>
+								<th>변경할 패스워드</th>
+								<td><input type="password" id="chgpwd" name="CHGPWD" maxlength="20" class="view_textfiled3"/></td>
+							</tr>
+							<tr>
+								<th>변경할 패스워드 확인</th>
+								<td><input type="password" id="chkpwd" name="CHKPWD" maxlength="20" class="view_textfiled3"/></td>
+							</tr>
+							<tr>
+								<th>사용자명</th>
+								<td>관리자</td>
+							</tr>
+							<tr>
+								<th>전화번호</th>
+								<td><input type="text" id="telnum" name="TELNUM" value="" maxlength="15" class="view_textfiled3"/></td>
+							</tr>
+							<tr>
+								<th>핸드폰번호</th>
+								<td><input type="text" id="mobnum" name="MOBNUM" value="01098008504" maxlength="15" class="view_textfiled3"/></td>
+							</tr>
+							<tr>
+								<td colspan="2" style="background:white; padding:20px; text-align:center;">
+									<img src="/views/admin/btn_save.gif" onclick="goEdit();"/>
+									<img src="/views/admin/btn_cancel.gif" onclick="goCancel();"/>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</form>
+			</div>
+		</div>
+		</div>
+	</body>
+</html>
