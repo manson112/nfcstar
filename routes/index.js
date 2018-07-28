@@ -51,35 +51,48 @@ passport.use('login', new LocalStrategy({
 	passwordField: 'password',
 	passReqToCallback: true
 }, function (req, username, password, done) {
-
-	process.nextTick(function () {
-		connection.query("SELECT * FROM POSMST WHERE POSID='" + username + "';", function (err, rows) {
-			let user = rows[0];
-			if (err) {
-				return done(err);
-			}
-			if (!user) {
-				connection.query("SELECT * FROM ADMMST WHERE ADMID='"+ username +"';", function(err, rows2) {
-					user = rows2[0];
-					if(err) {
-						return done(err);
-					}
-					if(!user) {
-						return done(null, false, { ResultCode: '200', msg: 'Incorrect username.' });
-					} 
-					if(user.ADMPW !== password) {
-						return done(null, false, { ResultCode: '200', msg: 'Incorrect password.' });
-					}
-					return done(null, user);
-				});
-			} else {
+	const findPos = async () => {
+		try {
+			let [rows] = await connection.execute("SELECT * FROM POSMST WHERE POSID='" + username + "';");
+			return rows;
+		} catch (e) {
+			console.error(e);
+		}
+	}
+	const findAdm = async() => {
+		try{
+			let [rows] = await connection.execute("SELECT * FROM POSMST WHERE POSID='" + username + "';")
+			return rows;
+		} catch (e) {
+			console.error(e);
+		}
+	}
+	process.nextTick(async function () {
+		try{
+			let rows = await findPos();
+			let user;
+			if(rows.length != 0) {
+				user = rows[0];
 				if (user.POSPW !== password) {
 					return done(null, false, { ResultCode: '200', msg: 'Incorrect password.' });
 				}
 				return done(null, user);
+			} else {
+				let rows2 = await findAdm();
+				if(rows2.length != 0) {
+					user = rows[0];
+					if(user.ADMPW !== password) {
+						return done(null, false, { ResultCode: '200', msg: 'Incorrect password.' });
+					}
+					return done(null, user);
+				} else {
+					return done(null, false, { ResultCode: '200', msg: 'Incorrect username.' });
+				}	
 			}
-		});
-	})
+		} catch (e) {
+			return done(e);
+		}
+	});
 }));
 
 //Image upload
