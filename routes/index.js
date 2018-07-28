@@ -51,7 +51,7 @@ passport.use('login', new LocalStrategy({
 	passwordField: 'password',
 	passReqToCallback: true
 }, function (req, username, password, done) {
-	const findPos = async () => {
+	const findPos = async (username) => {
 		try {
 			let [rows] = await connection.execute("SELECT * FROM POSMST WHERE POSID='" + username + "';");
 			return rows;
@@ -59,28 +59,29 @@ passport.use('login', new LocalStrategy({
 			console.error(e);
 		}
 	}
-	const findAdm = async() => {
+	const findAdm = async(username) => {
 		try{
-			let [rows] = await connection.execute("SELECT * FROM POSMST WHERE POSID='" + username + "';")
+			let [rows] = await connection.execute("SELECT * FROM ADMMST WHERE ADMID='" + username + "';")
 			return rows;
 		} catch (e) {
 			console.error(e);
 		}
 	}
-	process.nextTick(async function () {
+	const send = async () => {
 		try{
-			let rows = await findPos();
-			let user;
+			let rows = await findPos(username);
 			if(rows.length != 0) {
-				user = rows[0];
+				let user = rows[0];
+				console.log(user);
 				if (user.POSPW !== password) {
 					return done(null, false, { ResultCode: '200', msg: 'Incorrect password.' });
 				}
 				return done(null, user);
 			} else {
-				let rows2 = await findAdm();
+				let rows2 = await findAdm(username);
 				if(rows2.length != 0) {
-					user = rows[0];
+					let user = rows2[0];
+					console.log(user);
 					if(user.ADMPW !== password) {
 						return done(null, false, { ResultCode: '200', msg: 'Incorrect password.' });
 					}
@@ -92,7 +93,8 @@ passport.use('login', new LocalStrategy({
 		} catch (e) {
 			return done(e);
 		}
-	});
+	}
+	send();
 }));
 
 //Image upload
@@ -148,28 +150,6 @@ format_next = function date2str(x, y) {
 		return x.getFullYear().toString().slice(-v.length)
 	});
 }
-
-//전체 페이지 목록
-let pages = [{ url: '/addstore', name: '가게 등록(업체, 관리자)' },
-			{ url: '/addadmin', name: '관리자 등록' },
-			{ url: '/adduser', name: '회원 등록' },
-			{ url: '/addfloor', name: "층 등록(로그인 필요)" },
-			{ url: '/addtable', name: "테이블 등록(로그인 필요)" },
-			{ url: '/addcategory', name: "카테고리 등록(로그인 필요)" },
-			{ url: '/addproduct', name: "제품 등록(로그인 필요)" },
-			{ url: '/addoption', name: "옵션 등록(로그인 필요)" },
-			{ url: '/addset', name: "세트 등록(로그인 필요)" },
-			{ url: '/addevent', name: "이벤트 등록(로그인 필요)" },
-			{ url: '/addcall', name: "호출 등록(로그인 필요)" },
-			{ url: '/addncall2url', name: "NCALL2 동영상 추가"},
-			{ url: '/addvan', name: "밴 등록(업체, 관리자)" },
-			{ url: '/addpos', name: "포스 등록(업체, 관리자)" },
-			{ url: '/addcpn', name: "업체 등록(관리자)" },
-			{ url: '/dbcheck', name: "DB 확인" },
-			{ url: '/init', name: "테이블 생성" },
-			{ url: '/login', name: "로그인" }
-		];
-
 /* GET home page. */
 router.get('/', function (req, res, next) {
 	res.render('nfc_home');
@@ -194,67 +174,67 @@ router.get('/pos_index', function(req, res, next){
 	}
 })
 
-//GET pages
-router.get('/dbcheck', function (req, res, next) {
+// //GET pages
+// router.get('/dbcheck', function (req, res, next) {
 
 
-	const getTables = async () => {
-		let query = "show tables;";
-		let [rows] = await connection.execute(query);
-		return rows;
-	}
+// 	const getTables = async () => {
+// 		let query = "show tables;";
+// 		let [rows] = await connection.execute(query);
+// 		return rows;
+// 	}
 
-	const getRows = async (TBLNAM) => {
-		let q = "select * from " + TBLNAM;
-		let [rows, fields] = await connection.execute(q);
-		return [rows, fields];
-	}
-	const getColumn = async (TBLS) => {
-		let q = "SHOW COLUMNS FROM " + TBLS;
-		let [rows] = await connection.execute(q);
-		return rows;
-	}
+// 	const getRows = async (TBLNAM) => {
+// 		let q = "select * from " + TBLNAM;
+// 		let [rows, fields] = await connection.execute(q);
+// 		return [rows, fields];
+// 	}
+// 	const getColumn = async (TBLS) => {
+// 		let q = "SHOW COLUMNS FROM " + TBLS;
+// 		let [rows] = await connection.execute(q);
+// 		return rows;
+// 	}
 
-	const totalTables = async () => {
-		let total = [];
-		let tables = await getTables();
-		for(let i=0; i<tables.length; i++) {
-			let rows_result = await getRows(tables[i].Tables_in_nfcstar);
-			let rows = rows_result[0];
-			let fields = rows_result[1];
+// 	const totalTables = async () => {
+// 		let total = [];
+// 		let tables = await getTables();
+// 		for(let i=0; i<tables.length; i++) {
+// 			let rows_result = await getRows(tables[i].Tables_in_nfcstar);
+// 			let rows = rows_result[0];
+// 			let fields = rows_result[1];
 
-			let tbl = new Object();
-			tbl.name = fields[0].table;
-			tbl.row = [];
-			tbl.col = [];
+// 			let tbl = new Object();
+// 			tbl.name = fields[0].table;
+// 			tbl.row = [];
+// 			tbl.col = [];
 
-			for(let j=0; j<rows.length; j++) {
-				let tmprow = [];
-				let r = JSON.stringify(rows[j]);
-				let h = JSON.parse(r);
-				for (let k in h ){
-					tmprow.push(h[k]);
-				}
-				tbl.row.push(tmprow);
-			}
+// 			for(let j=0; j<rows.length; j++) {
+// 				let tmprow = [];
+// 				let r = JSON.stringify(rows[j]);
+// 				let h = JSON.parse(r);
+// 				for (let k in h ){
+// 					tmprow.push(h[k]);
+// 				}
+// 				tbl.row.push(tmprow);
+// 			}
 
-			let columns = await getColumn(fields[0].table);
-			for (let c = 0; c < columns.length; c++) {
-				tbl.col.push(columns[c].Field);
-			}
-			total.push(tbl);
-		}
-		return total;
-	}
+// 			let columns = await getColumn(fields[0].table);
+// 			for (let c = 0; c < columns.length; c++) {
+// 				tbl.col.push(columns[c].Field);
+// 			}
+// 			total.push(tbl);
+// 		}
+// 		return total;
+// 	}
 
-	const send = async () => {
-		let total = await totalTables();
-		res.render('dbcheck', { title: 'Database Check', tables: total });
-	}
+// 	const send = async () => {
+// 		let total = await totalTables();
+// 		res.render('dbcheck', { title: 'Database Check', tables: total });
+// 	}
 
-	send();
+// 	send();
 
-});
+// });
 
 router.get('/addstore', function (req, res, next) {
 	res.render('addstore', { title: 'Add Store' });
