@@ -51,17 +51,17 @@ passport.use('login', new LocalStrategy({
 	passwordField: 'password',
 	passReqToCallback: true
 }, function (req, username, password, done) {
-	const findPos = async (username) => {
+	const findPos = async (user) => {
 		try {
-			let [rows] = await connection.execute("SELECT * FROM POSMST WHERE POSID='" + username + "';");
+			let [rows] = await connection.execute("SELECT * FROM POSMST WHERE POSID=?", [user]);
 			return rows;
 		} catch (e) {
 			console.error(e);
 		}
 	}
-	const findAdm = async(username) => {
+	const findAdm = async(user) => {
 		try{
-			let [rows] = await connection.execute("SELECT * FROM ADMMST WHERE ADMID='" + username + "';")
+			let [rows] = await connection.execute("SELECT * FROM ADMMST WHERE ADMID=?", [user]);
 			return rows;
 		} catch (e) {
 			console.error(e);
@@ -72,20 +72,20 @@ passport.use('login', new LocalStrategy({
 			let rows = await findPos(username);
 			if(rows.length != 0) {
 				let user = rows[0];
-				console.log(user);
 				if (user.POSPW !== password) {
 					return done(null, false, { ResultCode: '200', msg: 'Incorrect password.' });
+				} else {
+					return done(null, user);
 				}
-				return done(null, user);
 			} else {
 				let rows2 = await findAdm(username);
 				if(rows2.length != 0) {
 					let user = rows2[0];
-					console.log(user);
 					if(user.ADMPW !== password) {
 						return done(null, false, { ResultCode: '200', msg: 'Incorrect password.' });
+					} else {
+						return done(null, user);
 					}
-					return done(null, user);
 				} else {
 					return done(null, false, { ResultCode: '200', msg: 'Incorrect username.' });
 				}	
@@ -94,28 +94,10 @@ passport.use('login', new LocalStrategy({
 			return done(e);
 		}
 	}
-	send();
+	process.nextTick(() => {
+		send();
+	});
 }));
-
-//Image upload
-const multer = require('multer');
-let imageFilter = function (req, file, cb) {
-	// accept image only
-	if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-		return cb(new Error('Only image files are allowed!'), false);
-	}
-	cb(null, true);
-};
-let storage = multer.diskStorage({
-	destination: function (req, file, cb) {
-		cb(null, './public/images/');
-	},
-	filename: function (req, file, cb) {
-		cb(null, "_" + new Date().valueOf() + file.originalname);
-	}
-});
-let upload = multer({ storage: storage, fileFilter: imageFilter });
-
 
 format = function date2str(x, y) {
 	let z = {
