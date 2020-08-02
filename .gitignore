@@ -126,6 +126,7 @@ build/Release
 node_modules/
 DB/
 public/
+key/
 
 mariadb-10.2.12-winx64/
 jspm_packages/
